@@ -1,24 +1,31 @@
 import RatesBlock from 'components/ChartBlock'
 import { InferGetServerSidePropsType } from 'next'
 import { Rate } from 'shared/rate.interface'
+import { Token } from 'shared/token.interface'
 
 export const getServerSideProps = async () => {
-  const res = await fetch('http://localhost:8080/rates')
-  const rates: Rate[] = await res.json()
-  
+  const [tokensRes, ratesRes] = await Promise.all([
+    fetch('http://localhost:8080/tokens'),
+    fetch('http://localhost:8080/rates')
+  ])
+
+  const tokens: Token[] = await tokensRes.json()
+  const rates: Rate[] = await ratesRes.json()
+
   return {
     props: {
+      tokens,
       rates,
     },
   }
 }
 
-function Home({ rates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <RatesBlock token={{id: "3", name: "ZWAP", symbol: "ZWAP"}} rates={rates.filter(rate => rate.token_id == 3)} />
-      <RatesBlock token={{id: "2", name: "gZIL", symbol: "gZIL"}} rates={rates.filter(rate => rate.token_id == 2)} />
-      <RatesBlock token={{id: "4", name: "Port", symbol: "PORT"}} rates={rates.filter(rate => rate.token_id == 4)} />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+      {tokens.map( token => {                
+        return <RatesBlock key={token.id} token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+      })}     
     </div>
   )
 }

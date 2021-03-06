@@ -4,6 +4,7 @@ import { Rate } from 'shared/rate.interface';
 
 interface Props {
   data: Rate[]
+  isIncrease: boolean
 }
 
 interface ChartDataPoint {
@@ -31,7 +32,7 @@ function Chart(props: Props) {
             visible: false,
           },
           horzLines: {
-            color: 'rgba(42, 46, 57, 0.02)',
+            visible: false,
           },
         },
         leftPriceScale: {
@@ -46,6 +47,9 @@ function Chart(props: Props) {
           borderVisible: false,
         },
         crosshair: {
+          vertLine: {
+            visible: false,
+          },
           horzLine: {
             visible: false,
           },
@@ -62,10 +66,11 @@ function Chart(props: Props) {
       })
 
       const series = chart.addAreaSeries({
-        topColor: 'rgba(76, 175, 80, 0.56)',
-        bottomColor: 'rgba(76, 175, 80, 0.04)',
-        lineColor: 'rgba(76, 175, 80, 1)',
+        topColor: props.isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
+        bottomColor: props.isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
+        lineColor: props.isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
         lineWidth: 2,
+        priceLineVisible: false,
         autoscaleInfoProvider: () => ({
           priceRange: {
               minValue: Math.min(...data.map(item => item.value)),
@@ -84,6 +89,7 @@ function Chart(props: Props) {
     function updateSize() {
       if(ref.current) {
         chart?.resize(ref.current.clientWidth, 220)
+        chart?.timeScale().fitContent()
       }
     }
     window.addEventListener('resize', updateSize)
