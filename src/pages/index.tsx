@@ -1,5 +1,6 @@
 import RatesBlock from 'components/ChartBlock'
 import { InferGetServerSidePropsType } from 'next'
+import Link from 'next/link'
 import { Rate } from 'shared/rate.interface'
 import { Token } from 'shared/token.interface'
 
@@ -24,7 +25,13 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
       {tokens.map( token => {                
-        return <RatesBlock key={token.id} token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+        return (
+          <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
+            <a>
+              <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+            </a>
+          </Link>
+        )
       })}     
     </div>
   )
