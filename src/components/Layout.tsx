@@ -11,8 +11,7 @@ export default function Layout(props: Props) {
   return (
     <>
       <Header />
-      <div>{children}</div>
-      <div>footer</div>
+      <div className="px-4">{children}</div>
     </>
   )
 }
