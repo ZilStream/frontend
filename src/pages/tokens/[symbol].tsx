@@ -1,7 +1,13 @@
-import Chart from 'components/Chart'
+import React from 'react'
+import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { Rate } from 'shared/rate.interface'
 import { Token } from 'shared/token.interface'
+
+const Chart = dynamic(
+  () => import('components/Chart'),
+  { ssr: false }
+)
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {  
   const { symbol } = context.query
