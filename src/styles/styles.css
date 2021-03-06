@@ -1,5 +1,5 @@
 html {
-  @apply text-base bg-gray-50 dark:bg-gray-900;
+  @apply text-base bg-gray-200 dark:bg-gray-900;
 }
 
 @layer components {
