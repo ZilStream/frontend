@@ -1,5 +1,8 @@
 export interface Token {
-  id: string
+  id: number
   name: string
   symbol: string
+  icon: string
+  address_bech32: string
+  decimals: number
 }
