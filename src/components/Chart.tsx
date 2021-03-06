@@ -4,7 +4,9 @@ import { Rate } from 'shared/rate.interface';
 
 interface Props {
   data: Rate[]
-  isIncrease: boolean
+  isIncrease: boolean,
+  isUserInteractionEnabled: boolean,
+  isScalesEnabled: boolean,
 }
 
 interface ChartDataPoint {
@@ -20,12 +22,12 @@ function Chart(props: Props) {
     if(ref.current) {
       chart = createChart(ref.current, {
         width: ref.current.clientWidth, 
-        height: 220,
-        handleScroll: false,
-        handleScale: false,
+        height: ref.current.clientHeight,
+        handleScroll: props.isUserInteractionEnabled ? true : false,
+        handleScale: props.isUserInteractionEnabled ? true : false,
         layout: {
           backgroundColor: 'rgba(0,0,0,0)',
-          // textColor: '#d1d4dc',
+          textColor: '#838383',
         },
         grid: {
           vertLines: {
@@ -39,19 +41,19 @@ function Chart(props: Props) {
           visible: false,
         },
         rightPriceScale: {
-          visible: false,
+          visible: props.isScalesEnabled ? true : false,
           borderVisible: false,
         },
         timeScale: {
-          visible: false,
+          visible: props.isScalesEnabled ? true : false,
           borderVisible: false,
         },
         crosshair: {
           vertLine: {
-            visible: false,
+            visible: props.isUserInteractionEnabled ? true : false ,
           },
           horzLine: {
-            visible: false,
+            visible: props.isUserInteractionEnabled ? true : false,
           },
         },
       })
@@ -88,7 +90,7 @@ function Chart(props: Props) {
   useLayoutEffect(() => {
     function updateSize() {
       if(ref.current) {
-        chart?.resize(ref.current.clientWidth, 220)
+        chart?.resize(ref.current.clientWidth, ref.current.clientHeight)
         chart?.timeScale().fitContent()
       }
     }
@@ -99,9 +101,14 @@ function Chart(props: Props) {
 
   return (
     <>
-      <div ref={ref} />
+      <div ref={ref} className="h-full" />
     </>
   )
+}
+
+Chart.defaultProps = {
+  isUserInteractionEnabled: true,
+  isScalesEnabled: true
 }
 
 export default Chart

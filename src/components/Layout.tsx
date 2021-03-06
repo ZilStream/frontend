@@ -14,8 +14,10 @@ export default function Layout(props: Props) {
       <Head>
         <title>ZilStream</title>
       </Head>
-      <Header />
-      <div className="px-4">{children}</div>
+      <div className="flex flex-col h-full">
+        <Header />
+        <div className="px-4 my-4 flex-grow">{children}</div>
+      </div>
     </>
   )
 }

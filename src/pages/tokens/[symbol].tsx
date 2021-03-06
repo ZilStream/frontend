@@ -31,11 +31,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 function TokenDetail({ token, rates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
-      <div className="flex items-center">
+      <div className="flex items-center mb-4 pt-8 pb-2">
         <h1 className="mr-3">{token.name}</h1>
-        <span className="text-gray-600">${token.symbol}</span>
+        <span className="text-gray-600 text-lg">${token.symbol}</span>
       </div>
-      <div>
+      <div className="h-64 md:h-80 lg:h-96 xl:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800">
         <Chart data={rates} isIncrease={true} />
       </div>
     </>
