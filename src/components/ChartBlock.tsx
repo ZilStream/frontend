@@ -23,7 +23,7 @@ const RatesBlock = (props: Props) => {
   const changeRounded = Math.round(change * 100) / 100
   
   return (
-    <div className="rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800 text-black dark:text-white relative">
+    <div className="h-64 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800 text-black dark:text-white relative">
       <div className="absolute top-3 left-4 right-4 flex items-center text-xl">
         <div className="flex-grow flex items-center">
           <span className="font-semibold mr-2">{props.token.symbol}</span>
@@ -33,7 +33,7 @@ const RatesBlock = (props: Props) => {
           {changeRounded} %
         </div>
       </div>
-      <Chart data={props.rates} isIncrease={change >= 0} />
+      <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
     </div>
   )
 }
