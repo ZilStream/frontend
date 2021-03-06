@@ -5,8 +5,8 @@ import { Token } from 'shared/token.interface'
 
 export const getServerSideProps = async () => {
   const [tokensRes, ratesRes] = await Promise.all([
-    fetch('http://localhost:8080/tokens'),
-    fetch('http://localhost:8080/rates')
+    fetch(`${process.env.BACKEND_URL}/tokens`),
+    fetch(`${process.env.BACKEND_URL}/rates`)
   ])
 
   const tokens: Token[] = await tokensRes.json()
