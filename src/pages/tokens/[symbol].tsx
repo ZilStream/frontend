@@ -36,7 +36,7 @@ function TokenDetail({ token, rates }: InferGetServerSidePropsType<typeof getSer
         <span className="text-gray-600 text-lg">${token.symbol}</span>
       </div>
       <div className="h-64 md:h-80 lg:h-96 xl:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800">
-        <Chart data={rates} isIncrease={true} />
+        <Chart data={rates} isIncrease={true} isUserInteractionEnabled={true} isScalesEnabled={true} />
       </div>
     </>
   )
