@@ -28,13 +28,13 @@ const TokenRow = (props: Props) => {
     <div className="token-row">
       <div className="w-6 mr-3"><img src={props.token.icon} /></div>
       <div className="w-24 md:w-48">{props.token.symbol}</div>
-      <div className="w-24 md:w-32">{lastRateRounded}</div>
-      <div className="w-32 hidden md:block">${usdRate.toFixed(2)}</div>
+      <div className="w-24 md:w-32 lg:w-40">{lastRateRounded}</div>
+      <div className="w-32 lg:w-40 hidden md:block">${usdRate.toFixed(2)}</div>
       <div className={change >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
         {changeRounded} %
       </div>
       <div className="flex-grow flex justify-end">
-        <div className="w-20 md:w-28 h-16">
+        <div className="w-20 md:w-28 lg:w-36 h-16">
           <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
         </div>
       </div>
