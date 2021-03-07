@@ -62,9 +62,9 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
       <div className="grid grid-cols-1 gap-2 mt-6">
         <div className="flex items-center px-4 text-gray-500 text-sm">
           <div className="w-6 mr-3"></div>
-          <div className="w-48">Token</div>
-          <div className="w-32">Price (ZIL)</div>
-          <div className="w-32">Price (USD)</div>
+          <div className="w-24 md:w-48">Token</div>
+          <div className="w-24 md:w-32">Price (ZIL)</div>
+          <div className="w-32 hidden md:block">Price (USD)</div>
           <div className="">
             Change (24h)
           </div>
