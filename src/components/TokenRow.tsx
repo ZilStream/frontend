@@ -28,9 +28,9 @@ const TokenRow = (props: Props) => {
     <div className="token-row">
       <div className="w-6 mr-3"><img src={props.token.icon} loading="lazy" /></div>
       <div className="w-24 md:w-48">{props.token.symbol}</div>
-      <div className="w-24 md:w-32 lg:w-40">{lastRateRounded}</div>
-      <div className="w-32 lg:w-40 hidden md:block">${usdRate.toFixed(2)}</div>
-      <div className={change >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
+      <div className="w-24 md:w-32 lg:w-40 font-normal">{lastRateRounded}</div>
+      <div className="w-32 lg:w-40 hidden md:block font-normal">${usdRate.toFixed(2)}</div>
+      <div className={change >= 0 ? 'text-green-600 dark:text-green-500 font-normal' : 'text-red-600 dark:text-red-500 font-normal'}>
         {changeRounded} %
       </div>
       <div className="flex-grow flex justify-end">
