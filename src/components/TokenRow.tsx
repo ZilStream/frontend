@@ -26,7 +26,7 @@ const TokenRow = (props: Props) => {
 
   return (
     <div className="token-row">
-      <div className="w-6 mr-3"><img src={props.token.icon} /></div>
+      <div className="w-6 mr-3"><img src={props.token.icon} loading="lazy" /></div>
       <div className="w-24 md:w-48">{props.token.symbol}</div>
       <div className="w-24 md:w-32 lg:w-40">{lastRateRounded}</div>
       <div className="w-32 lg:w-40 hidden md:block">${usdRate.toFixed(2)}</div>
