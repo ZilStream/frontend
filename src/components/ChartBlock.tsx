@@ -34,6 +34,7 @@ const RatesBlock = (props: Props) => {
         </div>
       </div>
       <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
+      <div className="z-10 absolute top-0 left-0 right-0 bottom-0"></div>
     </div>
   )
 }
