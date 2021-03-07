@@ -36,7 +36,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
       <div className="py-8">
         <h1 className="mb-1">Todays prices in Zilliqa</h1>
         <div className="text-gray-600">
-          Zilliqa is current valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
+          Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
           {change >= 0 ? (
             <div className="inline">
               up <span className="text-green-600 dark:text-green-500 font-medium">{changeRounded}%</span> from yesterday.
