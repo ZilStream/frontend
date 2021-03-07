@@ -3,7 +3,7 @@ import { GitHub, Twitter } from 'react-feather'
 
 export default function Footer() {
   return (
-    <div className="px-4 py-12 text-gray-500 text-sm text-center">
+    <div className="px-4 py-12 text-gray-500 dark:text-gray-400 text-sm text-center">
       <div className="font-medium mb-2">ZilStream</div>
       <div className="flex items-center justify-center text-gray-400">
         <a href="https://github.com/ZilStream" className="mr-2">
