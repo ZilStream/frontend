@@ -32,14 +32,18 @@ body, #__next {
   }
 
   h2 {
-    @apply text-3xl font-extrabold text-gray-900 dark:text-gray-50;
+    @apply text-3xl font-bold text-gray-900 dark:text-gray-50;
   }
 
   h1 {
-    @apply text-4xl font-extrabold text-gray-900 dark:text-gray-50;
+    @apply text-4xl font-bold text-gray-900 dark:text-gray-50;
   }
 
   img {
     @apply max-w-full;
+  }
+
+  .token-row {
+    @apply flex items-center bg-white px-4 rounded-lg shadow-md;
   }
 }
