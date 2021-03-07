@@ -42,7 +42,7 @@ function TokenDetail({ token, rates }: InferGetServerSidePropsType<typeof getSer
       <div className="flex flex-col md:flex-row items-stretch md:items-center">
         <div className="flex-grow flex flex-col md:flex-row items-start md:items-center mb-4 pt-8 pb-2">
           <div className="bg-gray-300 w-16 h-16 p-2 rounded-lg mb-2 md:mb-0 mr-0 md:mr-3">
-            <img src={token.icon} />
+            <img src={token.icon} loading="lazy" />
           </div>
           <div>
             <h2>{token.name}</h2>
