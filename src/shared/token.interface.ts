@@ -5,4 +5,7 @@ export interface Token {
   icon: string
   address_bech32: string
   decimals: number
+  init_supply: number
+  max_supply: number
+  current_supply: number
 }
