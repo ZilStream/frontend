@@ -48,7 +48,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
         {tokens.filter(token => token.symbol == 'ZWAP' || token.symbol == 'gZIL' || token.symbol == 'XSGD').map( token => {                
           return (
             <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
@@ -59,7 +59,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
           )
         })}     
       </div>
-      <div className="grid grid-cols-1 gap-2 mt-6">
+      <div className="grid grid-cols-1 gap-2 mt-10">
         <div className="flex items-center px-4 text-gray-500 text-sm">
           <div className="w-6 mr-3"></div>
           <div className="w-24 md:w-48">Token</div>
