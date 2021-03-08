@@ -2,6 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'shared/rate.interface'
 import { Token } from 'shared/token.interface'
+import { currencyFormat } from 'utils/format'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -38,7 +39,7 @@ const RatesBlock = (props: Props) => {
           </div>
         </div>
         <div>
-          <span className="text-gray-400">{usdRate.toFixed(2)} USD</span>
+          <span className="text-gray-400">{currencyFormat(usdRate, '')} USD</span>
         </div>
       </div>
     </div>
