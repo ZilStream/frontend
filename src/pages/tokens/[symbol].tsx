@@ -46,7 +46,7 @@ function TokenDetail({ token, rates }: InferGetServerSidePropsType<typeof getSer
           </div>
           <div>
             <h2>{token.name}</h2>
-            <div className="flex items-center">
+            <div className="flex flex-col md:flex-row items-start md:items-center">
               <span className="text-gray-600 dark:text-gray-400 text-lg mr-3">${token.symbol}</span>
               <span className="text-sm bg-gray-300 dark:bg-gray-800 dark:text-gray-400 rounded px-2">
                 <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} className="font-normal">
