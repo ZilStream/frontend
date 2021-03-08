@@ -31,6 +31,20 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
   const change = ((latestZilRate.value - firstZilRate.value) / firstZilRate.value) * 100
   const changeRounded = Math.round(change * 100) / 100
 
+  tokens.sort((a,b) => {
+    const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+    const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
+    const priorUsdRate = priorLastRate * latestZilRate.value
+    const priorMarketCap = a.current_supply * priorUsdRate
+
+    const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+    const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
+    const nextUsdRate = nextLastRate * latestZilRate.value
+    const nextMarketCap = b.current_supply * nextUsdRate
+
+    return (priorMarketCap < nextMarketCap) ? 1 : -1
+  })
+
   return (
     <>
       <div className="py-8">
