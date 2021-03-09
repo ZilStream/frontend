@@ -14,6 +14,7 @@ export default function Layout(props: Props) {
     <>
       <Head>
         <title>ZilStream</title>
+        <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
       </Head>
       <div className="flex flex-col h-full">
         <Header />
