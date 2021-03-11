@@ -26,6 +26,11 @@ const TokenRow = (props: Props) => {
   const changeRounded = Math.round(change * 100) / 100
 
   const marketCap = props.token.current_supply * usdRate
+  var usdVolume = props.token.daily_volume * props.zilRate.value
+
+  if(usdVolume < 0) {
+    usdVolume = 0
+  }
 
   return (
     <div className="token-row">
@@ -36,7 +41,8 @@ const TokenRow = (props: Props) => {
       <div className={change >= 0 ? 'text-green-600 dark:text-green-500 font-normal w-24 md:w-32 lg:w-40 text-right' : 'text-red-600 dark:text-red-500 font-normal w-24 md:w-32 lg:w-40 text-right'}>
         {changeRounded} %
       </div>
-      <div className="w-36 lg:w-44 xl:w-52 hidden lg:block font-normal text-right">{currencyFormat(marketCap)}</div>
+      <div className="w-36 lg:w-44 xl:w-48 hidden lg:block font-normal text-right">{currencyFormat(marketCap)}</div>
+      <div className="w-36 lg:w-44 xl:w-48 hidden xl:block font-normal text-right">{currencyFormat(usdVolume)}</div>
       <div className="flex-grow flex justify-end">
         <div className="w-20 md:w-28 lg:w-36 h-16">
           <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />

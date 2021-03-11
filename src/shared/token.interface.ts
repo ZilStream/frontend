@@ -8,4 +8,5 @@ export interface Token {
   init_supply: number
   max_supply: number
   current_supply: number
+  daily_volume: number
 }
