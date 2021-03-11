@@ -4,8 +4,8 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { Rate } from 'shared/rate.interface'
 import { Token } from 'shared/token.interface'
 
-const Chart = dynamic(
-  () => import('components/Chart'),
+const Candles = dynamic(
+  () => import('components/Candles'),
   { ssr: false }
 )
 
@@ -14,7 +14,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   const [tokenRes, ratesRes] = await Promise.all([
     fetch(`${process.env.BACKEND_URL}/token?symbol=${symbol}`),
-    fetch(`${process.env.BACKEND_URL}/rates?symbol=${symbol}`)
+    fetch(`${process.env.BACKEND_URL}/rates/${symbol}`)
   ])
 
   const token: Token = await tokenRes.json()
@@ -63,8 +63,14 @@ function TokenDetail({ token, rates }: InferGetServerSidePropsType<typeof getSer
           </div>
         </div>
       </div>
-      <div className="h-64 md:h-80 lg:h-96 xl:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800">
-        <Chart data={rates} isIncrease={true} isUserInteractionEnabled={true} isScalesEnabled={true} />
+      <div className="flex items-center justify-end mb-2">
+        <button className="py-1 px-2 rounded-lg bg-gray-700 text-gray-400 text-sm shadow font-medium">1D</button>
+        <button className="py-1 px-2 rounded-lg bg-gray-700 text-gray-400 text-sm ml-2 font-medium">4H</button>
+        <button className="py-1 px-2 rounded-lg bg-gray-700 text-gray-400 text-sm ml-2 font-medium">1H</button>
+        <button className="py-1 px-2 rounded-lg bg-gray-600 text-gray-300 text-sm ml-2 font-medium">15M</button>
+      </div>
+      <div className="h-80 md:h-96 lg:h-96 xl:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800">
+        <Candles data={rates} />
       </div>
     </>
   )
