@@ -82,7 +82,8 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
           <div className="w-24 md:w-32 lg:w-40 text-right">
             Change (24h)
           </div>
-          <div className="w-36 lg:w-44 xl:w-52 hidden lg:block text-right">Market Cap</div>
+          <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right">Market Cap</div>
+          <div className="w-36 lg:w-44 xl:w-48 hidden xl:block text-right">Volume (24h)</div>
           <div className="flex-grow text-right">
             Last 24 hours
           </div>

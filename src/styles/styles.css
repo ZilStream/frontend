@@ -46,4 +46,10 @@ body, #__next {
   .token-row {
     @apply flex items-center bg-white dark:bg-gray-800 px-2 sm:px-4 rounded-lg shadow-md;
   }
+
+  .container {
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+  }
 }
