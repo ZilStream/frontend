@@ -18,7 +18,9 @@ export default function Layout(props: Props) {
       </Head>
       <div className="flex flex-col h-full">
         <Header />
-        <div className="px-4 my-4 flex-grow">{children}</div>
+        <div className="container">
+          <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
+        </div>
         <Footer />
       </div>
     </>
