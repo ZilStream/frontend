@@ -9,4 +9,6 @@ export interface Token {
   max_supply: number
   current_supply: number
   daily_volume: number
+  website: string
+  whitepaper: string
 }
