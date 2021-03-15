@@ -32,7 +32,7 @@ body, #__next {
   }
 
   h2 {
-    @apply text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-50;
+    @apply text-xl md:text-3xl font-bold text-gray-900 dark:text-gray-50;
   }
 
   h1 {

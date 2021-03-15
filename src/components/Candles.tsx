@@ -77,7 +77,6 @@ function Candles(props: Props) {
           // reset
         } else {
           // set
-          console.log(param.seriesPrices.get(candleSeries))
           let rate: CandleDataPoint = param.seriesPrices.get(candleSeries) as CandleDataPoint
           rate.time = param.time
           updateLegend(rate)

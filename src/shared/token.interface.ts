@@ -11,4 +11,5 @@ export interface Token {
   daily_volume: number
   website: string
   whitepaper: string
+  supply_skip_addresses: string
 }
