@@ -18,16 +18,17 @@ interface CandleDataPoint {
 
 function Candles(props: Props) {
   const [rates, setRates] = useState(props.data)
-  const [currentRate, setCurrentRate] = useState<CandleDataPoint | null>(null);
-  const [currentInterval, setCurrentInterval] = useState('1h');
+  const [currentRate, setCurrentRate] = useState<CandleDataPoint | null>(null)
+  const [currentInterval, setCurrentInterval] = useState('1h')
+
+  const [chart, setChart] = useState<IChartApi|null>(null)
+  const [series, setSeries] = useState<ISeriesApi<"Candlestick">|null>(null)
 
   const ref = React.useRef<HTMLDivElement | null>(null)
-  var chart: IChartApi|null = null;
-  var series: ISeriesApi<"Candlestick">|null = null;
 
   useEffect(() => {    
     if(ref.current) {
-      chart = createChart(ref.current, {
+      const newChart = createChart(ref.current, {
         width: ref.current.clientWidth, 
         height: ref.current.clientHeight,
         layout: {
@@ -57,22 +58,25 @@ function Candles(props: Props) {
         }
       })
 
-      series = chart?.addCandlestickSeries()
+      const newSeries = newChart.addCandlestickSeries()
 
-      series.setData(prepareData(rates))
+      newSeries.setData(prepareData(rates))
 
-      chart?.timeScale().fitContent()
+      newChart.timeScale().fitContent()
 
-      chart.subscribeCrosshairMove((param) => {
+      newChart.subscribeCrosshairMove((param) => {
         if ( param === undefined || param.time === undefined || param.point.x < 0 || param.point.x > ref.current.clientWidth || param.point.y < 0 || param.point.y > ref.current?.clientHeight ) {
           // reset
         } else {
           // set
-          let rate: CandleDataPoint = param.seriesPrices.get(series) as CandleDataPoint
+          let rate: CandleDataPoint = param.seriesPrices.get(newSeries) as CandleDataPoint
           rate.time = param.time
           updateLegend(rate)
         }
       })
+
+      setChart(newChart)
+      setSeries(newSeries)
     }
   }, [rates])
 
@@ -115,6 +119,8 @@ function Candles(props: Props) {
       .then(response => response.json())
       .then(data => {
         const newRates: Rate[] = data
+        console.log(series)
+        console.log(chart)
         series?.setData(prepareData(newRates))
         chart?.timeScale().fitContent()
       })
