@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@tippyjs/react": "^4.2.4",
     "@zilliqa-js/zilliqa": "^2.2.0",
     "lightweight-charts": "^3.3.0",
     "next": "10.0.7",
