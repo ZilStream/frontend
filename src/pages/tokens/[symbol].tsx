@@ -53,8 +53,6 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
   const marketCap = token.current_supply * usdRate
   const usdVolume = token.daily_volume * zilRate.value
 
-  
-
   return (
     <>
       <Head>
@@ -121,20 +119,8 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
           <Supply token={token} />
         </div>
       </div>
-      <div className="flex items-center justify-end mb-2">
-        <span className="uppercase text-xs text-gray-500 mr-3">Currency</span>
-        <button className="py-1 px-2 rounded-lg bg-gray-600 text-gray-200 text-sm shadow font-bold">ZIL</button>
-        <button className="py-1 px-2 rounded-lg bg-gray-800 text-gray-400 text-sm ml-1 font-medium mr-6">USD</button>
-
-        <span className="uppercase text-xs text-gray-500 mr-3">Time</span>
-        <button className="py-1 px-2 rounded-lg bg-gray-800 text-gray-400 text-sm shadow font-medium">1D</button>
-        <button className="py-1 px-2 rounded-lg bg-gray-800 text-gray-400 text-sm ml-1 font-medium">4H</button>
-        <button className="py-1 px-2 rounded-lg bg-gray-600 text-gray-200 text-sm ml-1 font-bold">1H</button>
-        <button className="py-1 px-2 rounded-lg bg-gray-800 text-gray-400 text-sm ml-1 font-medium">15M</button>
-      </div>
-      <div className="h-80 md:h-96 lg:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800 relative">
-        <Candles data={rates} />
-      </div>
+      
+      <Candles token={token} data={rates} />
     </>
   )
 }
