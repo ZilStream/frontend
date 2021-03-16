@@ -67,7 +67,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {tokens.filter(token => token.symbol == 'ZWAP' || token.symbol == 'gZIL' || token.symbol == 'XSGD').map( token => {                
+        {tokens.slice(0, 3).map( token => {                
           return (
             <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
               <a>
