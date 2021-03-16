@@ -13,6 +13,10 @@ export default function Footer() {
           <Twitter size={18} />
         </a>
       </div>
+      <div className="mt-6 text-xs text-gray-400 dark:text-gray-500">
+        <div className="mb-1">Telegram: <a href="https://t.me/zilstream" target="_blank">t.me/zilstream</a></div>
+        <div>Tip jar: <span className="font-medium">zil1me2dr2za36mdxy0uygfx3s5eh9xckd227efqdx</span></div>
+      </div>
     </div>
   )
 }
