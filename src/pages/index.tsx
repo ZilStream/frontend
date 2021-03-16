@@ -1,6 +1,7 @@
 import RatesBlock from 'components/ChartBlock'
 import TokenRow from 'components/TokenRow'
 import { InferGetServerSidePropsType } from 'next'
+import Head from 'next/head'
 import Link from 'next/link'
 import { Rate } from 'shared/rate.interface'
 import { Token } from 'shared/token.interface'
@@ -47,6 +48,9 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
 
   return (
     <>
+      <Head>
+        <title>Zilliqa ecosystem prices, charts, and market capitalizations | ZilStream</title>
+      </Head>
       <div className="py-8">
         <h1 className="mb-1">Todays prices in Zilliqa</h1>
         <div className="text-gray-600 dark:text-gray-400">
@@ -94,7 +98,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
               </a>
             </Link>
           )
-        })}     
+        })}
     </div>
   </>
   )

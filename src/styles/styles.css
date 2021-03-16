@@ -32,7 +32,7 @@ body, #__next {
   }
 
   h2 {
-    @apply text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-50;
+    @apply text-xl md:text-3xl font-bold text-gray-900 dark:text-gray-50;
   }
 
   h1 {
@@ -51,5 +51,17 @@ body, #__next {
     max-width: 1300px;
     width: 100%;
     margin: 0 auto;
+  }
+
+  .chart-btn {
+    @apply py-1 px-2 rounded-lg text-sm mr-1 focus:outline-none dark:hover:bg-gray-600 dark:hover:text-gray-400;
+  }
+
+  .chart-btn-selected {
+    @apply text-gray-100 dark:text-gray-200 shadow-sm font-bold bg-gray-500 dark:bg-gray-600;
+  }
+
+  .chart-btn-unselected {
+    @apply text-gray-600 dark:text-gray-400 font-medium bg-gray-300 dark:bg-gray-800;
   }
 }
