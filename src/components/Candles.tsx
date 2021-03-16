@@ -72,11 +72,14 @@ function Candles(props: Props) {
       newChart.timeScale().fitContent()
 
       newChart.subscribeCrosshairMove((param) => {
-        if ( param === undefined || param.time === undefined || param.point.x < 0 || param.point.x > ref.current.clientWidth || param.point.y < 0 || param.point.y > ref.current?.clientHeight ) {
+        if(!param) {
+          updateLegend(null)
+        } else if (!param.time || !param.point || !ref.current || param.point.x < 0 || param.point.x > ref.current.clientWidth || param.point.y < 0 || param.point.y > ref.current?.clientHeight) {
           // reset
+          updateLegend(null)
         } else {
           // set
-          let rate: CandleDataPoint = param.seriesPrices.get(newSeries) as CandleDataPoint
+          let rate: CandleDataPoint = param.seriesPrices.get(newSeries) as unknown as CandleDataPoint
           rate.time = param.time
           updateLegend(rate)
         }
