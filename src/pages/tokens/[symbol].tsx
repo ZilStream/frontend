@@ -78,9 +78,9 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
           </div>
         </div>
       </div>
-      <div className="flex items-center text-sm text-gray-400 mb-2">
+      <div className="flex items-center text-sm text-gray-800 dark:text-gray-400 mb-2">
         {token.website &&
-          <a href={token.website} target="_blank" className="flex items-center bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded mr-2">
+          <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
             <Link size={12} className="mr-1" />
             Website 
             <ExternalLink size={10} className="ml-1 text-gray-600" />
@@ -88,39 +88,39 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
         }
         
         {token.whitepaper &&
-          <a href={token.whitepaper} target="_blank" className="flex items-center bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded mr-2">
+          <a href={token.whitepaper} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
             <FileText size={12} className="mr-1" />
             Whitepaper
             <ExternalLink size={10} className="ml-1 text-gray-600" />
           </a>
         }
         
-        <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="flex items-center bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded mr-2">
+        <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
           <Box size={12} className="mr-1" />
           ViewBlock 
           <ExternalLink size={10} className="ml-1 text-gray-600" />
         </a>
       </div>
       <div className="py-2 -mx-4 mb-6 grid grid-cols-2 md:grid-cols-4">
-        <div className="px-4 py-2 border-r border-gray-800">
-          <div className="text-gray-400 text-sm">Market Cap</div>
+        <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
+          <div className="text-gray-700 dark:text-gray-400 text-sm">Market Cap</div>
           <div className="font-medium">{currencyFormat(marketCap)}</div>
         </div>
-        <div className="px-4 py-2 border-r border-gray-800">
-          <div className="text-gray-400 text-sm">Volume (24h)</div>
+        <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
+          <div className="text-gray-700 dark:text-gray-400 text-sm">Volume (24h)</div>
           <div className="font-medium">{currencyFormat(usdVolume)}</div>
         </div>
-        <div className="px-4 py-2 border-r border-gray-800">
-          <div className="text-gray-400 text-sm">Volume / Market Cap</div>
+        <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
+          <div className="text-gray-700 dark:text-gray-400 text-sm">Volume / Market Cap</div>
           <div className="font-medium">{numberFormat(usdVolume / marketCap, 3)}</div>
         </div>
         <div className="px-4 py-2">
-          <div className="text-gray-400 text-sm">Circulating Supply</div>
+          <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
         </div>
       </div>
       
-      <Candles token={token} data={rates} />
+      <Candles token={token} data={rates} zilRate={zilRate} />
     </>
   )
 }

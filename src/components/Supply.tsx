@@ -15,7 +15,7 @@ const Supply = (props: Props) => {
   const excludedAddresses = (props.token.supply_skip_addresses != "") ? props.token.supply_skip_addresses.split(",") : []
   
   const SupplyInfo = (
-    <div className="bg-gray-700 p-4 rounded-lg shadow-md text-sm">
+    <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md text-sm">
       <div className="mb-2">The amount of tokens that are currently circulating in the market.</div>
       <div className="flex items-center">
         <div className="flex-grow">Initial Supply:</div>
@@ -31,10 +31,10 @@ const Supply = (props: Props) => {
       
       {excludedAddresses.length > 0 &&
         <div className="mt-4 text-xs">
-          <div className="text-gray-300">Excluded addresses:</div>
+          <div>Excluded addresses:</div>
           {excludedAddresses.map(address => {                
             return (
-              <div key={address} className="text-gray-400">
+              <div key={address} className="text-gray-600 dark:text-gray-400">
                 {address}
               </div>
             )
@@ -76,7 +76,7 @@ const Supply = (props: Props) => {
           </button>
         </Tippy>
       </div>
-      <div className="h-3 rounded-full overflow-hidden bg-gray-700">
+      <div className="h-3 rounded-full overflow-hidden bg-gray-300 dark:bg-gray-700">
         <div className="h-full bg-gray-500" style={{width: numberFormat(percentage, 0) + '%'}}></div>
       </div>
     </div>
