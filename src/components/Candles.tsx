@@ -6,6 +6,7 @@ import { Token } from 'shared/token.interface';
 interface Props {
   token: Token
   data: Rate[]
+  zilRate: Rate
 }
 
 interface CandleDataPoint {
@@ -20,29 +21,35 @@ function Candles(props: Props) {
   const [rates, setRates] = useState(props.data)
   const [currentRate, setCurrentRate] = useState<CandleDataPoint | null>(null)
   const [currentInterval, setCurrentInterval] = useState('1h')
+  const [currency, setCurrency] = useState('ZIL')
 
   const [chart, setChart] = useState<IChartApi|null>(null)
   const [series, setSeries] = useState<ISeriesApi<"Candlestick">|null>(null)
 
+  const [darkMode, setDarkMode] = useState(false);
+
   const ref = React.useRef<HTMLDivElement | null>(null)
 
-  useEffect(() => {    
+  useEffect(() => {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    setDarkMode(isDarkMode)
+    
     if(ref.current) {
       const newChart = createChart(ref.current, {
         width: ref.current.clientWidth, 
         height: ref.current.clientHeight,
         layout: {
           backgroundColor: 'rgba(0,0,0,0)',
-          textColor: '#eeeeee',
+          textColor: isDarkMode ? '#eeeeee' : '#888888',
         },
         grid: {
           vertLines: {
-            color: 'rgba(220, 220, 220, 0.1)',
+            color: isDarkMode ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
             style: 1,
             visible: true,
           },
           horzLines: {
-            color: 'rgba(220, 220, 220, 0.1)',
+            color: isDarkMode ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
             style: 1,
             visible: true,
           },
@@ -77,32 +84,59 @@ function Candles(props: Props) {
 
       setChart(newChart)
       setSeries(newSeries)
-    }
-  }, [rates])
+      setSizeListener()
 
-  useLayoutEffect(() => {
-    function updateSize() {
-      if(ref.current) {
-        chart?.resize(ref.current.clientWidth, ref.current.clientHeight)
-        chart?.timeScale().fitContent()
-      }
+      window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', event => {
+          if (event.matches) {
+            setDarkMode(true)
+          } else {
+            setDarkMode(false)
+          }
+      })
     }
+  }, [])
+
+  useEffect(() => {
+    series?.setData(prepareData(rates))
+  }, [currency])
+
+  function setSizeListener() {
     window.addEventListener('resize', updateSize)
-    updateSize()
-    return () => window.removeEventListener('resize', updateSize)
-  })
+  }
+
+  function removeSizeListener() {
+    window.removeEventListener('resize', updateSize)
+  }
+
+  function updateSize() {
+    if(ref.current) {
+      chart?.resize(ref.current.clientWidth, ref.current.clientHeight)
+      chart?.timeScale().fitContent()
+    }
+  }
 
   function prepareData(providedRates: Rate[]): CandleDataPoint[] {
     var data: CandleDataPoint[] = [];
-
+    
     providedRates.forEach(rate => {
-      data.push({
-        time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
-        low: rate.low,
-        high: rate.high,
-        open: rate.open,
-        close: rate.close,
-      })
+      if(currency === 'USD') {
+        data.push({
+          time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
+          low: rate.low * props.zilRate.value,
+          high: rate.high * props.zilRate.value,
+          open: rate.open * props.zilRate.value,
+          close: rate.close * props.zilRate.value,
+        })
+      } else {
+        data.push({
+          time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
+          low: rate.low,
+          high: rate.high,
+          open: rate.open,
+          close: rate.close,
+        })
+      }
     })
 
     data.sort((a,b) => (a.time > b.time) ? 1 : -1)
@@ -119,33 +153,39 @@ function Candles(props: Props) {
       .then(response => response.json())
       .then(data => {
         const newRates: Rate[] = data
-        console.log(series)
-        console.log(chart)
+        setRates(newRates)
         series?.setData(prepareData(newRates))
-        chart?.timeScale().fitContent()
       })
+  }
+
+  function setChartToCurrency(newCurrency: string) {
+    setCurrency(newCurrency)
   }
 
   return (
     <>
       <div className="flex items-center justify-end mb-2">
         <span className="uppercase text-xs text-gray-500 mr-3">Currency</span>
-        <button className="py-1 px-2 rounded-lg bg-gray-600 text-gray-200 text-sm shadow font-bold">ZIL</button>
-        <button className="py-1 px-2 rounded-lg bg-gray-800 text-gray-400 text-sm ml-1 font-medium mr-6">USD</button>
+        <button 
+          onClick={() => setChartToCurrency('ZIL')}
+          className={`chart-btn ${(currency == 'ZIL' ? 'chart-btn-selected' : 'chart-btn-unselected')}`}>ZIL</button>
+        <button 
+          onClick={() => setChartToCurrency('USD')}
+          className={`chart-btn ${(currency == 'USD' ? 'chart-btn-selected' : 'chart-btn-unselected')}`}>USD</button>
 
-        <span className="uppercase text-xs text-gray-500 mr-3">Time</span>
+        <span className="uppercase text-xs text-gray-500 mx-3">Time</span>
         <button 
           onClick={() => setChartToInterval('1d')}
-          className={`py-1 px-2 rounded-lg text-sm shadow mr-1 focus:outline-none hover:bg-gray-600 hover:text-gray-400 ${(currentInterval == '1d') ? 'text-gray-200 font-bold  bg-gray-600' : 'text-gray-400 font-medium  bg-gray-800'}`}>1D</button>
+          className={`chart-btn ${(currentInterval == '1d') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>1D</button>
         <button 
           onClick={() => setChartToInterval('4h')}
-          className={`py-1 px-2 rounded-lg text-sm shadow mr-1 focus:outline-none hover:bg-gray-600 hover:text-gray-400 ${(currentInterval == '4h') ? 'text-gray-200 font-bold  bg-gray-600' : 'text-gray-400 font-medium  bg-gray-800'}`}>4H</button>
+          className={`chart-btn ${(currentInterval == '4h') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>4H</button>
         <button 
           onClick={() => setChartToInterval('1h')}
-          className={`py-1 px-2 rounded-lg text-sm shadow mr-1 focus:outline-none hover:bg-gray-600 hover:text-gray-400 ${(currentInterval == '1h') ? 'text-gray-200 font-bold  bg-gray-600' : 'text-gray-400 font-medium  bg-gray-800'}`}>1H</button>
+          className={`chart-btn ${(currentInterval == '1h') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>1H</button>
         <button
           onClick={() => setChartToInterval('15m')}
-          className={`py-1 px-2 rounded-lg text-sm shadow mr-1 focus:outline-none hover:bg-gray-600 hover:text-gray-400 ${(currentInterval == '15m') ? 'text-gray-200 font-bold  bg-gray-600' : 'text-gray-400 font-medium  bg-gray-800'}`}>15M</button>
+          className={`chart-btn ${(currentInterval == '15m') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>15M</button>
       </div>
       <div className="h-80 md:h-96 lg:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800 relative">
         {currentRate&&
