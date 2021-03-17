@@ -15,6 +15,7 @@ export default function Layout(props: Props) {
       <Head>
         <title>ZilStream</title>
         <meta property="og:site_name" content="ZilStream" />
+        <meta name="twitter:site" content="@zilstream" />
         <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
       </Head>
       <div className="flex flex-col h-full">

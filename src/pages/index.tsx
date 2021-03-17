@@ -49,8 +49,8 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
   return (
     <>
       <Head>
-        <title>Zilliqa ecosystem prices, charts, and market capitalizations | ZilStream</title>
-        <meta property="og:title" content="Zilliqa ecosystem prices, charts, and market capitalizations | ZilStream" />
+        <title>Zilliqa ecosystem prices, charts, and market cap | ZilStream</title>
+        <meta property="og:title" content="Zilliqa ecosystem prices, charts, and market cap | ZilStream" />
         <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
