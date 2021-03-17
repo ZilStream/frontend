@@ -50,6 +50,9 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
     <>
       <Head>
         <title>Zilliqa ecosystem prices, charts, and market capitalizations | ZilStream</title>
+        <meta property="og:title" content="Zilliqa ecosystem prices, charts, and market capitalizations | ZilStream" />
+        <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
+        <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
       <div className="py-8">
         <h1 className="mb-1">Todays prices in Zilliqa</h1>
