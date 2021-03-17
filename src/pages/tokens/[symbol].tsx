@@ -57,6 +57,9 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
     <>
       <Head>
         <title>{token.symbol} price and info | ZilStream</title>
+        <meta property="og:title" content={`${token.symbol} price and info | ZilStream`} />
+        <meta name="description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
+        <meta property="og:description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
       </Head>
       <div className="flex flex-col md:flex-row items-stretch md:items-center">
         <div className="flex-grow flex items-start sm:items-center mb-1 pt-8 pb-2">
