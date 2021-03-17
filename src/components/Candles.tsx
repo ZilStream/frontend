@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { createChart, CrosshairMode, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
 import { Rate } from 'shared/rate.interface';
 import { Token } from 'shared/token.interface';
+import { useTheme } from 'next-themes';
 
 interface Props {
   token: Token
@@ -18,6 +19,8 @@ interface CandleDataPoint {
 }
 
 function Candles(props: Props) {
+  const {resolvedTheme} = useTheme()
+
   const [rates, setRates] = useState(props.data)
   const [currentRate, setCurrentRate] = useState<CandleDataPoint | null>(null)
   const [currentInterval, setCurrentInterval] = useState('1h')
@@ -26,30 +29,25 @@ function Candles(props: Props) {
   const [chart, setChart] = useState<IChartApi|null>(null)
   const [series, setSeries] = useState<ISeriesApi<"Candlestick">|null>(null)
 
-  const [darkMode, setDarkMode] = useState(false);
-
   const ref = React.useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    setDarkMode(isDarkMode)
-    
     if(ref.current) {
       const newChart = createChart(ref.current, {
         width: ref.current.clientWidth, 
         height: ref.current.clientHeight,
         layout: {
           backgroundColor: 'rgba(0,0,0,0)',
-          textColor: isDarkMode ? '#eeeeee' : '#888888',
+          textColor: resolvedTheme === 'dark' ? '#eeeeee' : '#888888',
         },
         grid: {
           vertLines: {
-            color: isDarkMode ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
+            color: resolvedTheme === 'dark' ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
             style: 1,
             visible: true,
           },
           horzLines: {
-            color: isDarkMode ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
+            color: resolvedTheme === 'dark' ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)',
             style: 1,
             visible: true,
           },
@@ -88,21 +86,21 @@ function Candles(props: Props) {
       setChart(newChart)
       setSeries(newSeries)
       setSizeListener()
-
-      window.matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', event => {
-          if (event.matches) {
-            setDarkMode(true)
-          } else {
-            setDarkMode(false)
-          }
-      })
     }
   }, [])
 
   useEffect(() => {
     series?.setData(prepareData(rates))
   }, [currency])
+
+  useEffect(() => {
+    if(!chart) return
+    const chartOptions = chart.options()
+    chartOptions.layout.textColor = resolvedTheme === 'dark' ? '#eeeeee' : '#888888'
+    chartOptions.grid.vertLines.color = resolvedTheme === 'dark' ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)'
+    chartOptions.grid.horzLines.color = resolvedTheme === 'dark' ? 'rgba(220, 220, 220, 0.1)' : 'rgba(220, 220, 220, 0.8)'
+    chart.applyOptions(chartOptions)
+  }, [resolvedTheme])
 
   function setSizeListener() {
     window.addEventListener('resize', updateSize)

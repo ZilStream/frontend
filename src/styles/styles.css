@@ -1,9 +1,9 @@
 html {
-  @apply text-base bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-50 h-full;
+  @apply h-full;
 }
 
 body, #__next {
-  @apply h-full;
+  @apply text-base bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-50 h-full;
 }
 
 @layer components {
