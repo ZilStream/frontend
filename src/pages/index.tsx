@@ -1,4 +1,5 @@
 import RatesBlock from 'components/ChartBlock'
+import ExchangeStats from 'components/ExchangeStats'
 import TokenRow from 'components/TokenRow'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
@@ -55,18 +56,26 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
       <div className="py-8">
-        <h1 className="mb-1">Todays prices in Zilliqa</h1>
-        <div className="text-gray-600 dark:text-gray-400">
-          Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
-          {change >= 0 ? (
-            <div className="inline">
-              up <span className="text-green-600 dark:text-green-500 font-medium">{changeRounded}%</span> from yesterday.
+        <div className="flex flex-col lg:flex-row items-start">
+          <div className="flex-grow">
+            <h1 className="mb-1">Todays prices in Zilliqa</h1>
+            <div className="text-gray-600 dark:text-gray-400">
+              Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
+              {change >= 0 ? (
+                <div className="inline">
+                  up <span className="text-green-600 dark:text-green-500 font-medium">{changeRounded}%</span> from yesterday.
+                </div>
+              ) : (
+                <div className="inline">
+                  down <span className="text-red-600 dark:text-red-500 font-medium">{changeRounded}%</span> from yesterday.
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="inline">
-              down <span className="text-red-600 dark:text-red-500 font-medium">{changeRounded}%</span> from yesterday.
-            </div>
-          )}
+          </div>
+          <ExchangeStats 
+            total_liquidity={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * latestZilRate.value}
+            volume={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * latestZilRate.value} 
+          />
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
