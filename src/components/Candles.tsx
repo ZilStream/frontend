@@ -1,8 +1,9 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { createChart, CrosshairMode, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
-import { Rate } from 'shared/rate.interface';
-import { Token } from 'shared/token.interface';
+import { Rate } from 'types/rate.interface';
+import { Token } from 'types/token.interface';
 import { useTheme } from 'next-themes';
+import getRatesForToken from 'lib/zilstream/getRatesForToken';
 
 interface Props {
   token: Token
@@ -103,14 +104,11 @@ function Candles(props: Props) {
   }, [resolvedTheme])
 
   useEffect(() => {
-    fetch(`https://api.zilstream.com/rates/${props.token.symbol}?interval=${currentInterval}&period=${currentPeriod}`)
-      .then(response => response.json())
-      .then(data => {
-        const newRates: Rate[] = data
-        setRates(newRates)
-        series?.setData(prepareData(newRates))
-        setVisibleRange()
-      })
+    getRatesForToken(props.token.symbol, currentInterval, currentPeriod).then(data => {
+      setRates(data)
+      series?.setData(prepareData(data))
+      setVisibleRange()
+    })
   }, [currentInterval, currentPeriod])
 
   function setSizeListener() {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Token } from 'shared/token.interface'
+import { Token } from 'types/token.interface'
 import { numberFormat } from 'utils/format'
 import { Info } from 'react-feather'
 import Tippy from '@tippyjs/react'

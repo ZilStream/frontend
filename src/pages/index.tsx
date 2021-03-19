@@ -1,20 +1,15 @@
 import RatesBlock from 'components/ChartBlock'
 import ExchangeStats from 'components/ExchangeStats'
 import TokenRow from 'components/TokenRow'
+import getRates from 'lib/zilstream/getRates'
+import getTokens from 'lib/zilstream/getTokens'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Rate } from 'shared/rate.interface'
-import { Token } from 'shared/token.interface'
 
 export const getServerSideProps = async () => {
-  const [tokensRes, ratesRes] = await Promise.all([
-    fetch(`${process.env.BACKEND_URL}/tokens`),
-    fetch(`${process.env.BACKEND_URL}/rates`)
-  ])
-
-  const tokens: Token[] = await tokensRes.json()
-  const rates: Rate[] = await ratesRes.json()
+  const tokens = await getTokens()
+  const rates = await getRates()
 
   return {
     props: {
@@ -29,7 +24,7 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
   const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
   const firstZilRate = zilRates[zilRates.length - 1]
   const latestZilRate = zilRates[0]
-
+  
   const change = ((latestZilRate.value - firstZilRate.value) / firstZilRate.value) * 100
   const changeRounded = Math.round(change * 100) / 100
 
