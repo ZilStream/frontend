@@ -16,8 +16,8 @@ const ExchangeStats = (props: Props) => {
           </a>
         </div>
       </div>
-      <div className="flex-grow flex items-center justify-end">
-        <div className="mr-4 md:mr-6">
+      <div className="flex-grow flex items-center justify-end text-right">
+        <div className="mr-5 md:mr-6">
           <div className="truncate">Total Value Locked</div>
           <span className="font-semibold">{currencyFormat(props.total_liquidity)}</span>
         </div>
