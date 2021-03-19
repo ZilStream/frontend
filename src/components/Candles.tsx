@@ -24,6 +24,7 @@ function Candles(props: Props) {
   const [rates, setRates] = useState(props.data)
   const [currentRate, setCurrentRate] = useState<CandleDataPoint | null>(null)
   const [currentInterval, setCurrentInterval] = useState('1h')
+  const [currentPeriod, setCurrentPeriod] = useState('7d')
   const [currency, setCurrency] = useState('ZIL')
 
   const [chart, setChart] = useState<IChartApi|null>(null)
@@ -67,8 +68,6 @@ function Candles(props: Props) {
 
       newSeries.setData(prepareData(rates))
 
-      newChart.timeScale().fitContent()
-
       newChart.subscribeCrosshairMove((param) => {
         if(!param) {
           updateLegend(null)
@@ -86,6 +85,7 @@ function Candles(props: Props) {
       setChart(newChart)
       setSeries(newSeries)
       setSizeListener()
+      setVisibleRange()
     }
   }, [])
 
@@ -102,6 +102,17 @@ function Candles(props: Props) {
     chart.applyOptions(chartOptions)
   }, [resolvedTheme])
 
+  useEffect(() => {
+    fetch(`https://api.zilstream.com/rates/${props.token.symbol}?interval=${currentInterval}&period=${currentPeriod}`)
+      .then(response => response.json())
+      .then(data => {
+        const newRates: Rate[] = data
+        setRates(newRates)
+        series?.setData(prepareData(newRates))
+        setVisibleRange()
+      })
+  }, [currentInterval, currentPeriod])
+
   function setSizeListener() {
     window.addEventListener('resize', updateSize)
   }
@@ -113,8 +124,25 @@ function Candles(props: Props) {
   function updateSize() {
     if(ref.current) {
       chart?.resize(ref.current.clientWidth, ref.current.clientHeight)
-      chart?.timeScale().fitContent()
+      setVisibleRange()
     }
+  }
+
+  function setVisibleRange() {
+    var numberOfDays = 1
+
+    if(currentInterval == "1h") {
+      numberOfDays = 7
+    } else if(currentInterval == "4h") {
+      numberOfDays = 12
+    } else if(currentInterval == "1d") {
+      numberOfDays = 60
+    }
+
+    chart?.timeScale().setVisibleRange({
+      from: ((new Date()).getTime() / 1000) - (numberOfDays*24*60*60),
+      to: (new Date()).getTime() / 1000,
+    })
   }
 
   function prepareData(providedRates: Rate[]): CandleDataPoint[] {
@@ -148,15 +176,9 @@ function Candles(props: Props) {
     setCurrentRate(rate)
   }
 
-  function setChartToInterval(interval: string) {
+  function setChartToInterval(interval: string, period: string = '7d') {
     setCurrentInterval(interval)
-    fetch(`https://api.zilstream.com/rates/${props.token.symbol}?interval=${interval}`)
-      .then(response => response.json())
-      .then(data => {
-        const newRates: Rate[] = data
-        setRates(newRates)
-        series?.setData(prepareData(newRates))
-      })
+    setCurrentPeriod(period)
   }
 
   function setChartToCurrency(newCurrency: string) {
@@ -176,16 +198,16 @@ function Candles(props: Props) {
 
         <span className="uppercase text-xs text-gray-500 mx-3">Time</span>
         <button 
-          onClick={() => setChartToInterval('1d')}
+          onClick={() => setChartToInterval('1d', '8w')}
           className={`chart-btn ${(currentInterval == '1d') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>1D</button>
         <button 
-          onClick={() => setChartToInterval('4h')}
+          onClick={() => setChartToInterval('4h', '4w')}
           className={`chart-btn ${(currentInterval == '4h') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>4H</button>
         <button 
-          onClick={() => setChartToInterval('1h')}
+          onClick={() => setChartToInterval('1h', '2w')}
           className={`chart-btn ${(currentInterval == '1h') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>1H</button>
         <button
-          onClick={() => setChartToInterval('15m')}
+          onClick={() => setChartToInterval('15m', '1w')}
           className={`chart-btn ${(currentInterval == '15m') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>15M</button>
       </div>
       <div className="h-80 md:h-96 lg:h-144 rounded-lg overflow-hidden p-2 shadow-md bg-white dark:bg-gray-800 relative">
