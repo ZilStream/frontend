@@ -1,7 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { Rate } from 'shared/rate.interface'
-import { Token } from 'shared/token.interface'
+import { Rate } from 'types/rate.interface'
+import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 
 const Chart = dynamic(

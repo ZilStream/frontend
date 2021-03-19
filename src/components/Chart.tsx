@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react'
 import { createChart, IChartApi, Time, UTCTimestamp } from 'lightweight-charts'
-import { Rate } from 'shared/rate.interface';
+import { Rate } from 'types/rate.interface';
 
 interface Props {
   data: Rate[]

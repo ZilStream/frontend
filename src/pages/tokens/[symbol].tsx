@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
-import { Rate } from 'shared/rate.interface'
-import { Token } from 'shared/token.interface'
+import { Rate } from 'types/rate.interface'
+import { Token } from 'types/token.interface'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
 import { Link, FileText, Box, ExternalLink } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
+import getToken from 'lib/zilstream/getToken'
+import getRatesForToken from 'lib/zilstream/getRatesForToken'
 
 const Candles = dynamic(
   () => import('components/Candles'),
@@ -17,15 +19,13 @@ const Candles = dynamic(
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {  
   const { symbol } = context.query
 
-  const [tokenRes, ratesRes, dailyRatesRes, zilRatesRes] = await Promise.all([
-    fetch(`${process.env.BACKEND_URL}/token?symbol=${symbol}`),
-    fetch(`${process.env.BACKEND_URL}/rates/${symbol}?interval=1h`),
+  const [dailyRatesRes, zilRatesRes] = await Promise.all([
     fetch(`${process.env.BACKEND_URL}/rates?symbol=${symbol}`),
     fetch(`${process.env.BACKEND_URL}/rates?symbol=ZIL`)
   ])
 
-  const token: Token = await tokenRes.json()
-  const rates: Rate[] = await ratesRes.json()
+  const token = await getToken(symbol as string)
+  const rates = await getRatesForToken(symbol as string)
   const dailyRates: Rate[] = await dailyRatesRes.json()
   const zilRates: Rate[] = await zilRatesRes.json()
 
