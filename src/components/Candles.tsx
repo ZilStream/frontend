@@ -140,8 +140,8 @@ function Candles(props: Props) {
     }
 
     chart?.timeScale().setVisibleRange({
-      from: ((new Date()).getTime() / 1000) - (numberOfDays*24*60*60),
-      to: (new Date()).getTime() / 1000,
+      from: ((new Date()).getTime() / 1000) - (numberOfDays*24*60*60) as UTCTimestamp,
+      to: (new Date()).getTime() / 1000 as UTCTimestamp,
     })
   }
 
