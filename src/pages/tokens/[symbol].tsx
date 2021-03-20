@@ -10,6 +10,7 @@ import Supply from 'components/Supply'
 import Head from 'next/head'
 import getToken from 'lib/zilstream/getToken'
 import getRatesForToken from 'lib/zilstream/getRatesForToken'
+import TokenIcon from 'components/TokenIcon'
 
 const Candles = dynamic(
   () => import('components/Candles'),
@@ -64,7 +65,7 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
       <div className="flex flex-col md:flex-row items-stretch md:items-center">
         <div className="flex-grow flex items-start sm:items-center mb-1 pt-8 pb-2">
           <div className="flex-shrink-0 bg-gray-300 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-2 md:mr-3">
-            <img src={token.icon} loading="lazy" />
+            <TokenIcon url={token.icon} />
           </div>
           <div>
             <h2 className="">{token.name}</h2>
