@@ -7,6 +7,7 @@ export interface Token {
   decimals: number
   init_supply: number
   max_supply: number
+  total_supply: number
   current_supply: number
   daily_volume: number
   current_liquidity: number
