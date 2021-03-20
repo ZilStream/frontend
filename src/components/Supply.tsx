@@ -28,6 +28,13 @@ const Supply = (props: Props) => {
           <div className="font-semibold">{numberFormat(props.token.max_supply, 0)}</div>
         </div>
       }
+
+      {props.token.total_supply != props.token.max_supply &&
+        <div className="flex items-center">
+          <div className="flex-grow">Total Supply:</div>
+          <div className="font-semibold">{numberFormat(props.token.total_supply, 0)}</div>
+        </div>
+      }
       
       {excludedAddresses.length > 0 &&
         <div className="mt-4 text-xs">
