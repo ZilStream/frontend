@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
+import TokenIcon from './TokenIcon'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -34,7 +35,7 @@ const TokenRow = (props: Props) => {
 
   return (
     <div className="token-row">
-      <div className="w-6 mr-3 md:mr-4"><img src={props.token.icon} loading="lazy" /></div>
+      <div className="w-6 mr-3 md:mr-4"><TokenIcon url={props.token.icon} /></div>
       <div className="w-16 sm:w-24 md:w-36">{props.token.symbol}</div>
       <div className="w-20 md:w-28 lg:w-36 font-normal text-right">{lastRateRounded}</div>
       <div className="w-32 lg:w-40 hidden md:block font-normal text-right">{currencyFormat(usdRate)}</div>
