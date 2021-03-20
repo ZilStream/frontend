@@ -47,6 +47,7 @@ function Chart(props: Props) {
         timeScale: {
           visible: props.isScalesEnabled ? true : false,
           borderVisible: false,
+          fixLeftEdge: true,
         },
         crosshair: {
           vertLine: {
