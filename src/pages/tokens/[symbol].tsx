@@ -21,8 +21,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const { symbol } = context.query
 
   const [dailyRatesRes, zilRatesRes] = await Promise.all([
-    fetch(`${process.env.BACKEND_URL}/rates?symbol=${symbol}`),
-    fetch(`${process.env.BACKEND_URL}/rates?symbol=ZIL`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=${symbol}`),
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=ZIL`)
   ])
 
   const token = await getToken(symbol as string)
