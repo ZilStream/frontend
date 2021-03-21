@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
+import FlashChange from './FlashChange'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -31,7 +32,7 @@ const RatesBlock = (props: Props) => {
         <div className="flex items-center text-xl">
           <div className="flex-grow flex items-center">
             <span className="font-semibold mr-2">{props.token.symbol}</span>
-            <span className="mr-2">{lastRateRounded}</span>
+            <span className="mr-2"><FlashChange value={lastRateRounded}>{lastRateRounded}</FlashChange></span>
           </div>
           <div className={change >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
             {changeRounded} %
