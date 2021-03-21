@@ -6,20 +6,38 @@ import getTokens from 'lib/zilstream/getTokens'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
+import { Rate } from 'types/rate.interface'
+import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
   const tokens = await getTokens()
-  const rates = await getRates()
+  const initialRates = await getRates()
 
   return {
     props: {
       tokens,
-      rates,
+      initialRates,
     },
   }
 }
 
-function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [rates, setRates] = useState<Rate[]>(initialRates)
+  const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0);
+
+  useInterval(async () => {
+      let newRates = await getRates()
+      setRates(newRates)
+      setSecondsSinceUpdate(0)
+    },
+    60000
+  )
+
+  useInterval(() => {
+    setSecondsSinceUpdate(secondsSinceUpdate + 1)
+  }, 1000)
+
   const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
   const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
   const firstZilRate = zilRates[zilRates.length - 1]
@@ -106,6 +124,10 @@ function Home({ tokens, rates }: InferGetServerSidePropsType<typeof getServerSid
             </Link>
           )
         })}
+    </div>
+    <div className="flex items-center justify-center text-sm text-gray-500 mt-8 py-2">
+      <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+      <div>Last updated: {secondsSinceUpdate} seconds ago</div>
     </div>
   </>
   )
