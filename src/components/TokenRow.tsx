@@ -4,6 +4,7 @@ import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 import TokenIcon from './TokenIcon'
+import FlashChange from './FlashChange'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -37,7 +38,7 @@ const TokenRow = (props: Props) => {
     <div className="token-row">
       <div className="w-6 mr-3 md:mr-4"><TokenIcon url={props.token.icon} /></div>
       <div className="w-16 sm:w-24 md:w-36">{props.token.symbol}</div>
-      <div className="w-20 md:w-28 lg:w-36 font-normal text-right">{lastRateRounded}</div>
+      <div className="w-20 md:w-28 lg:w-36 font-normal text-right"><FlashChange value={lastRateRounded}>{lastRateRounded}</FlashChange></div>
       <div className="w-32 lg:w-40 hidden md:block font-normal text-right">{currencyFormat(usdRate)}</div>
       <div className={change >= 0 ? 'text-green-600 dark:text-green-500 font-normal w-20 md:w-32 lg:w-40 text-right' : 'text-red-600 dark:text-red-500 font-normal w-20 md:w-32 lg:w-40 text-right'}>
         {changeRounded} %
