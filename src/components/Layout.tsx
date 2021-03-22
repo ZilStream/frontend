@@ -20,7 +20,7 @@ export default function Layout(props: Props) {
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-ios.png" />
         <meta name="apple-mobile-web-app-title" content="ZilStream" />
-        <meta name="mobile-web-app-capable" content="yes"></meta>
+        <meta name="mobile-web-app-capable" content="yes" />
 
         <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
       </Head>
