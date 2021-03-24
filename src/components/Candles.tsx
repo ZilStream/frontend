@@ -1,14 +1,13 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createChart, CrosshairMode, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
 import { Rate } from 'types/rate.interface';
-import { Token } from 'types/token.interface';
+import { TokenDetail } from 'types/token.interface';
 import { useTheme } from 'next-themes';
 import getRatesForToken from 'lib/zilstream/getRatesForToken';
 
 interface Props {
-  token: Token
+  token: TokenDetail
   data: Rate[]
-  zilRate: Rate
 }
 
 interface CandleDataPoint {

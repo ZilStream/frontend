@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { Rate } from 'types/rate.interface'
-import { Token } from 'types/token.interface'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
 import { Link, FileText, Box, ExternalLink } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
@@ -20,39 +19,25 @@ const Candles = dynamic(
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {  
   const { symbol } = context.query
 
-  const [dailyRatesRes, zilRatesRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=${symbol}`),
+  const [zilRatesRes] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=ZIL`)
   ])
 
   const token = await getToken(symbol as string)
   const rates = await getRatesForToken(symbol as string)
-  const dailyRates: Rate[] = await dailyRatesRes.json()
   const zilRates: Rate[] = await zilRatesRes.json()
 
   return {
     props: {
       token,
       rates,
-      dailyRates,
       zilRates,
     },
   }
 }
 
-function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const sortedRates = dailyRates.sort((a,b) => (a.time < b.time) ? 1 : -1)
-  const lastRate = sortedRates.length > 0 ? sortedRates[0].value : 0
-  const firstRate = sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
-  const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
+function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const zilRate = zilRates.sort((a,b) => (a.time < b.time) ? 1 : -1)[0]
-  const usdRate = lastRate * zilRate.value
-
-  const change = ((lastRate - firstRate) / firstRate) * 100
-  const changeRounded = Math.round(change * 100) / 100
-
-  const marketCap = token.current_supply * usdRate
-  const usdVolume = token.daily_volume * zilRate.value
 
   return (
     <>
@@ -76,9 +61,9 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
           </div>
         </div>
         <div className="text-left md:text-right font-medium flex items-center md:block mb-2 md:mb-0">
-          <div className="flex-grow font-bold text-2xl">{cryptoFormat(lastRateRounded)} ZIL</div>
-          <div className={change >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
-            {changeRounded} %
+          <div className="flex-grow font-bold text-2xl">{cryptoFormat(token.rate)} ZIL</div>
+          <div className={token.market_data.change_24h >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
+            {numberFormat(token.market_data.change_percentage_24h)} %
           </div>
         </div>
       </div>
@@ -108,15 +93,15 @@ function TokenDetail({ token, rates, dailyRates, zilRates }: InferGetServerSideP
       <div className="py-2 -mx-4 mb-6 grid grid-cols-2 md:grid-cols-4">
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Market Cap</div>
-          <div className="font-medium">{currencyFormat(marketCap)}</div>
+          <div className="font-medium">{currencyFormat(token.market_data.market_cap)}</div>
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Volume (24h)</div>
-          <div className="font-medium">{currencyFormat(usdVolume)}</div>
+          <div className="font-medium">{currencyFormat(token.market_data.daily_volume)}</div>
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Volume / Market Cap</div>
-          <div className="font-medium">{numberFormat(usdVolume / marketCap, 3)}</div>
+          <div className="font-medium">{numberFormat(token.market_data.daily_volume / token.market_data.market_cap, 3)}</div>
         </div>
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
