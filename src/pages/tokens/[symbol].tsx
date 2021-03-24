@@ -48,8 +48,8 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
         <meta property="og:description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
       </Head>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center">
-        <div className="flex-grow flex flex-col sm:flex-row items-center mb-1 pt-8 pb-2">
-          <div className="flex-shrink-0 flex items-center justify-center bg-gray-300 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3">
+        <div className="flex-grow flex flex-col sm:flex-row items-center mb-1 pt-6 sm:pt-8 pb-2">
+          <div className="flex-shrink-0 flex items-center justify-center bg-gray-300 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3 mb-2 sm:mb-0">
             <TokenIcon url={token.icon} />
           </div>
           <div>
