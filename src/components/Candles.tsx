@@ -8,6 +8,7 @@ import getRatesForToken from 'lib/zilstream/getRatesForToken';
 interface Props {
   token: TokenDetail
   data: Rate[]
+  zilRate: Rate
 }
 
 interface CandleDataPoint {
