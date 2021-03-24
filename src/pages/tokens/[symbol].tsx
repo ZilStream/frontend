@@ -64,7 +64,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
           <div className="flex-grow font-bold text-2xl">{cryptoFormat(token.rate)} ZIL</div>
           <div className="text-gray-500 flex items-center justify-end">
             {currencyFormat(token.rate_usd)}
-            <div className="bg-gray-300 text-sm rounded px-2 py-1 ml-2">
+            <div className="bg-gray-300 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
               <div className={`font-medium ${token.market_data.change_24h >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
                 {numberFormat(token.market_data.change_percentage_24h)} %
               </div>
