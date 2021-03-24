@@ -51,12 +51,12 @@ const Supply = (props: Props) => {
     </div>
   )
 
-  if(!props.token.max_supply && props.token.max_supply == 0) {
+  if(!props.token.market_data.max_supply && props.token.market_data.max_supply == 0) {
     return (
       <div className="relative">
         <div className="mb-2 flex items-center">
           <div className="flex-grow font-medium">
-            { numberFormat(props.token.current_supply, 0) } {props.token.symbol}
+            { numberFormat(props.token.market_data.current_supply, 0) } {props.token.symbol}
           </div>
           <Tippy content={SupplyInfo}>
             <button className="ml-2 focus:outline-none">
@@ -72,7 +72,7 @@ const Supply = (props: Props) => {
     <div className="relative">
       <div className="mb-2 flex items-center">
         <div className="flex-grow font-medium">
-          { numberFormat(props.token.current_supply, 0) } {props.token.symbol}
+          { numberFormat(props.token.market_data.current_supply, 0) } {props.token.symbol}
         </div>
         <div className="font-medium">
           {numberFormat(percentage, 0)}%
