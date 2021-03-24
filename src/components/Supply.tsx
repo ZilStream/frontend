@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
-import { Token } from 'types/token.interface'
+import { TokenDetail } from 'types/token.interface'
 import { numberFormat } from 'utils/format'
 import { Info } from 'react-feather'
 import Tippy from '@tippyjs/react'
 
 interface Props {
-  token: Token
+  token: TokenDetail
 }
 
 const Supply = (props: Props) => {
   const [showPopup, setShowPopup] = useState(false)
 
-  const percentage = (props.token.current_supply / props.token.max_supply) * 100
+  const percentage = (props.token.market_data.current_supply / props.token.market_data.max_supply) * 100
   const excludedAddresses = (props.token.supply_skip_addresses != "") ? props.token.supply_skip_addresses.split(",") : []
   
   const SupplyInfo = (
@@ -19,20 +19,20 @@ const Supply = (props: Props) => {
       <div className="mb-2">The amount of tokens that are currently circulating in the market.</div>
       <div className="flex items-center">
         <div className="flex-grow">Initial Supply:</div>
-        <div className="font-semibold">{numberFormat(props.token.init_supply, 0)}</div>
+        <div className="font-semibold">{numberFormat(props.token.market_data.init_supply, 0)}</div>
       </div>
 
-      {props.token.max_supply > 0 &&
+      {props.token.market_data.max_supply > 0 &&
         <div className="flex items-center">
           <div className="flex-grow">Max Supply:</div>
-          <div className="font-semibold">{numberFormat(props.token.max_supply, 0)}</div>
+          <div className="font-semibold">{numberFormat(props.token.market_data.max_supply, 0)}</div>
         </div>
       }
 
-      {props.token.total_supply != props.token.max_supply &&
+      {props.token.market_data.total_supply != props.token.market_data.max_supply &&
         <div className="flex items-center">
           <div className="flex-grow">Total Supply:</div>
-          <div className="font-semibold">{numberFormat(props.token.total_supply, 0)}</div>
+          <div className="font-semibold">{numberFormat(props.token.market_data.total_supply, 0)}</div>
         </div>
       }
       
