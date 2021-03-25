@@ -48,7 +48,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const zilRate = zilRates.sort((a,b) => (a.time < b.time) ? 1 : -1)[0]
+  const zilRate = zilRates.sort((a: Rate, b: Rate) => (a.time < b.time) ? 1 : -1)[0]
 
   return (
     <>
