@@ -1,28 +1,40 @@
+import PortfolioBalances from 'components/PortfolioBalances';
 import PortfolioOnboard from 'components/PortfolioOnboard'
-import Head from 'next/head'
-import React, { useState } from 'react'
+import getTokens from 'lib/zilstream/getTokens';
+import { InferGetServerSidePropsType } from 'next';
+import React, { useEffect, useState } from 'react'
 
-function Portfolio() {
+export const getServerSideProps = async () => {
+  const tokens = await getTokens()
+
+  return {
+    props: {
+      tokens,
+    },
+  }
+}
+
+
+function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [walletAddress, setWalletAddress] = useState<string|null>(null);
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setWalletAddress(localStorage.getItem('wallet_address'))
+  }, [])
+
+  useEffect(() => {
+    if(walletAddress) {
+      localStorage.setItem('wallet_address', walletAddress)
+    }
+  }, [walletAddress])
 
   function selectWallet(address: string) {
     setWalletAddress(address)
   }
 
-  return (
-    <>
-      <Head>
-        <title>Portfolio | ZilStream</title>
-        <meta property="og:title" content={`Portfolio | ZilStream`} />
-      </Head>
+  if(walletAddress == null) return <PortfolioOnboard onSelectAddress={selectWallet} />
 
-      {walletAddress == null &&
-        <PortfolioOnboard onSelectAddress={selectWallet} />
-      }
-      
-    </>
-  )
+  return <PortfolioBalances walletAddress={walletAddress} tokens={tokens} />
 }
 
 export default Portfolio
