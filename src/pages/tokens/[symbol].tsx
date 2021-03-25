@@ -23,7 +23,18 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=ZIL`)
   ])
 
-  const token = await getToken(symbol as string)
+  const token = await getToken(symbol as string).catch(error => {
+    return
+  })
+  if(!token) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+  
   const rates = await getRatesForToken(symbol as string)
   const zilRates: Rate[] = await zilRatesRes.json()
 
