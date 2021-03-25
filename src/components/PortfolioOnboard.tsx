@@ -13,7 +13,7 @@ function PortfolioOnboard(props: Props) {
       <div className="mt-12">
         <form className="flex items-stretch justify-center">
           <input
-            className="w-96 bg-gray-700 px-3 py-2 rounded-lg mr-2 border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-96 bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-lg mr-2 border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Enter your wallet address" />
           <button className="px-3 py-1 rounded-lg bg-primary font-medium hover:shadow-md">
             View portfolio
