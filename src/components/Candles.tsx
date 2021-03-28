@@ -145,6 +145,8 @@ function Candles(props: Props) {
 
   function prepareData(providedRates: Rate[]): CandleDataPoint[] {
     var data: CandleDataPoint[] = [];
+
+    if(!Array.isArray(providedRates)) { return [] }
     
     providedRates.forEach(rate => {
       if(currency === 'USD') {
