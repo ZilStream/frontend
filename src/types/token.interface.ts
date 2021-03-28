@@ -13,6 +13,7 @@ export interface Token {
   current_liquidity: number
   website: string
   whitepaper: string
+  viewblock_score: number
   supply_skip_addresses: string
 }
 
@@ -25,6 +26,7 @@ export interface TokenDetail {
   decimals: number
   website: string
   whitepaper: string
+  viewblock_score: number
   supply_skip_addresses: string
   rate: number
   rate_usd: number
