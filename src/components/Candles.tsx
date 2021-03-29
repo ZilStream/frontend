@@ -62,10 +62,15 @@ function Candles(props: Props) {
         },
         crosshair: {
           mode: CrosshairMode.Normal,
-        }
+        },
       })
 
-      const newSeries = newChart.addCandlestickSeries()
+      const newSeries = newChart.addCandlestickSeries({
+        priceFormat: {
+          precision: rates?.[0].low < 0.01 ? 5 : 2,
+          minMove: rates?.[0].low < 0.01 ? 0.00001 : 0.01
+        }
+      })
 
       newSeries.setData(prepareData(rates))
 
@@ -145,6 +150,8 @@ function Candles(props: Props) {
 
   function prepareData(providedRates: Rate[]): CandleDataPoint[] {
     var data: CandleDataPoint[] = [];
+
+    if(!Array.isArray(providedRates)) { return [] }
     
     providedRates.forEach(rate => {
       if(currency === 'USD') {

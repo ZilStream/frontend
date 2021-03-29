@@ -10,6 +10,7 @@ import Head from 'next/head'
 import getToken from 'lib/zilstream/getToken'
 import getRatesForToken from 'lib/zilstream/getRatesForToken'
 import TokenIcon from 'components/TokenIcon'
+import Score from 'components/Score'
 
 const Candles = dynamic(
   () => import('components/Candles'),
@@ -84,7 +85,12 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
         </div>
       </div>
       <div className="flex flex-col-reverse items-stretch sm:flex-row sm:items-center text-gray-800 dark:text-gray-400 mb-2">
+        <div className="flex items-center justify-center mt-2 sm:mt-0">
+          <Score value={token.viewblock_score} />
+        </div>
         <div className="flex-grow flex items-center justify-center sm:justify-start text-sm mt-2 sm:mt-0">
+          
+
           {token.website &&
             <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
               <Link size={12} className="mr-1" />

@@ -86,8 +86,10 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
             </div>
           </div>
           <ExchangeStats 
-            total_liquidity={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * latestZilRate.value}
-            volume={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * latestZilRate.value} 
+            total_liquidity={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0)}
+            volume={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0)}
+            total_liquidity_usd={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * latestZilRate.value}
+            volume_usd={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * latestZilRate.value}
           />
         </div>
       </div>
