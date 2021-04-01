@@ -31,7 +31,7 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
       setRates(newRates)
       setSecondsSinceUpdate(0)
     },
-    60000
+    50000
   )
 
   useInterval(() => {
