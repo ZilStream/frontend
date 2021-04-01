@@ -104,8 +104,19 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
           )
         })}     
       </div>
-      <div className="grid grid-cols-1 gap-2 mt-10">
-        <div className="flex items-center px-2 sm:px-4 text-gray-500 dark:text-gray-400 text-sm">
+      <div className="flex items-center py-4 mt-8 mb-4 border-b border-gray-800 text-sm">
+        <Link href="/">
+          <a className="bg-gray-700 shadow-md font-medium py-2 px-4 rounded-full mr-1">Ranking</a>
+        </Link>
+        <Link href="/">
+          <a className="hover:bg-gray-700 font-normal py-2 px-4 rounded-full mr-1">Trending</a>
+        </Link>
+        <Link href="/">
+          <a className="hover:bg-gray-700 font-normal py-2 px-4 rounded-full">Low Score</a>
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 gap-2">
+        <div className="flex items-center px-2 sm:px-4 mb-1 text-gray-500 dark:text-gray-400 text-sm">
           <div className="w-6 mr-3 md:mr-4"></div>
           <div className="w-16 sm:w-24 md:w-36">Token</div>
           <div className="w-20 md:w-28 lg:w-36 text-right">Price (ZIL)</div>
