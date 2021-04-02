@@ -41,6 +41,8 @@ export interface MarketData {
   current_supply: number
   daily_volume: number
   current_liquidity: number
+  zil_reserve: number
+  token_reserve: number
   market_cap: number
   fully_diluted_valuation: number
   ath: number
