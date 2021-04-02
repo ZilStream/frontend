@@ -31,7 +31,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
-  const [topTokens] = useState<Token[]>(Object.assign([], tokens.slice(0, 3)))
+  const [topTokens, setTopTokens] = useState<Token[]>(Object.assign([], tokens.slice(0, 3)))
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -68,8 +68,20 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   })
 
   useEffect(() => {
-    
-  }, [currentList])
+    setTopTokens(Object.assign([], tokens.sort((a,b) => {
+      const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
+      const priorUsdRate = priorLastRate * latestZilRate.value
+      const priorMarketCap = a.current_supply * priorUsdRate
+  
+      const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
+      const nextUsdRate = nextLastRate * latestZilRate.value
+      const nextMarketCap = b.current_supply * nextUsdRate
+  
+      return (priorMarketCap < nextMarketCap) ? 1 : -1
+    }).slice(0, 3)))
+  }, [])
 
   var displayedTokens = []
   if(currentList == ListType.Gains) {
