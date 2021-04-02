@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { Rate } from 'types/rate.interface'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link, FileText, Box, ExternalLink } from 'react-feather'
+import { Link, FileText, Box, ExternalLink, AlertCircle } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -59,6 +59,15 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
         <meta name="description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
         <meta property="og:description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
       </Head>
+      {!token.listed &&
+        <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row">
+          <AlertCircle className="mb-2 sm:mr-3" />
+          <div>
+            <div className="font-medium">This token is unlisted, be extra cautious</div>
+            <div className="text-sm">{token.name} is not screened or audited by ZilStream. Please verify the legitimacy of this token yourself.</div>
+          </div>
+        </div>
+      }
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center">
         <div className="flex-grow flex flex-col sm:flex-row items-center mb-1 pt-6 sm:pt-8 pb-2">
           <div className="flex-shrink-0 flex items-center justify-center bg-gray-300 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3 mb-2 sm:mb-0">

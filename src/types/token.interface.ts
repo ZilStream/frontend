@@ -26,6 +26,7 @@ export interface TokenDetail {
   decimals: number
   website: string
   whitepaper: string
+  listed: string
   viewblock_score: number
   supply_skip_addresses: string
   rate: number
