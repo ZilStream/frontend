@@ -6,25 +6,32 @@ import getTokens from 'lib/zilstream/getTokens'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { AlertCircle } from 'react-feather'
+import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
+import { Token } from 'types/token.interface'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
   const tokens = await getTokens()
+  const unlistedTokens = await getTokens(true)
   const initialRates = await getRates()
-
+  
   return {
     props: {
       tokens,
+      unlistedTokens,
       initialRates,
     },
   }
 }
 
-function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [rates, setRates] = useState<Rate[]>(initialRates)
-  const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0);
+  const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
+  const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
+  const [topTokens] = useState<Token[]>(Object.assign([], tokens.slice(0, 3)))
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -45,8 +52,8 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
   
   const change = ((latestZilRate.value - firstZilRate.value) / firstZilRate.value) * 100
   const changeRounded = Math.round(change * 100) / 100
-
-  tokens.sort((a,b) => {
+  
+  unlistedTokens.sort((a,b) => {
     const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
     const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
     const priorUsdRate = priorLastRate * latestZilRate.value
@@ -59,6 +66,47 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
 
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   })
+
+  useEffect(() => {
+    
+  }, [currentList])
+
+  var displayedTokens = []
+  if(currentList == ListType.Gains) {
+    displayedTokens = tokens.sort((a,b) => {
+      const priorSortedRates = rates.filter(rate => rate.token_id == a.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
+      const priorLastRate = priorSortedRates.length > 0 ? priorSortedRates[0].value : 0
+      const priorFirstRate = priorSortedRates.length > 0 ? priorSortedRates[priorSortedRates.length-1].value : 0
+      const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
+
+      const nextSortedRates = rates.filter(rate => rate.token_id == b.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
+      const nextLastRate = nextSortedRates.length > 0 ? nextSortedRates[0].value : 0
+      const nextFirstRate = nextSortedRates.length > 0 ? nextSortedRates[nextSortedRates.length-1].value : 0
+      const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
+
+      return (priorChange < nextChange) ? 1 : -1
+    })
+  } else if(currentList == ListType.Liquidity) {
+    displayedTokens = tokens.sort((a,b) => {
+      return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+    })
+  } else if(currentList == ListType.Unlisted) {
+    displayedTokens = unlistedTokens
+  } else {
+    displayedTokens = tokens.sort((a,b) => {
+      const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
+      const priorUsdRate = priorLastRate * latestZilRate.value
+      const priorMarketCap = a.current_supply * priorUsdRate
+  
+      const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
+      const nextUsdRate = nextLastRate * latestZilRate.value
+      const nextMarketCap = b.current_supply * nextUsdRate
+  
+      return (priorMarketCap < nextMarketCap) ? 1 : -1
+    })
+  }
 
   return (
     <>
@@ -94,7 +142,7 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {tokens.slice(0, 3).map( token => {                
+        {topTokens.map( token => {                
           return (
             <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
               <a>
@@ -104,8 +152,37 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
           )
         })}     
       </div>
-      <div className="grid grid-cols-1 gap-2 mt-10">
-        <div className="flex items-center px-2 sm:px-4 text-gray-500 dark:text-gray-400 text-sm">
+      <div className="token-order-list">
+        <div className="flex items-center" style={{'min-width': '440px'}}>
+          <button 
+            onClick={() => setCurrentList(ListType.Ranking)}
+            className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
+          >Ranking</button>
+          <button 
+            onClick={() => setCurrentList(ListType.Gains)}
+            className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
+          >Biggest gains</button>
+          <button 
+            onClick={() => setCurrentList(ListType.Liquidity)}
+            className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
+          >Highest liquidity</button>
+          <button 
+            onClick={() => setCurrentList(ListType.Unlisted)}
+            className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn'}`}
+          >Unlisted</button>
+        </div>
+      </div>
+      {currentList == ListType.Unlisted &&
+        <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row mb-6">
+          <AlertCircle className="mb-2 sm:mr-3" />
+          <div>
+            <div className="font-medium">Unlisted tokens, be extra cautious</div>
+            <div className="text-sm">Unlisted tokens are not screened or audited by ZilStream. Please verify the legitimacy of these tokens yourself.</div>
+          </div>
+        </div>
+      }
+      <div className="grid grid-cols-1 gap-2">
+        <div className="flex items-center px-2 sm:px-4 mb-1 text-gray-500 dark:text-gray-400 text-sm">
           <div className="w-6 mr-3 md:mr-4"></div>
           <div className="w-16 sm:w-24 md:w-36">Token</div>
           <div className="w-20 md:w-28 lg:w-36 text-right">Price (ZIL)</div>
@@ -117,7 +194,7 @@ function Home({ tokens, initialRates }: InferGetServerSidePropsType<typeof getSe
             Last 24 hours
           </div>
         </div>
-        {tokens.filter(token => token.symbol != 'ZIL').map( token => {                
+        {displayedTokens.filter(token => token.symbol != 'ZIL').map( token => {                
           return (
             <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
               <a>
