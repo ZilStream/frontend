@@ -34,7 +34,7 @@ const RatesBlock = (props: Props) => {
             <span className="font-semibold mr-2">{props.token.symbol}</span>
             <span className="mr-2"><FlashChange value={lastRateRounded}>{lastRateRounded}</FlashChange></span>
           </div>
-          <div className={change >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}>
+          <div className={change >= 0 ? 'positive-change' : 'negative-change'}>
             {changeRounded} %
           </div>
         </div>

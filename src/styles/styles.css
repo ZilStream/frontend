@@ -82,4 +82,12 @@ body, #__next {
   .list-btn-selected {
     @apply bg-primary dark:bg-primaryDark text-white shadow font-medium py-2 px-4 rounded-full outline-none focus:outline-none;
   }
+
+  .positive-change {
+    @apply text-green-600 dark:text-green-500;
+  }
+
+  .negative-change {
+    @apply text-red-600 dark:text-red-500;
+  }
 }
