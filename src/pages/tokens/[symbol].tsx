@@ -89,8 +89,6 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
           <Score value={token.viewblock_score} />
         </div>
         <div className="flex-grow flex items-center justify-center sm:justify-start text-sm mt-2 sm:mt-0">
-          
-
           {token.website &&
             <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
               <Link size={12} className="mr-1" />
@@ -164,7 +162,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
 
           <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity</div>
           <div className="font-medium">{currencyFormat(token.market_data.current_liquidity)}</div>
-          
+          <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
         </div>
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
