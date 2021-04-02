@@ -153,7 +153,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
         })}     
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{'min-width': '440px'}}>
+        <div className="flex items-center" style={{minWidth: '440px'}}>
           <button 
             onClick={() => setCurrentList(ListType.Ranking)}
             className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
