@@ -31,7 +31,6 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
-  const [topTokens, setTopTokens] = useState<Token[]>(Object.assign([], tokens.slice(0, 3)))
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -52,24 +51,9 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   
   const change = ((latestZilRate.value - firstZilRate.value) / firstZilRate.value) * 100
   const changeRounded = Math.round(change * 100) / 100
-  
-  unlistedTokens.sort((a,b) => {
+
+  const sortTokensByMarketCap = (a: Token, b: Token) => {
     const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-    const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
-    const priorUsdRate = priorLastRate * latestZilRate.value
-    const priorMarketCap = a.current_supply * priorUsdRate
-
-    const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-    const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
-    const nextUsdRate = nextLastRate * latestZilRate.value
-    const nextMarketCap = b.current_supply * nextUsdRate
-
-    return (priorMarketCap < nextMarketCap) ? 1 : -1
-  })
-
-  useEffect(() => {
-    setTopTokens(Object.assign([], tokens.sort((a,b) => {
-      const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
       const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
       const priorUsdRate = priorLastRate * latestZilRate.value
       const priorMarketCap = a.current_supply * priorUsdRate
@@ -80,12 +64,16 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
       const nextMarketCap = b.current_supply * nextUsdRate
   
       return (priorMarketCap < nextMarketCap) ? 1 : -1
-    }).slice(0, 3)))
-  }, [])
+  }
+
+  const listTokens: Token[] = Object.assign([], tokens)
+  const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
+  
+  unlistedTokens.sort(sortTokensByMarketCap)
 
   var displayedTokens = []
   if(currentList == ListType.Gains) {
-    displayedTokens = tokens.sort((a,b) => {
+    displayedTokens = listTokens.sort((a,b) => {
       const priorSortedRates = rates.filter(rate => rate.token_id == a.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
       const priorLastRate = priorSortedRates.length > 0 ? priorSortedRates[0].value : 0
       const priorFirstRate = priorSortedRates.length > 0 ? priorSortedRates[priorSortedRates.length-1].value : 0
@@ -99,25 +87,13 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
       return (priorChange < nextChange) ? 1 : -1
     })
   } else if(currentList == ListType.Liquidity) {
-    displayedTokens = tokens.sort((a,b) => {
+    displayedTokens = listTokens.sort((a,b) => {
       return (a.current_liquidity < b.current_liquidity) ? 1 : -1
     })
   } else if(currentList == ListType.Unlisted) {
     displayedTokens = unlistedTokens
   } else {
-    displayedTokens = tokens.sort((a,b) => {
-      const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-      const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
-      const priorUsdRate = priorLastRate * latestZilRate.value
-      const priorMarketCap = a.current_supply * priorUsdRate
-  
-      const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-      const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
-      const nextUsdRate = nextLastRate * latestZilRate.value
-      const nextMarketCap = b.current_supply * nextUsdRate
-  
-      return (priorMarketCap < nextMarketCap) ? 1 : -1
-    })
+    displayedTokens = listTokens.sort(sortTokensByMarketCap)
   }
 
   return (
