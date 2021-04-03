@@ -3,6 +3,8 @@ import PortfolioOnboard from 'components/PortfolioOnboard'
 import getTokens from 'lib/zilstream/getTokens';
 import { InferGetServerSidePropsType } from 'next';
 import React, { useEffect, useState } from 'react'
+import { connect, useSelector } from 'react-redux'
+import { RootState, TokenState } from 'store/types';
 
 export const getServerSideProps = async () => {
   const tokens = await getTokens()
@@ -16,7 +18,8 @@ export const getServerSideProps = async () => {
 
 function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [walletAddress, setWalletAddress] = useState<string|null>(null);
-
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  
   useEffect(() => {
     setWalletAddress(localStorage.getItem('wallet_address'))
   }, [])
@@ -31,7 +34,7 @@ function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideP
     const batchRequests: any[] = [];
     tokens.forEach(token => {
       if(token.symbol == "ZIL") {
-        
+
       } else {
 
       }
