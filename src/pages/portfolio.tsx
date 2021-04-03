@@ -14,7 +14,6 @@ export const getServerSideProps = async () => {
   }
 }
 
-
 function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [walletAddress, setWalletAddress] = useState<string|null>(null);
 
@@ -23,9 +22,20 @@ function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideP
   }, [])
 
   useEffect(() => {
+    // Save the wallet address
     if(walletAddress) {
       localStorage.setItem('wallet_address', walletAddress)
     }
+
+    // Retrieve wallet balances
+    const batchRequests: any[] = [];
+    tokens.forEach(token => {
+      if(token.symbol == "ZIL") {
+        
+      } else {
+
+      }
+    })
   }, [walletAddress])
 
   function selectWallet(address: string) {
