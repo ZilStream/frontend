@@ -26,6 +26,7 @@ export interface TokenDetail {
   decimals: number
   website: string
   whitepaper: string
+  listed: string
   viewblock_score: number
   supply_skip_addresses: string
   rate: number
@@ -40,6 +41,8 @@ export interface MarketData {
   current_supply: number
   daily_volume: number
   current_liquidity: number
+  zil_reserve: number
+  token_reserve: number
   market_cap: number
   fully_diluted_valuation: number
   ath: number
