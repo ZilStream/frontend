@@ -150,7 +150,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
             <button 
               onClick={() => setCurrentList(ListType.Gains)}
               className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Biggest gains</button>
+            >Largest gainers</button>
             <button 
               onClick={() => setCurrentList(ListType.Liquidity)}
               className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
