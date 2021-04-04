@@ -141,7 +141,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
         })}     
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '420px'}}>
+        <div className="flex items-center" style={{minWidth: '430px'}}>
           <div className="flex-grow flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Ranking)}
