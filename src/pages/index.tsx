@@ -72,19 +72,9 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   unlistedTokens.sort(sortTokensByMarketCap)
 
   var displayedTokens = []
-  if(currentList == ListType.Gains) {
+  if(currentList == ListType.Volume) {
     displayedTokens = listTokens.sort((a,b) => {
-      const priorSortedRates = rates.filter(rate => rate.token_id == a.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
-      const priorLastRate = priorSortedRates.length > 0 ? priorSortedRates[0].value : 0
-      const priorFirstRate = priorSortedRates.length > 0 ? priorSortedRates[priorSortedRates.length-1].value : 0
-      const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
-
-      const nextSortedRates = rates.filter(rate => rate.token_id == b.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
-      const nextLastRate = nextSortedRates.length > 0 ? nextSortedRates[0].value : 0
-      const nextFirstRate = nextSortedRates.length > 0 ? nextSortedRates[nextSortedRates.length-1].value : 0
-      const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
-
-      return (priorChange < nextChange) ? 1 : -1
+      return (a.daily_volume < b.daily_volume) ? 1 : -1
     })
   } else if(currentList == ListType.Liquidity) {
     displayedTokens = listTokens.sort((a,b) => {
@@ -148,9 +138,9 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
               className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Ranking</button>
             <button 
-              onClick={() => setCurrentList(ListType.Gains)}
-              className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Largest gainers</button>
+              onClick={() => setCurrentList(ListType.Volume)}
+              className={`${currentList == ListType.Volume ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Most volume</button>
             <button 
               onClick={() => setCurrentList(ListType.Liquidity)}
               className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}

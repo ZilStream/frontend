@@ -1,6 +1,6 @@
 export enum ListType {
   Ranking,
-  Gains,
+  Volume,
   Liquidity,
   Unlisted
 }
