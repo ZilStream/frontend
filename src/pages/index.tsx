@@ -141,23 +141,27 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
         })}     
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '440px'}}>
-          <button 
-            onClick={() => setCurrentList(ListType.Ranking)}
-            className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Ranking</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Gains)}
-            className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Biggest gains</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Liquidity)}
-            className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Highest liquidity</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Unlisted)}
-            className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn'}`}
-          >Unlisted</button>
+        <div className="flex items-center" style={{minWidth: '420px'}}>
+          <div className="flex-grow flex items-center">
+            <button 
+              onClick={() => setCurrentList(ListType.Ranking)}
+              className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Ranking</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Gains)}
+              className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Biggest gains</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Liquidity)}
+              className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Highest liquidity</button>
+          </div>
+          <div className="flex items-center">
+            <button 
+              onClick={() => setCurrentList(ListType.Unlisted)}
+              className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn text-gray-400 dark:text-gray-500 hover:text-gray-500 hover:dark:text-gray-200'}`}
+            >Unlisted</button>
+          </div>
         </div>
       </div>
       {currentList == ListType.Unlisted &&
