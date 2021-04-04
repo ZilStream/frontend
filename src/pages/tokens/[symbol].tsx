@@ -123,7 +123,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
 
         <div className="flex items-center justify-center sm:justify-end text-sm">
           {token.market_data.change_percentage_7d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-3">
+            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium">
               <div className="mr-2 text-gray-500">7D</div>
               <div className={`${token.market_data.change_percentage_7d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
                 {numberFormat(token.market_data.change_percentage_7d)} %
@@ -132,7 +132,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
           }
 
           {token.market_data.change_percentage_14d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-3">
+            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
               <div className="mr-2 text-gray-500">14D</div>
               <div className={`${token.market_data.change_percentage_14d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
                 {numberFormat(token.market_data.change_percentage_14d)} %
@@ -141,7 +141,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
           }
 
           {token.market_data.change_percentage_30d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium">
+            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
               <div className="mr-2 text-gray-500">30D</div>
               <div className={`${token.market_data.change_percentage_30d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
                 {numberFormat(token.market_data.change_percentage_30d)} %
