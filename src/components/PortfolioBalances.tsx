@@ -1,5 +1,6 @@
 import Head from "next/head"
 import React, { useEffect, useState } from "react"
+import { TokenInfo } from "store/types"
 import { Balance } from "types/balance.interface"
 import { Token } from "types/token.interface"
 import { getBalancesForTokens } from "utils/balances"
@@ -7,35 +8,11 @@ import TokenIcon from "./TokenIcon"
 
 interface Props {
   walletAddress: string
-  tokens: Token[]
+  tokens: TokenInfo[]
 }
 
 function PortfolioBalances(props: Props) {
   const walletAddress = props.walletAddress
-
-  const [balances, setBalances] = useState<Balance[]>([])
-
-  useEffect(() => {
-    let cachedBalancesString = localStorage.getItem('balances')
-    
-    if(cachedBalancesString) {
-      console.log(JSON.parse(cachedBalancesString))
-      let cachedBalances: Balance[] = JSON.parse(cachedBalancesString)
-      console.log(cachedBalances)
-      setBalances(cachedBalances)
-    } else {
-      const retrieveBalances = async () => {
-        if(walletAddress) {
-          let retrievedBalances = await getBalancesForTokens(walletAddress, props.tokens)
-          console.log(retrievedBalances)
-          setBalances(retrievedBalances)
-          localStorage.setItem('balances', JSON.stringify(retrievedBalances))
-        }
-      }
-  
-      retrieveBalances()
-    }
-  }, [])
 
   return (
     <>
@@ -59,9 +36,10 @@ function PortfolioBalances(props: Props) {
         </div>
         {props.tokens.map( token => {
           return (
-            <div key={token.id} className="bg-gray-800 p-4 rounded-lg mb-2 flex items-center">
-              <div className="w-6 mr-4"><TokenIcon url={token.icon} /></div>
-              <div className="font-medium">{token.symbol}</div>
+            <div key={token.symbol} className="bg-gray-800 p-4 rounded-lg mb-2 flex items-center">
+              <div className="w-6 mr-3 md:mr-4"><TokenIcon url={token.icon} /></div>
+              <div className="w-16 sm:w-24 md:w-36 font-medium">{token.symbol}</div>
+              <div>{token.balance?.toNumber()}</div>
             </div>
           )
         })}

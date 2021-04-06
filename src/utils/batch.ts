@@ -1,4 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
+import { TokenInfo } from "store/types";
 import { Token } from "types/token.interface";
 import { Network } from "./network";
 
@@ -17,7 +18,7 @@ interface BatchRequestItem {
 
 interface BatchRequest {
   type: string
-  token: Token
+  token: TokenInfo
   item: BatchRequestItem
 }
 
@@ -33,7 +34,8 @@ interface BatchResponse {
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const balanceBatchRequest = (token: Token, address: string): BatchRequest => {
+export const balanceBatchRequest = (token: TokenInfo, address: string): BatchRequest => {
+  const walletAddress = fromBech32Address(address).replace('0x', '').toLowerCase()
   return {
     type: BatchRequestType.Balance,
     token: token,
@@ -41,7 +43,7 @@ export const balanceBatchRequest = (token: Token, address: string): BatchRequest
       id: "1",
       jsonrpc: "2.0",
       method: "GetBalance",
-      params: [address],
+      params: [walletAddress],
     },
   };
 }
@@ -53,8 +55,9 @@ export const balanceBatchRequest = (token: Token, address: string): BatchRequest
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+export const tokenBalanceBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
   const address = fromBech32Address(token.address_bech32)
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.TokenBalance,
     token: token,
@@ -65,7 +68,7 @@ export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): B
       params: [
         address.replace("0x", "").toLowerCase(),
         "balances",
-        [walletAddress],
+        [walletAddr],
       ],
     },
   };
@@ -78,7 +81,7 @@ export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): B
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
   const address = fromBech32Address(token.address_bech32)
   return {
     type: BatchRequestType.TokenAllowance,
@@ -108,7 +111,7 @@ export const sendBatchRequest = async (network: Network, requests: BatchRequest[
   if (network == Network.TestNet) {
     baseUrl = "https://dev-api.zilliqa.com/"
   }
-
+  
   const response = await fetch(baseUrl, {
     method: 'POST',
     body: JSON.stringify(requests.flatMap(request => request.item))

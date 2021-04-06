@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js'
+
 export type TokenInfo = {
   name: string
   symbol: string
@@ -15,6 +17,7 @@ export type TokenInfo = {
   viewblock_score: number
   supply_skip_addresses: string
   isZil: boolean
+  balance?: BigNumber = 0
 }
 
 export interface TokenState {

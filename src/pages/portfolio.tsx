@@ -1,24 +1,37 @@
 import PortfolioBalances from 'components/PortfolioBalances';
 import PortfolioOnboard from 'components/PortfolioOnboard'
 import getTokens from 'lib/zilstream/getTokens';
-import { InferGetServerSidePropsType } from 'next';
+import { NextPage } from 'next';
 import React, { useEffect, useState } from 'react'
-import { connect, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState, TokenState } from 'store/types';
+import {wrapper} from 'store/store'
+import { TokenActionTypes } from 'store/token/actions';
+import { BatchRequestType, sendBatchRequest, tokenBalanceBatchRequest } from 'utils/batch';
+import { Network } from 'utils/network';
+import { fromBech32Address } from '@zilliqa-js/crypto';
+import BigNumber from 'bignumber.js'
+import { bnOrZero } from 'utils/strings';
 
-export const getServerSideProps = async () => {
-  const tokens = await getTokens()
-
-  return {
-    props: {
-      tokens,
-    },
-  }
+interface OtherProps {
+  tokens: string;
+  appProp: string;
 }
 
-function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => {
+  const tokens = await getTokens()
+  
+  store.dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+
+  return {
+    props: {},
+  }
+})
+
+const Portfolio: NextPage = () => {
   const [walletAddress, setWalletAddress] = useState<string|null>(null);
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const dispatch = useDispatch()
   
   useEffect(() => {
     setWalletAddress(localStorage.getItem('wallet_address'))
@@ -30,15 +43,51 @@ function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideP
       localStorage.setItem('wallet_address', walletAddress)
     }
 
-    // Retrieve wallet balances
-    const batchRequests: any[] = [];
-    tokens.forEach(token => {
-      if(token.symbol == "ZIL") {
+    if(walletAddress == null) { return }
 
-      } else {
+    async function fetchBalances(walletAddress: string) {
+      // Retrieve wallet balances
+      const batchRequests: any[] = [];
+      tokenState.tokens.forEach(token => {
+        if(token.symbol === "ZIL") {
+          batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
+        } else {
+          batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
+        }
+      })
 
-      }
-    })
+      const batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
+
+      batchResults.forEach(result => {
+        let token = result.request.token
+
+        switch(result.request.type) {
+          case BatchRequestType.Balance: {
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+              address_bech32: token.address_bech32,
+              balance: result.result.balance
+            }})
+          }
+
+          case BatchRequestType.TokenBalance: {
+            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+            let balance: BigNumber | undefined;
+
+            if(result.result) {
+              balance = bnOrZero(result.result.balances[walletAddr])
+            }
+
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+              address_bech32: token.address_bech32,
+              balance: balance
+            }})
+          }
+        }
+      })
+    }
+
+    fetchBalances(walletAddress)
+    
   }, [walletAddress])
 
   function selectWallet(address: string) {
@@ -47,7 +96,7 @@ function Portfolio({ tokens }: InferGetServerSidePropsType<typeof getServerSideP
 
   if(walletAddress == null) return <PortfolioOnboard onSelectAddress={selectWallet} />
 
-  return <PortfolioBalances walletAddress={walletAddress} tokens={tokens} />
+  return <PortfolioBalances walletAddress={walletAddress} tokens={tokenState.tokens} />
 }
 
 export default Portfolio
