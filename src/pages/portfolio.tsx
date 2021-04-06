@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, TokenState } from 'store/types';
 import {wrapper} from 'store/store'
 import { TokenActionTypes } from 'store/token/actions';
-import { BatchRequestType, sendBatchRequest, tokenBalanceBatchRequest } from 'utils/batch';
+import { balanceBatchRequest, BatchRequestType, sendBatchRequest, tokenBalanceBatchRequest } from 'utils/batch';
 import { Network } from 'utils/network';
 import { fromBech32Address } from '@zilliqa-js/crypto';
 import BigNumber from 'bignumber.js'
@@ -49,8 +49,9 @@ const Portfolio: NextPage = () => {
       // Retrieve wallet balances
       const batchRequests: any[] = [];
       tokenState.tokens.forEach(token => {
-        if(token.symbol === "ZIL") {
-          batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
+        console.log(token)
+        if(token.address_bech32 === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') {
+          batchRequests.push(balanceBatchRequest(token, walletAddress))
         } else {
           batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
         }
@@ -67,6 +68,7 @@ const Portfolio: NextPage = () => {
               address_bech32: token.address_bech32,
               balance: result.result.balance
             }})
+            return
           }
 
           case BatchRequestType.TokenBalance: {
@@ -81,6 +83,7 @@ const Portfolio: NextPage = () => {
               address_bech32: token.address_bech32,
               balance: balance
             }})
+            return
           }
         }
       })

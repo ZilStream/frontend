@@ -4,6 +4,7 @@ import { TokenInfo } from "store/types"
 import { Balance } from "types/balance.interface"
 import { Token } from "types/token.interface"
 import { getBalancesForTokens } from "utils/balances"
+import useMoneyFormatter from "utils/useMoneyFormatter"
 import TokenIcon from "./TokenIcon"
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 function PortfolioBalances(props: Props) {
   const walletAddress = props.walletAddress
+  const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
 
   return (
     <>
@@ -35,11 +37,21 @@ function PortfolioBalances(props: Props) {
           <div className="flex-grow"></div>
         </div>
         {props.tokens.map( token => {
+          let balance = moneyFormat(token.balance, {
+            symbol: token.symbol,
+            compression: token.decimals,
+            showCurrency: false,
+          })
+
           return (
             <div key={token.symbol} className="bg-gray-800 p-4 rounded-lg mb-2 flex items-center">
               <div className="w-6 mr-3 md:mr-4"><TokenIcon url={token.icon} /></div>
               <div className="w-16 sm:w-24 md:w-36 font-medium">{token.symbol}</div>
-              <div>{token.balance?.toNumber()}</div>
+              <div className="w-20 md:w-28 lg:w-36 text-right">{balance}</div>
+              <div className="w-32 lg:w-40 hidden md:block text-right"></div>
+              <div className="w-20 md:w-32 lg:w-40 text-right"></div>
+              <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right"></div>
+              <div className="flex-grow"></div>
             </div>
           )
         })}
