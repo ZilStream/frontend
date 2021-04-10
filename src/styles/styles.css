@@ -80,7 +80,7 @@ body, #__next {
   }
 
   .list-btn-disabled {
-    @apply hover:bg-gray-300 dark:hover:bg-gray-700 dark:text-gray-600 dark:hover:text-gray-400 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
+    @apply hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-600 dark:hover:text-gray-400 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
   }
 
   .list-btn-selected {

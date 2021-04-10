@@ -168,7 +168,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
             
 
             <div className="text-xs">
-              <span className="text-gray-400">Market Cap: </span>
+              <span className="text-gray-500 dark:text-gray-400">Market Cap: </span>
               <span className="font-medium">{currencyFormat(totalMarketCap)}</span>
             </div>
           </div>
