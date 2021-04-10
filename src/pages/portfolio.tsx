@@ -12,23 +12,27 @@ import { Network } from 'utils/network';
 import { fromBech32Address } from '@zilliqa-js/crypto';
 import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings';
+import { SimpleRate } from 'types/rate.interface';
+import getLatestRates from 'lib/zilstream/getLatestRates';
 
-interface OtherProps {
-  tokens: string;
-  appProp: string;
+interface Props {
+  latestRates: SimpleRate[]
 }
 
 export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => {
   const tokens = await getTokens()
+  const latestRates = await getLatestRates()
   
   store.dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
 
   return {
-    props: {},
+    props: {
+      latestRates: latestRates
+    },
   }
 })
 
-const Portfolio: NextPage = () => {
+const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const [walletAddress, setWalletAddress] = useState<string|null>(null);
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const dispatch = useDispatch()
@@ -49,7 +53,6 @@ const Portfolio: NextPage = () => {
       // Retrieve wallet balances
       const batchRequests: any[] = [];
       tokenState.tokens.forEach(token => {
-        console.log(token)
         if(token.address_bech32 === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') {
           batchRequests.push(balanceBatchRequest(token, walletAddress))
         } else {
@@ -66,7 +69,8 @@ const Portfolio: NextPage = () => {
           case BatchRequestType.Balance: {
             dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
               address_bech32: token.address_bech32,
-              balance: result.result.balance
+              balance: result.result.balance,
+              isZil: true,
             }})
             return
           }
@@ -99,7 +103,11 @@ const Portfolio: NextPage = () => {
 
   if(walletAddress == null) return <PortfolioOnboard onSelectAddress={selectWallet} />
 
-  return <PortfolioBalances walletAddress={walletAddress} tokens={tokenState.tokens} />
+  return <PortfolioBalances 
+    walletAddress={walletAddress} 
+    tokens={tokenState.tokens} 
+    latestRates={latestRates} 
+  />
 }
 
 export default Portfolio
