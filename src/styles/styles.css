@@ -79,6 +79,10 @@ body, #__next {
     @apply hover:bg-gray-300 dark:hover:bg-gray-700 dark:text-gray-200 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
   }
 
+  .list-btn-disabled {
+    @apply hover:bg-gray-300 dark:hover:bg-gray-700 dark:text-gray-600 dark:hover:text-gray-400 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
+  }
+
   .list-btn-selected {
     @apply bg-primary dark:bg-primaryDark text-white font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
   }

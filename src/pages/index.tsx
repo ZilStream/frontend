@@ -11,6 +11,7 @@ import { AlertCircle } from 'react-feather'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
+import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
@@ -31,6 +32,19 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
+  const [totalMarketCap, setTotalMarketCap] = useState(0)
+
+  useEffect(() => {
+    const allTokens: Token[] = []
+    allTokens.push(...tokens)
+    allTokens.push(...unlistedTokens)
+    const totalCap = allTokens.reduce((sum, current) => {
+      const tokenRates = rates.filter(rate => rate.token_id == current.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const lastRate = tokenRates.length > 0 ? tokenRates[0].value : 0
+      return sum + (current.current_supply * (latestZilRate.value * lastRate))
+    }, 0)
+    setTotalMarketCap(totalCap)
+  }, [rates])
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -131,7 +145,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
         })}     
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '430px'}}>
+        <div className="flex items-center" style={{minWidth: '600px'}}>
           <div className="flex-grow flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Ranking)}
@@ -145,12 +159,18 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
               onClick={() => setCurrentList(ListType.Liquidity)}
               className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Highest liquidity</button>
-          </div>
-          <div className="flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Unlisted)}
-              className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn text-gray-400 dark:text-gray-500 hover:text-gray-500 hover:dark:text-gray-200'}`}
+              className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn-disabled'}`}
             >Unlisted</button>
+          </div>
+          <div className="flex items-center">
+            
+
+            <div className="text-xs">
+              <span className="text-gray-400">Market Cap: </span>
+              <span className="font-medium">{currencyFormat(totalMarketCap)}</span>
+            </div>
           </div>
         </div>
       </div>
