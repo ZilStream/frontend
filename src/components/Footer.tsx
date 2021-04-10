@@ -24,7 +24,6 @@ export default function Footer() {
           <Link href="/disclaimer"><a className="hover:underline mr-6 mb-4">Disclaimer</a></Link>
           <Link href="https://request.zilstream.com"><a className="hover:underline mb-4">Request listing</a></Link>
         </div>
-        <div className="text-xs">Tip jar: <span className="font-medium">zil1me2dr2za36mdxy0uygfx3s5eh9xckd227efqdx</span></div>
       </div>
     </div>
   )
