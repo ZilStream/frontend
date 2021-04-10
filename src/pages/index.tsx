@@ -71,7 +71,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   
   unlistedTokens.sort(sortTokensByMarketCap)
 
-  var displayedTokens = []
+  var displayedTokens: Token[] = []
   if(currentList == ListType.Volume) {
     displayedTokens = listTokens.sort((a,b) => {
       return (a.daily_volume < b.daily_volume) ? 1 : -1
@@ -163,28 +163,47 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
           </div>
         </div>
       }
-      <div className="grid grid-cols-1 gap-2">
-        <div className="flex items-center px-2 sm:px-4 mb-1 text-gray-500 dark:text-gray-400 text-sm">
-          <div className="w-6 mr-3 md:mr-4"></div>
-          <div className="w-16 sm:w-24 md:w-36">Token</div>
-          <div className="w-20 md:w-28 lg:w-36 text-right">Price (ZIL)</div>
-          <div className="w-32 lg:w-40 hidden md:block text-right">Price (USD)</div>
-          <div className="w-20 md:w-32 lg:w-40 text-right">Change (24h)</div>
-          <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right">Market Cap</div>
-          <div className="w-36 lg:w-44 xl:w-48 hidden xl:block text-right">Volume (24h)</div>
-          <div className="flex-grow text-right">
-            Last 24 hours
-          </div>
-        </div>
-        {displayedTokens.filter(token => token.symbol != 'ZIL').map( token => {                
-          return (
-            <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-              <a>
-                <TokenRow token={token} rates={rates.filter(rate => rate.token_id == token.id)} zilRate={latestZilRate} />
-              </a>
-            </Link>
-          )
-        })}
+      <div className="scrollable-table-container max-w-full overflow-x-scroll">
+        <table className="zilstream-table table-fixed border-collapse">
+          <colgroup>
+            <col style={{width: '54px', minWidth: 'auto'}} />
+            <col style={{width: '276px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+          </colgroup>
+          <thead className="text-gray-500 dark:text-gray-400 text-xs">
+            <tr className="py-2">
+              <th className="text-left pl-5 pr-2 py-2">#</th>
+              <th className="px-2 py-2 text-left">Token</th>
+              <th className="px-2 py-2 text-right">ZIL</th>
+              <th className="px-2 py-2 text-right">USD</th>
+              <th className="px-2 py-2 text-right">24h %</th>
+              <th className="px-2 py-2 text-right">Market Cap</th>
+              <th className="px-2 py-2 text-right">Liquidity</th>
+              <th className="px-2 py-2 text-right">Volume (24h)</th>
+              <th className="px-2 py-2 text-right">Last 24 hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedTokens.filter(token => token.symbol != 'ZIL').map((token, index) => {                
+              return (
+                <TokenRow 
+                  key={token.id} 
+                  token={token} 
+                  rank={index+1} 
+                  rates={rates.filter(rate => rate.token_id == token.id)} 
+                  zilRate={latestZilRate} 
+                  isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
+                />
+              )
+            })}
+          </tbody>
+      </table>
     </div>
     <div className="flex items-center justify-center text-sm text-gray-500 mt-8 py-2">
       <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>

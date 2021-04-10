@@ -76,7 +76,7 @@ body, #__next {
   }
 
   .list-btn {
-    @apply hover:bg-gray-300 dark:hover:bg-gray-700 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
+    @apply hover:bg-gray-300 dark:hover:bg-gray-700 dark:text-gray-200 font-medium py-1 px-3 rounded-lg outline-none focus:outline-none;
   }
 
   .list-btn-selected {
@@ -89,5 +89,18 @@ body, #__next {
 
   .negative-change {
     @apply text-red-600 dark:text-red-500;
+  }
+
+  .zilstream-table td {
+    @apply bg-white dark:bg-gray-800;
+  }
+
+  .scrollable-table-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollable-table-container::-webkit-scrollbar {
+    display: none;
   }
 }
