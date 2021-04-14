@@ -22,7 +22,7 @@ export default function Footer() {
           <Link href="/terms"><a className="hover:underline mr-6 mb-4">Terms</a></Link>
           <Link href="/api_terms"><a className="hover:underline mr-6 mb-4">API Terms</a></Link>
           <Link href="/disclaimer"><a className="hover:underline mr-6 mb-4">Disclaimer</a></Link>
-          <Link href="https://request.zilstream.com"><a className="hover:underline mb-4">Request listing</a></Link>
+          <Link href="https://github.com/zilstream/tokens"><a className="hover:underline mb-4">Request listing</a></Link>
         </div>
       </div>
     </div>
