@@ -111,7 +111,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1">Todays prices in Zilliqa</h1>
+            <h1 className="mb-1">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
               Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
               {change >= 0 ? (
