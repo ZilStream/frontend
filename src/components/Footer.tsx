@@ -19,12 +19,11 @@ export default function Footer() {
       </div>
       <div className="mt-6 text-gray-400 dark:text-gray-500">
         <div className="mb-4">
-          <Link href="/terms"><a className="hover:underline mr-8 mb-4">Terms</a></Link>
-          <Link href="/api_terms"><a className="hover:underline mr-8 mb-4">API Terms</a></Link>
-          <Link href="/disclaimer"><a className="hover:underline mr-8 mb-4">Disclaimer</a></Link>
-          <Link href="https://request.zilstream.com"><a className="hover:underline mb-4">Request listing</a></Link>
+          <Link href="/terms"><a className="hover:underline mr-6 mb-4">Terms</a></Link>
+          <Link href="/api_terms"><a className="hover:underline mr-6 mb-4">API Terms</a></Link>
+          <Link href="/disclaimer"><a className="hover:underline mr-6 mb-4">Disclaimer</a></Link>
+          <Link href="https://github.com/zilstream/tokens"><a className="hover:underline mb-4">Request listing</a></Link>
         </div>
-        <div className="text-xs">Tip jar: <span className="font-medium">zil1me2dr2za36mdxy0uygfx3s5eh9xckd227efqdx</span></div>
       </div>
     </div>
   )

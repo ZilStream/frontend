@@ -1,12 +1,10 @@
-import React, { FC } from 'react'
-import { AppProps } from 'next/app'
-import { wrapper } from 'store/store'
-import { ThemeProvider } from 'next-themes'
-import Layout from '../components/Layout'
+import type { AppProps } from 'next/app'
 import '../styles/tailwind.css'
 import '../styles/styles.css'
+import Layout from '../components/Layout'
+import { ThemeProvider } from 'next-themes'
 
-const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider defaultTheme="system" enableSystem={true} attribute="class">
       <Layout>
@@ -16,4 +14,4 @@ const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => {
   )
 }
 
-export default wrapper.withRedux(WrappedApp)
+export default MyApp

@@ -19,10 +19,10 @@ const Score = (props: Props) => {
       <span
         className={`
           ${props.value < 20 ? 'text-red-500' : ''}
-          ${props.value >= 20 && props.value < 35 ? 'text-yellow-600' : ''}
-          ${props.value >= 35 && props.value < 50 ? 'text-yellow-300' : ''}
-          ${props.value >= 50 && props.value < 80 ? 'text-green-400' : ''}
-          ${props.value >= 80 ? 'text-green-600' : ''}
+          ${props.value >= 20 && props.value < 35 ? 'text-yellow-700 dark:text-yellow-600' : ''}
+          ${props.value >= 35 && props.value < 50 ? 'text-yellow-500 dark:text-yellow-300' : ''}
+          ${props.value >= 50 && props.value < 80 ? 'text-green-500' : ''}
+          ${props.value >= 80 ? 'text-green-700' : ''}
         `}
       >
         {props.value}/100

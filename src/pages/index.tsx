@@ -11,6 +11,7 @@ import { AlertCircle } from 'react-feather'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
+import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
@@ -31,6 +32,19 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
+  const [totalMarketCap, setTotalMarketCap] = useState(0)
+
+  useEffect(() => {
+    const allTokens: Token[] = []
+    allTokens.push(...tokens)
+    allTokens.push(...unlistedTokens)
+    const totalCap = allTokens.reduce((sum, current) => {
+      const tokenRates = rates.filter(rate => rate.token_id == current.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
+      const lastRate = tokenRates.length > 0 ? tokenRates[0].value : 0
+      return sum + (current.current_supply * (latestZilRate.value * lastRate))
+    }, 0)
+    setTotalMarketCap(totalCap)
+  }, [rates])
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -71,20 +85,10 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   
   unlistedTokens.sort(sortTokensByMarketCap)
 
-  var displayedTokens = []
-  if(currentList == ListType.Gains) {
+  var displayedTokens: Token[] = []
+  if(currentList == ListType.Volume) {
     displayedTokens = listTokens.sort((a,b) => {
-      const priorSortedRates = rates.filter(rate => rate.token_id == a.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
-      const priorLastRate = priorSortedRates.length > 0 ? priorSortedRates[0].value : 0
-      const priorFirstRate = priorSortedRates.length > 0 ? priorSortedRates[priorSortedRates.length-1].value : 0
-      const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
-
-      const nextSortedRates = rates.filter(rate => rate.token_id == b.id).sort((a,b) => (a.time < b.time) ? 1 : -1)
-      const nextLastRate = nextSortedRates.length > 0 ? nextSortedRates[0].value : 0
-      const nextFirstRate = nextSortedRates.length > 0 ? nextSortedRates[nextSortedRates.length-1].value : 0
-      const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
-
-      return (priorChange < nextChange) ? 1 : -1
+      return (a.daily_volume < b.daily_volume) ? 1 : -1
     })
   } else if(currentList == ListType.Liquidity) {
     displayedTokens = listTokens.sort((a,b) => {
@@ -107,7 +111,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1">Todays prices in Zilliqa</h1>
+            <h1 className="mb-1">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
               Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
               {change >= 0 ? (
@@ -141,23 +145,33 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
         })}     
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '440px'}}>
-          <button 
-            onClick={() => setCurrentList(ListType.Ranking)}
-            className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Ranking</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Gains)}
-            className={`${currentList == ListType.Gains ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Biggest gains</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Liquidity)}
-            className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
-          >Highest liquidity</button>
-          <button 
-            onClick={() => setCurrentList(ListType.Unlisted)}
-            className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn'}`}
-          >Unlisted</button>
+        <div className="flex items-center" style={{minWidth: '600px'}}>
+          <div className="flex-grow flex items-center">
+            <button 
+              onClick={() => setCurrentList(ListType.Ranking)}
+              className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Ranking</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Volume)}
+              className={`${currentList == ListType.Volume ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Most volume</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Liquidity)}
+              className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Highest liquidity</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Unlisted)}
+              className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn-disabled'}`}
+            >Unlisted</button>
+          </div>
+          <div className="flex items-center">
+            
+
+            <div className="text-xs">
+              <span className="text-gray-500 dark:text-gray-400">Market Cap: </span>
+              <span className="font-medium">{currencyFormat(totalMarketCap)}</span>
+            </div>
+          </div>
         </div>
       </div>
       {currentList == ListType.Unlisted &&
@@ -169,28 +183,47 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
           </div>
         </div>
       }
-      <div className="grid grid-cols-1 gap-2">
-        <div className="flex items-center px-2 sm:px-4 mb-1 text-gray-500 dark:text-gray-400 text-sm">
-          <div className="w-6 mr-3 md:mr-4"></div>
-          <div className="w-16 sm:w-24 md:w-36">Token</div>
-          <div className="w-20 md:w-28 lg:w-36 text-right">Price (ZIL)</div>
-          <div className="w-32 lg:w-40 hidden md:block text-right">Price (USD)</div>
-          <div className="w-20 md:w-32 lg:w-40 text-right">Change (24h)</div>
-          <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right">Market Cap</div>
-          <div className="w-36 lg:w-44 xl:w-48 hidden xl:block text-right">Volume (24h)</div>
-          <div className="flex-grow text-right">
-            Last 24 hours
-          </div>
-        </div>
-        {displayedTokens.filter(token => token.symbol != 'ZIL').map( token => {                
-          return (
-            <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-              <a>
-                <TokenRow token={token} rates={rates.filter(rate => rate.token_id == token.id)} zilRate={latestZilRate} />
-              </a>
-            </Link>
-          )
-        })}
+      <div className="scrollable-table-container max-w-full overflow-x-scroll">
+        <table className="zilstream-table table-fixed border-collapse">
+          <colgroup>
+            <col style={{width: '54px', minWidth: 'auto'}} />
+            <col style={{width: '276px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
+          </colgroup>
+          <thead className="text-gray-500 dark:text-gray-400 text-xs">
+            <tr className="py-2">
+              <th className="text-left pl-5 pr-2 py-2">#</th>
+              <th className="px-2 py-2 text-left">Token</th>
+              <th className="px-2 py-2 text-right">ZIL</th>
+              <th className="px-2 py-2 text-right">USD</th>
+              <th className="px-2 py-2 text-right">24h %</th>
+              <th className="px-2 py-2 text-right">Market Cap</th>
+              <th className="px-2 py-2 text-right">Liquidity</th>
+              <th className="px-2 py-2 text-right">Volume (24h)</th>
+              <th className="px-2 py-2 text-right">Last 24 hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedTokens.filter(token => token.symbol != 'ZIL').map((token, index) => {                
+              return (
+                <TokenRow 
+                  key={token.id} 
+                  token={token} 
+                  rank={index+1} 
+                  rates={rates.filter(rate => rate.token_id == token.id)} 
+                  zilRate={latestZilRate} 
+                  isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
+                />
+              )
+            })}
+          </tbody>
+      </table>
     </div>
     <div className="flex items-center justify-center text-sm text-gray-500 mt-8 py-2">
       <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>

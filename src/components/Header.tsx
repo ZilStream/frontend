@@ -24,15 +24,6 @@ const Header = () => {
               )}
             </a>
           </Link>
-          
-          <nav className="ml-8 text-sm">
-            <Link href="/">
-              <a className="mr-6">Tokens</a>
-            </Link>
-            <Link href="/portfolio">
-              <a className="mr-6">Portfolio</a>
-            </Link>
-          </nav>
         </div>
         <div className="flex items-center">
           <button  
