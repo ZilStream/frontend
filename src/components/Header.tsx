@@ -24,12 +24,26 @@ const Header = () => {
               )}
             </a>
           </Link>
+          
+          <nav className="ml-8 text-sm">
+            <Link href="/">
+              <a>Rankings</a>
+            </Link>
+
+            <Link href="/portfolio">
+              <a className="ml-5">Portfolio</a>
+            </Link>
+          </nav>
         </div>
         <div className="flex items-center">
           <button  
             onClick={() => setTheme(resolvedTheme == 'dark' ? 'light' : 'dark')}
             className="focus:outline-none">
             <Moon size={18} />
+          </button>
+
+          <button className="font-semibold ml-4 text-sm">
+            Connect wallet
           </button>
         </div>
       </div>
