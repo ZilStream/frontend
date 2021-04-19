@@ -3,11 +3,12 @@ import Link from 'next/link'
 import { Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
 import ConnectWallet from './ConnectWallet'
+import useComponentVisible from 'utils/useComponentVisible'
 
 const Header = () => {
   const [mounted, setMounted] = useState(false);
-  const [showConnectWallet, setShowConnectWallet] = useState(false);
   const {theme, setTheme, resolvedTheme} = useTheme()
+  const {ref, isComponentVisible, setIsComponentVisible} = useComponentVisible(false)
 
   useEffect(() => setMounted(true), [])
 
@@ -46,15 +47,15 @@ const Header = () => {
 
           <button 
             className="font-semibold ml-4 text-sm focus:outline-none" 
-            onClick={() => setShowConnectWallet(!showConnectWallet)}
+            onClick={() => setIsComponentVisible(!isComponentVisible)}
           >
             Connect wallet
           </button>
         </div>
       </div>
                 
-      {showConnectWallet &&
-        <ConnectWallet dismissCallback={() => setShowConnectWallet(false)} />
+      {isComponentVisible &&
+        <ConnectWallet innerRef={ref} />
       }
     </div>
   )

@@ -55,19 +55,19 @@ function PortfolioBalances(props: Props) {
             <col style={{width: '100px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
-            <th className="pl-4 pr-2 py-2 text-left">Token</th>
-            <th className="px-2 py-2 text-right">Balance</th>
-            <th className="px-2 py-2 text-right">ZIL</th>
-            <th className="px-2 py-2 text-right">USD</th>
-            <th className="px-2 py-2 text-right">24h %</th>
+            <tr>
+              <th className="pl-4 pr-2 py-2 text-left">Token</th>
+              <th className="px-2 py-2 text-right">Balance</th>
+              <th className="px-2 py-2 text-right">ZIL</th>
+              <th className="px-2 py-2 text-right">USD</th>
+              <th className="px-2 py-2 text-right">24h %</th>
+            </tr>
           </thead>
           <tbody>
-            {props.tokens.filter(token => token.balance !== null && token.balance !== undefined).map( token => {
+            {props.tokens.filter(token => {
+              return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
+            }).map(token => {
               let balance = toBigNumber(token.balance, {compression: token.decimals})
-
-              if(balance.isZero()) {
-                return <></>
-              }
 
               let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
               let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
@@ -122,9 +122,11 @@ function PortfolioBalances(props: Props) {
               <col style={{width: '100px', minWidth: 'auto'}} />
             </colgroup>
             <thead className="text-gray-500 dark:text-gray-400 text-xs">
-              <th className="pl-3 pr-2 py-2 text-left">Pair</th>
-              <th className="px-2 py-2 text-right">Pool</th>
-              <th className="px-2 py-2 text-right">Fees</th>
+              <tr>
+                <th className="pl-3 pr-2 py-2 text-left">Pair</th>
+                <th className="px-2 py-2 text-right">Pool</th>
+                <th className="px-2 py-2 text-right">Fees</th>
+              </tr>
             </thead>
             <tbody>
               <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
