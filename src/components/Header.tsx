@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
+import ConnectWallet from './ConnectWallet'
 
 const Header = () => {
   const [mounted, setMounted] = useState(false);
+  const [showConnectWallet, setShowConnectWallet] = useState(false);
   const {theme, setTheme, resolvedTheme} = useTheme()
 
   useEffect(() => setMounted(true), [])
@@ -42,11 +44,18 @@ const Header = () => {
             <Moon size={18} />
           </button>
 
-          <button className="font-semibold ml-4 text-sm">
+          <button 
+            className="font-semibold ml-4 text-sm focus:outline-none" 
+            onClick={() => setShowConnectWallet(!showConnectWallet)}
+          >
             Connect wallet
           </button>
         </div>
       </div>
+                
+      {showConnectWallet &&
+        <ConnectWallet dismissCallback={() => setShowConnectWallet(false)} />
+      }
     </div>
   )
 }

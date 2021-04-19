@@ -14,7 +14,10 @@ module.exports = {
     },
   },
   variants: {
-    borderWidth: ['first', 'last'],
+    extend: {
+      borderWidth: ['first', 'last'],
+      borderRadius: ['first', 'last']
+    }
   },
   plugins: [],
   corePlugins: {

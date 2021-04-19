@@ -1,9 +1,11 @@
 import BigNumber from "bignumber.js"
 import Head from "next/head"
+import Link from "next/link"
 import React from "react"
 import { TokenInfo } from "store/types"
 import { SimpleRate } from "types/rate.interface"
 import useMoneyFormatter, { toBigNumber } from "utils/useMoneyFormatter"
+import FlashChange from "./FlashChange"
 import TokenIcon from "./TokenIcon"
 
 interface Props {
@@ -43,54 +45,105 @@ function PortfolioBalances(props: Props) {
           <div>{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
-      <div>
-        <div className="flex items-center px-2 sm:px-4 text-gray-500 dark:text-gray-400 text-sm mb-2">
-          <div className="w-6 mr-3 md:mr-4"></div>
-          <div className="w-16 sm:w-24 md:w-36">Token</div>
-          <div className="w-20 md:w-28 lg:w-36 text-right">Balance</div>
-          <div className="w-32 lg:w-40 hidden md:block text-right">ZIL</div>
-          <div className="w-20 md:w-32 lg:w-40 text-right">USD</div>
-          <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right">Change (24h)</div>
-          <div className="flex-grow"></div>
+      <div className="flex">
+        <table className="zilstream-table table-fixed border-collapse">
+          <colgroup>
+            <col style={{width: '276px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+          </colgroup>
+          <thead className="text-gray-500 dark:text-gray-400 text-xs">
+            <th className="pl-4 pr-2 py-2 text-left">Token</th>
+            <th className="px-2 py-2 text-right">Balance</th>
+            <th className="px-2 py-2 text-right">ZIL</th>
+            <th className="px-2 py-2 text-right">USD</th>
+            <th className="px-2 py-2 text-right">24h %</th>
+          </thead>
+          <tbody>
+            {props.tokens.filter(token => token.balance !== null && token.balance !== undefined).map( token => {
+              let balance = toBigNumber(token.balance, {compression: token.decimals})
+
+              if(balance.isZero()) {
+                return <></>
+              }
+
+              let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
+              let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
+              let usdBalance = zilBalance * zilRate
+              
+              return (
+                <tr key={token.address_bech32} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                  <td className="pl-4 pr-2 py-4 font-medium">
+                    <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+                      <a className="flex items-center">
+                        <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
+                          <TokenIcon url={token.icon} />
+                        </div>
+                        <span className="hidden lg:inline">{token.name}</span>
+                        <span className="lg:font-normal ml-2 lg:text-gray-500">{token.symbol}</span>
+                      </a>
+                    </Link>
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {moneyFormat(token.balance, {
+                      symbol: token.symbol,
+                      compression: token.decimals,
+                      maxFractionDigits: 2,
+                      showCurrency: false,
+                    })}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    <FlashChange value={zilBalance}>
+                      {token.isZil ? (
+                        <span>-</span>
+                      ) : (
+                        <span>{moneyFormat(zilBalance, {compression: 0, maxFractionDigits: 2})}</span>
+                      )}
+                    </FlashChange>
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    <FlashChange value={usdBalance}>
+                      <span>${moneyFormat(usdBalance, {compression: 0, maxFractionDigits: 2})}</span>
+                    </FlashChange>
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right"></td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <div className="ml-8 flex-grow">
+          <table className="zilstream-table table-fixed border-collapse">
+            <colgroup>
+              <col style={{width: '220px', minWidth: 'auto'}} />
+              <col style={{width: '100px', minWidth: 'auto'}} />
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            </colgroup>
+            <thead className="text-gray-500 dark:text-gray-400 text-xs">
+              <th className="pl-3 pr-2 py-2 text-left">Pair</th>
+              <th className="px-2 py-2 text-right">Pool</th>
+              <th className="px-2 py-2 text-right">Fees</th>
+            </thead>
+            <tbody>
+              <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                <td className="pl-4 pr-2 py-4 font-medium">
+                  ZWAP / ZIL
+                </td>
+                <td className="px-2 py-2 font-normal text-right">
+                  <div>
+                    <div>2,400 ZIL</div>
+                    <div>1,400 CARB</div>
+                  </div>
+                </td>
+                <td className="px-2 py-2 font-normal text-right">
+                  $44
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        {props.tokens.filter(token => token.balance !== null && token.balance !== undefined).map( token => {
-          let balance = toBigNumber(token.balance, {compression: token.decimals})
-
-          if(balance.isZero()) {
-            return <></>
-          }
-
-          let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
-          let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
-          let usdBalance = zilBalance * zilRate
-          
-          return (
-            <div key={token.address_bech32} className="bg-gray-800 p-4 rounded-lg mb-2 flex items-center">
-              <div className="w-6 mr-3 md:mr-4"><TokenIcon url={token.icon} /></div>
-              <div className="w-16 sm:w-24 md:w-36 font-medium">{token.symbol}</div>
-              <div className="w-20 md:w-28 lg:w-36 text-right">
-                {moneyFormat(token.balance, {
-                  symbol: token.symbol,
-                  compression: token.decimals,
-                  maxFractionDigits: 2,
-                  showCurrency: false,
-                })}
-              </div>
-              <div className="w-32 lg:w-40 hidden md:block text-right">
-                {token.isZil ? (
-                  <span>-</span>
-                ) : (
-                  <span>{moneyFormat(zilBalance, {compression: 0, maxFractionDigits: 2})}</span>
-                )}
-              </div>
-              <div className="w-20 md:w-32 lg:w-40 text-right">
-                <span>${moneyFormat(usdBalance, {compression: 0, maxFractionDigits: 2})}</span>
-              </div>
-              <div className="w-36 lg:w-44 xl:w-48 hidden lg:block text-right"></div>
-              <div className="flex-grow"></div>
-            </div>
-          )
-        })}
       </div>
     </>
   )
