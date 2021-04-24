@@ -1,11 +1,14 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { AccountActionTypes } from 'store/account/actions'
 
 interface Props {
   innerRef: React.RefObject<HTMLDivElement>
+  dismissAction: () => void
 }
 
 const ConnectWallet = (props: Props) => {
-
+  const dispatch = useDispatch()
 
   const connectZilPay = async () => {
     const zilPay = (window as any).zilPay
@@ -19,13 +22,19 @@ const ConnectWallet = (props: Props) => {
     if(result !== zilPay.wallet.isConnect)
       console.log("Could not connect to ZilPay")
 
+    const walletAddress = zilPay.wallet.defaultAccount.bech32
+    const network = zilPay.wallet.net
+
+    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
     
+    props.dismissAction()
   }
 
   return (
-    <div className="absolute top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
+    <div className="absolute z-50 top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
       <div ref={props.innerRef} className="p-6 w-128 bg-gray-700 rounded-lg flex flex-col items-center">
-        <div className="font-semibold text-xl">Connect your wallet</div>
+        <div className="font-bold text-xl">Connect your wallet</div>
         <div className="py-12 flex flex-col items-stretch">
           <button 
             className="bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
