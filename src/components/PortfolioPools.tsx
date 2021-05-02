@@ -40,13 +40,13 @@ function PortfolioPools(props: Props) {
             let zilAmount = contributionShare?.times(token.pool?.zilReserve ?? BIG_ZERO);
 
             return (
-              <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+              <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                 <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-bl-lg' : ''}`}>
                   <div className="flex items-center mr-3">
-                    <div className="w-6 h-6 bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-20">
+                    <div className="w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-20">
                       <TokenIcon url={token.icon} />
                     </div>
-                    <div className="w-6 h-6 -ml-2 bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-10">
+                    <div className="w-6 h-6 -ml-2 bg-gray-200 dark:bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-10">
                       <TokenIcon url={`https://meta.viewblock.io/ZIL/logo`} />
                     </div>
                   </div>

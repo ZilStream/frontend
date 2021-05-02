@@ -44,8 +44,8 @@ function PortfolioOverview(props: Props) {
   let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
 
   return (
-    <div className="bg-gray-800 py-4 px-5 rounded-lg w-96 flex-shrink-0 flex-grow-0 mr-4">
-      <div className="text-gray-400 text-sm border-b border-gray-700 pb-2 mb-2">Total balance</div>
+    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-96 flex-shrink-0 flex-grow-0 mr-4">
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2">Total balance</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-semibold text-xl">
@@ -53,12 +53,12 @@ function PortfolioOverview(props: Props) {
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
-        <div className="bg-green-500 py-1 px-2 text-sm font-semibold rounded-lg">
+        {/* <div className="bg-green-500 py-1 px-2 text-sm font-semibold rounded-lg">
           +5%
-        </div>
+        </div> */}
       </div>
 
-      <div className="text-gray-400 text-sm border-b border-gray-700 pb-2 mb-2 mt-8">Liquidity Pools</div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Liquidity Pools</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
@@ -69,12 +69,12 @@ function PortfolioOverview(props: Props) {
       </div>
 
       <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
-      <div className="text-sm text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
 
       <div className="text-sm text-gray-500 mt-4">Fees earned</div>
-      <div className="text-sm text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
 
-      <div className="text-gray-400 text-sm border-b border-gray-700 pb-2 mb-2 mt-8">Staking</div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Staking</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
@@ -85,7 +85,7 @@ function PortfolioOverview(props: Props) {
       </div>
 
       <div className="text-sm text-gray-500 mt-4">Rewards earned</div>
-      <div className="text-sm text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
     </div>
   )
 }
