@@ -181,13 +181,13 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           <div className="text-gray-600">{walletAddress}</div>
         </div>
       </div>
-      <div className="flex items-start">
+      <div className="flex flex-col sm:flex-row items-start">
         <PortfolioOverview
           tokens={tokenState.tokens}
           latestRates={latestRates}
           operators={stakingState.operators}
         />
-        <div className="flex-grow flex flex-col items-stretch">
+        <div className="mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
           <PortfolioBalances 
             walletAddress={walletAddress} 
             tokens={tokenState.tokens} 

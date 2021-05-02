@@ -32,9 +32,9 @@ const Header = () => {
             </a>
           </Link>
           
-          <nav className="ml-8 text-sm">
+          <nav className="ml-2 md:ml-8 text-sm">
             <Link href="/">
-              <a>Rankings</a>
+              <a className="hidden md:inline">Rankings</a>
             </Link>
 
             <Link href="/portfolio">
@@ -51,14 +51,14 @@ const Header = () => {
 
           {accountState.isConnected ? (
             <button 
-              className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-4 text-sm focus:outline-none" 
+              className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-2 md:ml-4 text-sm focus:outline-none" 
               onClick={() => setIsComponentVisible(!isComponentVisible)}
             >
               {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
             </button>
           ) : (
             <button 
-              className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-4 text-sm focus:outline-none" 
+              className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-2 md:ml-4 text-sm focus:outline-none" 
               onClick={() => setIsComponentVisible(!isComponentVisible)}
             >
               Connect wallet

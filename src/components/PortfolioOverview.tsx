@@ -44,7 +44,7 @@ function PortfolioOverview(props: Props) {
   let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
 
   return (
-    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-96 flex-shrink-0 flex-grow-0 mr-4">
+    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2">Total balance</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
