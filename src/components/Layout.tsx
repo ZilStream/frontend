@@ -24,7 +24,9 @@ export default function Layout(props: Props) {
         <meta name="apple-mobile-web-app-title" content="ZilStream" />
         <meta name="mobile-web-app-capable" content="yes" />
 
-        <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
+        {process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' &&
+          <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
+        }
       </Head>
       <div className="flex flex-col h-full">
         <Header />
