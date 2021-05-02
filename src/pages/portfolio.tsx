@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { AccountState, RootState, TokenState } from 'store/types';
 import {wrapper} from 'store/store'
-import { TokenActionTypes } from 'store/token/actions';
+import { add, TokenActionTypes } from 'store/token/actions';
 import { BatchRequestType } from 'utils/batch';
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto';
 import BigNumber from 'bignumber.js'
@@ -17,6 +17,9 @@ import useMoneyFormatter from 'utils/useMoneyFormatter';
 import PortfolioPools from 'components/PortfolioPools';
 import PortfolioOverview from 'components/PortfolioOverview';
 import getPortfolioState from 'lib/zilstream/getPortfolio';
+import { Operator, StakingState } from 'store/staking/types';
+import { init, StakingActionTypes } from 'store/staking/actions';
+import PortfolioStaking from 'components/PortfolioStaking';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -39,6 +42,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   
@@ -128,6 +132,36 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
             })
             return
           }
+
+          case BatchRequestType.StakingOperators: {
+            let ssnlist: any[] = result.result.ssnlist
+            
+            var operators: Operator[] = []
+            Object.keys(ssnlist).forEach(ssnAddress => {
+              let address: any = ssnAddress
+              operators.push({
+                name: ssnlist[address].arguments[3],
+                address: address,
+              })
+            })
+
+            dispatch(init({operators: operators}))
+            return
+          }
+
+          case BatchRequestType.StakingDelegators: {
+            let ssnDelegators: any[] = result.result.ssn_deleg_amt
+            Object.keys(ssnDelegators).forEach(ssnAddress => {
+              let address: any = ssnAddress
+              let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
+              let staked = new BigNumber(amount)
+              dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
+                address: ssnAddress,
+                staked
+              }}) 
+            })
+            return
+          }
         }
       })
     }
@@ -151,6 +185,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
         <PortfolioOverview
           tokens={tokenState.tokens}
           latestRates={latestRates}
+          operators={stakingState.operators}
         />
         <div className="flex-grow flex flex-col items-stretch">
           <PortfolioBalances 
@@ -160,6 +195,10 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           />
           <PortfolioPools
             tokens={tokenState.tokens}
+          />
+          <PortfolioStaking
+            walletAddress={accountState.address}
+            operators={stakingState.operators}
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
-import { TokenInfo } from 'store/types'
+import { Operator, TokenInfo } from 'store/types'
 import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
@@ -9,6 +9,7 @@ import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 interface Props {
   tokens: TokenInfo[]
   latestRates: SimpleRate[]
+  operators: Operator[]
 }
 
 function PortfolioOverview(props: Props) {
@@ -33,6 +34,11 @@ function PortfolioOverview(props: Props) {
     let totalZilAmount = zilAmount.times(2)
 
     return sum.plus(totalZilAmount)
+  }, new BigNumber(0))
+
+  var stakingBalance = props.operators.reduce((sum, current) => {
+    let staked = toBigNumber(current.staked, {compression: 12})
+    return sum.plus(staked)
   }, new BigNumber(0))
 
   let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
@@ -72,9 +78,9 @@ function PortfolioOverview(props: Props) {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            ${moneyFormat(stakingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
           </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
 

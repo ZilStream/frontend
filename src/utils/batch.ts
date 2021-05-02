@@ -8,11 +8,16 @@ export enum BatchRequestType {
   TokenAllowance = "tokenAllowance",
   Pools = "pools",
   PoolBalance = "poolBalance",
-  TotalContributions = "totalContributions"
+  TotalContributions = "totalContributions",
+  StakingOperators = "stakingOperators",
+  StakingDelegators = "stakingDelegators"
 };
 
 const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
 const zilSwapHash = fromBech32Address(zilSwapAddress)
+
+const stakingAddress = "zil1k7qwsz2m3w595u29je0dvv4nka62c5wwrp8r8p"
+const stakingHash = fromBech32Address(stakingAddress)
 
 interface BatchRequestItem {
   id: string;
@@ -173,6 +178,54 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
         zilSwapHash.replace("0x", "").toLowerCase(),
         "balances",
         [address, walletAddr],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the staking operators.
+ *
+ * @param TokenInfo The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const stakingOperatorsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.StakingOperators,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        stakingHash.replace("0x", "").toLowerCase(),
+        "ssnlist",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the staking delegators.
+ *
+ * @param TokenInfo The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const stakingDelegatorsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.StakingDelegators,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        stakingHash.replace("0x", "").toLowerCase(),
+        "ssn_deleg_amt",
+        [],
       ],
     },
   };
