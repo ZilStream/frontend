@@ -1,7 +1,7 @@
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux'
-import { TokenActionTypes, update } from "./actions";
-import { TokenAddProps, TokenInitProps, TokenState, TokenUpdateProps } from "./types";
+import { TokenActionTypes } from "./actions";
+import { TokenAddProps, TokenInitProps, TokenPoolUpdateProps, TokenState, TokenUpdateProps } from "./types";
 
 const initialState: TokenState = {
   initialized: false,
@@ -42,6 +42,25 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
           ...state.tokens,
           addProps.token
         ]
+      }
+
+    case TokenActionTypes.TOKEN_UPDATE_POOL:
+      const poolProps: TokenPoolUpdateProps = payload
+      return {
+        ...state,
+        tokens: state.tokens.map(token => {
+          if(token.address_bech32 === poolProps.address) {
+            return {
+              ...token,
+              pool: {
+                ...token.pool,
+                ...poolProps
+              }
+            }
+          } else {
+            return token
+          }
+        })
       }
 
     default:

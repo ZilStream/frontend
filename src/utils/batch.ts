@@ -1,13 +1,18 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
 import { TokenInfo } from "store/types";
-import { Token } from "types/token.interface";
 import { Network } from "./network";
 
 export enum BatchRequestType {
   Balance = "balance",
   TokenBalance = "tokenBalance",
-  TokenAllowance = "tokenAllowance"
+  TokenAllowance = "tokenAllowance",
+  Pools = "pools",
+  PoolBalance = "poolBalance",
+  TotalContributions = "totalContributions"
 };
+
+const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
+const zilSwapHash = fromBech32Address(zilSwapAddress)
 
 interface BatchRequestItem {
   id: string;
@@ -18,11 +23,11 @@ interface BatchRequestItem {
 
 interface BatchRequest {
   type: string
-  token: TokenInfo
+  token?: TokenInfo
   item: BatchRequestItem
 }
 
-interface BatchResponse {
+export interface BatchResponse {
   request: BatchRequest;
   result: any;
 }
@@ -94,6 +99,80 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
         address.replace("0x", "").toLowerCase(),
         "allowances",
         [walletAddress],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @param TokenInfo The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const poolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.Pools,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        zilSwapHash.replace("0x", "").toLowerCase(),
+        "pools",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @param TokenInfo The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const totalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.TotalContributions,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        zilSwapHash.replace("0x", "").toLowerCase(),
+        "total_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param TokenInfo The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const tokenPoolBalanceBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.PoolBalance,
+    token: token,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        zilSwapHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [address, walletAddr],
       ],
     },
   };

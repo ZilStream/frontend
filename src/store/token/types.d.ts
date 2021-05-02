@@ -18,6 +18,16 @@ export type TokenInfo = {
   supply_skip_addresses: string
   isZil: boolean
   balance?: BigNumber = 0
+  pool?: TokenPool
+}
+
+export type TokenPool = {
+  zilReserve: BigNumber
+  tokenReserve: BigNumber
+  exchangeRate: BigNumber
+  totalContribution: BigNumber
+  userContribution?: BigNumber
+  contributionPercentage?: BigNumber
 }
 
 export interface TokenState {
@@ -35,4 +45,8 @@ export interface TokenUpdateProps extends Partial<TokenInfo> {
 
 export interface TokenAddProps {
   token: TokenInfo
+}
+
+export interface TokenPoolUpdateProps extends Partial<TokenPool> {
+  address: string
 }
