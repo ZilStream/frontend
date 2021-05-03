@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { AccountState, RootState, TokenState } from 'store/types';
 import {wrapper} from 'store/store'
-import { add, TokenActionTypes } from 'store/token/actions';
+import { TokenActionTypes } from 'store/token/actions';
 import { BatchRequestType } from 'utils/batch';
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto';
 import BigNumber from 'bignumber.js'
@@ -13,13 +13,14 @@ import { bnOrZero } from 'utils/strings';
 import { SimpleRate } from 'types/rate.interface';
 import getLatestRates from 'lib/zilstream/getLatestRates';
 import Head from 'next/head';
-import useMoneyFormatter from 'utils/useMoneyFormatter';
 import PortfolioPools from 'components/PortfolioPools';
 import PortfolioOverview from 'components/PortfolioOverview';
 import getPortfolioState from 'lib/zilstream/getPortfolio';
 import { Operator, StakingState } from 'store/staking/types';
 import { init, StakingActionTypes } from 'store/staking/actions';
 import PortfolioStaking from 'components/PortfolioStaking';
+import PortfolioOnboard from 'components/PortfolioOnboard';
+import { AccountActionTypes } from 'store/account/actions'
 
 interface Props {
   latestRates: SimpleRate[]
@@ -44,7 +45,6 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
-  const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   
   useEffect(() => {
     setWalletAddress(accountState.address)
@@ -168,40 +168,69 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
 
     fetchState(walletAddress)
   }, [walletAddress])
-  
+
+  const connectZilPay = async () => {
+    const zilPay = (window as any).zilPay
+    
+    // Check if ZilPay is installed
+    if(typeof zilPay === "undefined") {
+      console.log("ZilPay extension not installed")
+      return
+    }
+      
+    const result = await zilPay.wallet.connect()
+
+    if(result !== zilPay.wallet.isConnect) {
+      console.log("Could not connect to ZilPay")
+      return
+    }
+
+    const walletAddress = zilPay.wallet.defaultAccount.bech32
+    const network = zilPay.wallet.net
+    
+    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+  }
+
   return (
     <>
       <Head>
         <title>Portfolio | ZilStream</title>
         <meta property="og:title" content={`Portfolio | ZilStream`} />
       </Head>
-      <div className="py-8 flex items-center">
-        <div className="flex-grow">
-          <h1 className="flex-grow">Portfolio</h1>
-          <div className="text-gray-600">{walletAddress}</div>
-        </div>
-      </div>
-      <div className="flex flex-col sm:flex-row items-start">
-        <PortfolioOverview
-          tokens={tokenState.tokens}
-          latestRates={latestRates}
-          operators={stakingState.operators}
-        />
-        <div className="mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
-          <PortfolioBalances 
-            walletAddress={walletAddress} 
-            tokens={tokenState.tokens} 
-            latestRates={latestRates} 
-          />
-          <PortfolioPools
-            tokens={tokenState.tokens}
-          />
-          <PortfolioStaking
-            walletAddress={accountState.address}
-            operators={stakingState.operators}
-          />
-        </div>
-      </div>
+      {walletAddress !== '' ? (
+        <>
+          <div className="py-8 flex items-center">
+            <div className="flex-grow">
+              <h1 className="flex-grow">Portfolio</h1>
+              <div className="text-gray-600">{walletAddress}</div>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start">
+            <PortfolioOverview
+              tokens={tokenState.tokens}
+              latestRates={latestRates}
+              operators={stakingState.operators}
+            />
+            <div className="mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
+              <PortfolioBalances 
+                walletAddress={walletAddress} 
+                tokens={tokenState.tokens} 
+                latestRates={latestRates} 
+              />
+              <PortfolioPools
+                tokens={tokenState.tokens}
+              />
+              <PortfolioStaking
+                walletAddress={accountState.address}
+                operators={stakingState.operators}
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <PortfolioOnboard onConnect={() => connectZilPay()} />
+      )}
     </>
   )
 }

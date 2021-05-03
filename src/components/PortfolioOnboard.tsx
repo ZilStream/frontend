@@ -1,45 +1,27 @@
-import Head from 'next/head'
-import React, { useState } from 'react'
+import React from 'react'
 
 interface Props {
-  onSelectAddress: (address: string) => void
+  onConnect: () => void
 }
 
 function PortfolioOnboard(props: Props) {
-  const [address, setAddress] = useState('')
-
-  function selectAddress(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    e.preventDefault()
-
-    if(address == "") {
-      return
-    }
-
-    props.onSelectAddress(address)
-  }
-
   return (
     <>
-      <Head>
-        <title>Portfolio | ZilStream</title>
-        <meta property="og:title" content={`Portfolio | ZilStream`} />
-      </Head>
       <div className="mt-12 pt-8 pb-2 md:pb-8 text-center">
         <h1 className="mb-1">Portfolio</h1>
         <p className="text-lg">Track the performance of your Zilliqa wallet</p>
 
-        <div className="mt-12">
-          <form className="flex items-stretch justify-center">
-            <input
-              className="w-96 bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-lg mr-2 border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="Enter your wallet address" 
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-            />
-            <button onClick={(e) => selectAddress(e)} className="px-3 py-1 rounded-lg bg-primary font-medium hover:shadow-md">
-              View portfolio
-            </button>
-          </form>
+        <div className="mt-12 flex justify-center">
+          <div className="p-6 w-128 bg-gray-700 rounded-lg flex flex-col items-center">
+            <div className="font-bold text-xl">Connect your wallet</div>
+            <div className="py-12 flex flex-col items-stretch">
+              <button 
+                className="bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
+                onClick={() => props.onConnect()}
+              >ZilPay</button>
+            </div>
+            <div className="text-sm text-gray-400"><span className="font-semibold">Note:</span> Connecting your Wallet does not give ZilStream access to your private keys, and no transactions can be sent. ZilStream does not store your wallet address on its servers.</div>
+          </div>
         </div>
       </div>
     </>
