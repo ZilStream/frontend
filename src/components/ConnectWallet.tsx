@@ -31,6 +31,8 @@ const ConnectWallet = (props: Props) => {
 
     dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
     dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+
+    localStorage.setItem('zilpay', 'true')
     
     props.dismissAction()
   }

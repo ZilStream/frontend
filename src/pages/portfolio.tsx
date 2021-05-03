@@ -50,6 +50,11 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   let walletAddress = accountState.address
 
   useEffect(() => {
+    if(localStorage.getItem('zilpay') === 'true')
+      connectZilPay()
+  }, [])
+
+  useEffect(() => {
     if(walletAddress === '') { return }
 
     async function fetchState(walletAddress: string) {
@@ -189,6 +194,8 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
     
     dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
     dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+
+    localStorage.setItem('zilpay', 'true')
   }
 
   return (

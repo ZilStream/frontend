@@ -13,10 +13,12 @@ const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => {
 
   useEffect(() => {
     const zilPay = (window as any).zilPay
-
+    
     try {
       if(typeof zilPay !== "undefined") {
+        
         if(zilPay.wallet.isConnect) {
+          console.log('zilpay')
           const walletAddress = zilPay.wallet.defaultAccount.bech32
           const network = zilPay.wallet.net
           
