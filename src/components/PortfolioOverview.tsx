@@ -15,6 +15,8 @@ interface Props {
 function PortfolioOverview(props: Props) {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
 
+  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+
   var totalBalance = props.tokens.reduce((sum, current) => {
     let balance = toBigNumber(current.balance, {compression: current.decimals})
 
@@ -35,13 +37,13 @@ function PortfolioOverview(props: Props) {
 
     return sum.plus(totalZilAmount)
   }, new BigNumber(0))
+  totalBalance = totalBalance.plus(liquidityBalance.times(zilRate).pow(10, -12))
 
   var stakingBalance = props.operators.reduce((sum, current) => {
     let staked = toBigNumber(current.staked, {compression: 12})
     return sum.plus(staked)
   }, new BigNumber(0))
-
-  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+  totalBalance = totalBalance.plus(stakingBalance.times(zilRate).pow(10, -12))  
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
