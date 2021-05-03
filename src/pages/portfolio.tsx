@@ -222,6 +222,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               />
               <PortfolioPools
                 tokens={tokenState.tokens}
+                zilRate={latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
               />
               <PortfolioStaking
                 walletAddress={accountState.address}

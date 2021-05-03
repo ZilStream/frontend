@@ -1,11 +1,13 @@
 import React from 'react'
 import { TokenInfo } from 'store/types'
+import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 import TokenIcon from './TokenIcon'
 
 interface Props {
-  tokens: TokenInfo[]
+  tokens: TokenInfo[],
+  zilRate: SimpleRate
 }
 
 function PortfolioPools(props: Props) {
@@ -23,12 +25,14 @@ function PortfolioPools(props: Props) {
           <col style={{width: '220px', minWidth: 'auto'}} />
           <col style={{width: '100px', minWidth: 'auto'}} />
           <col style={{width: '100px', minWidth: 'auto'}} />
+          <col style={{width: '100px', minWidth: 'auto'}} />
         </colgroup>
         <thead className="text-gray-500 dark:text-gray-400 text-xs">
           <tr>
             <th className="pl-3 pr-2 py-2 text-left">Pair</th>
             <th className="px-2 py-2 text-right">Pool</th>
             <th className="px-2 py-2 text-right">Share</th>
+            <th className="px-2 py-2 text-right">USD</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +73,14 @@ function PortfolioPools(props: Props) {
                         showCurrency: false,
                       })} ZIL</div>
                   </div>
+                </td>
+                <td className="px-2 py-2 font-normal text-right">
+                  ${moneyFormat(zilAmount.times(2).times(props.zilRate.rate), {
+                    symbol: 'USD',
+                    compression: 12,
+                    maxFractionDigits: 2,
+                    showCurrency: false,
+                  })}
                 </td>
                 <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-br-lg' : ''}`}>
                   {moneyFormat(contributionPercentage, {
