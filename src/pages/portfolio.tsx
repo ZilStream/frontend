@@ -42,15 +42,12 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => 
 })
 
 const Portfolio: NextPage<Props> = ({ latestRates }) => {
-  const [walletAddress, setWalletAddress] = useState<string>('');
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
-  
-  useEffect(() => {
-    setWalletAddress(accountState.address)
-  }, [accountState])
+
+  let walletAddress = accountState.address
 
   useEffect(() => {
     if(walletAddress === '') { return }

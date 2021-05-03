@@ -14,7 +14,7 @@ function PortfolioPools(props: Props) {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
 
   let filteredTokens = props.tokens.filter(token => {
-    return token.pool && token.pool.userContribution
+    return token.pool && token.pool.userContribution && !token.pool.userContribution.isZero()
   })
 
   return (
