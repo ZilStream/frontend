@@ -12,11 +12,11 @@ function PortfolioOnboard(props: Props) {
         <p className="text-lg">Track the performance of your Zilliqa wallet</p>
 
         <div className="mt-12 flex justify-center">
-          <div className="p-6 w-128 bg-gray-700 rounded-lg flex flex-col items-center">
+          <div className="p-6 w-128 bg-white dark:bg-gray-700 rounded-lg flex flex-col items-center">
             <div className="font-bold text-xl">Connect your wallet</div>
             <div className="py-12 flex flex-col items-stretch">
               <button 
-                className="bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
+                className="bg-gray-300 dark:bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
                 onClick={() => props.onConnect()}
               >ZilPay</button>
             </div>

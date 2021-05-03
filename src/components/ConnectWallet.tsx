@@ -37,11 +37,11 @@ const ConnectWallet = (props: Props) => {
 
   return (
     <div className="absolute z-50 top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center bg-black bg-opacity-60">
-      <div ref={props.innerRef} className="p-6 w-128 bg-gray-700 rounded-lg flex flex-col items-center">
+      <div ref={props.innerRef} className="p-6 w-128 bg-white dark:bg-gray-700 rounded-lg flex flex-col items-center">
         <div className="font-bold text-xl">Connect your wallet</div>
         <div className="py-12 flex flex-col items-stretch">
           <button 
-            className="bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
+            className="bg-gray-300 dark:bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
             onClick={() => connectZilPay()}
           >ZilPay</button>
         </div>
