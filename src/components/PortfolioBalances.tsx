@@ -23,6 +23,20 @@ function PortfolioBalances(props: Props) {
     return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
   })
 
+  filteredTokens.sort((a, b) => {
+    const priorTokenRate = props.latestRates.filter(rate => rate.address == a.address_bech32)[0]
+    const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
+    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(priorTokenRate.rate)
+    const priorUsdRate = priorZilRate.times(zilRate)
+
+    const nextTokenRate = props.latestRates.filter(rate => rate.address == b.address_bech32)[0]
+    const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
+    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(nextTokenRate.rate)
+    const nextUsdRate = nextZilRate.times(zilRate)
+    
+    return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
+  })
+
   return (
     <>
       <div className="font-bold text-2xl">Balances</div>
@@ -75,7 +89,12 @@ function PortfolioBalances(props: Props) {
                 <td className="px-2 py-2 font-normal text-right">
                   <FlashChange value={zilBalance}>
                     {token.isZil ? (
-                      <span>-</span>
+                      <span>{moneyFormat(token.balance, {
+                        symbol: token.symbol,
+                        compression: token.decimals,
+                        maxFractionDigits: 2,
+                        showCurrency: false,
+                      })}</span>
                     ) : (
                       <span>{moneyFormat(zilBalance, {compression: 0, maxFractionDigits: 2})}</span>
                     )}
