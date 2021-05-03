@@ -14,22 +14,26 @@ const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     const zilPay = (window as any).zilPay
 
-    if(typeof zilPay !== "undefined") {
-      if(zilPay.wallet.isConnect) {
-        const walletAddress = zilPay.wallet.defaultAccount.bech32
-        const network = zilPay.wallet.net
-        
-        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+    try {
+      if(typeof zilPay !== "undefined") {
+        if(zilPay.wallet.isConnect) {
+          const walletAddress = zilPay.wallet.defaultAccount.bech32
+          const network = zilPay.wallet.net
+          
+          dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+          dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+  
+          zilPay.wallet.observableAccount().subscribe(function(account: any) {
+            dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
+          })
+    
+          zilPay.wallet.observableNetwork().subscribe(function(network: any) {
+            dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+          })
+        }
       }
-
-      zilPay.wallet.observableAccount().subscribe(function(account: any) {
-        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
-      })
-
-      zilPay.wallet.observableNetwork().subscribe(function(network: any) {
-        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-      })
+    } catch (e) {
+      console.error(e)
     }
   }, [])
 
