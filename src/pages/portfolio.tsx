@@ -27,10 +27,12 @@ interface Props {
 }
 
 export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => {
-  const tokens = await getTokens()
-  const latestRates = await getLatestRates()
+  if(store.getState().token.tokens.length === 0) {
+    const tokens = await getTokens()
+    store.dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+  }
   
-  store.dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+  const latestRates = await getLatestRates()
 
   return {
     props: {
@@ -224,6 +226,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               <PortfolioStaking
                 walletAddress={accountState.address}
                 operators={stakingState.operators}
+                zilRate={latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
               />
             </div>
           </div>
