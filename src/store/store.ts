@@ -5,4 +5,4 @@ import { RootState } from './types'
 
 const makeStore: MakeStore<RootState> = (context: Context) => createStore(reducer)
 
-export const wrapper = createWrapper<RootState>(makeStore, {debug: true})
+export const wrapper = createWrapper<RootState>(makeStore, {debug: false})
