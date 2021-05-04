@@ -2,6 +2,7 @@ import React from 'react'
 import { Operator } from 'store/staking/types'
 import { SimpleRate } from 'types/rate.interface'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
+import EmptyRow from './EmptyRow'
 
 interface Props {
   walletAddress: string,
@@ -62,6 +63,9 @@ function PortfolioStaking(props: Props) {
             
           </tbody>
         </table>
+        {filteredOperators.length === 0 &&
+          <EmptyRow message="Currently not staking." />
+        }
       </div>
     </>
   )

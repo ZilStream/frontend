@@ -147,6 +147,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               operators.push({
                 name: ssnlist[address].arguments[3],
                 address: address,
+                comission: new BigNumber(ssnlist[address].arguments[6])
               })
             })
 

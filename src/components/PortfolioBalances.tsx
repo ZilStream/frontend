@@ -5,6 +5,7 @@ import React from "react"
 import { TokenInfo } from "store/types"
 import { SimpleRate } from "types/rate.interface"
 import useMoneyFormatter, { toBigNumber } from "utils/useMoneyFormatter"
+import EmptyRow from "./EmptyRow"
 import FlashChange from "./FlashChange"
 import TokenIcon from "./TokenIcon"
 
@@ -130,6 +131,9 @@ function PortfolioBalances(props: Props) {
             })}
           </tbody>
         </table>
+        {filteredTokens.length === 0 &&
+          <EmptyRow message="Currently not holding any tokens." />
+        }
       </div>
     </>
   )

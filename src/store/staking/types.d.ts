@@ -8,7 +8,7 @@ export type Operator = {
   // api_url: string
   // stake_amount: BigNumber
   // buffered_deposit: BigNumber
-  // comission: BigNumber
+  comission: BigNumber
 }
 
 export interface StakingState {

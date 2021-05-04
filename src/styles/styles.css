@@ -95,6 +95,10 @@ body, #__next {
     @apply text-red-600 dark:text-red-500;
   }
 
+  .zilstream-table {
+    @apply min-w-full;
+  }
+
   .zilstream-table td {
     @apply bg-white dark:bg-gray-800;
   }

@@ -3,6 +3,7 @@ import { TokenInfo } from 'store/types'
 import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
+import EmptyRow from './EmptyRow'
 import TokenIcon from './TokenIcon'
 
 interface Props {
@@ -65,7 +66,7 @@ function PortfolioPools(props: Props) {
                           compression: token.decimals,
                           maxFractionDigits: 2,
                           showCurrency: false,
-                        })} <span className="text-gray-400">{token.symbol}</span>
+                        })} <span className="text-gray-500">{token.symbol}</span>
                       </div>
                       <div>
                         {moneyFormat(zilAmount, {
@@ -73,7 +74,7 @@ function PortfolioPools(props: Props) {
                           compression: 12,
                           maxFractionDigits: 2,
                           showCurrency: false,
-                        })} <span className="text-gray-400">ZIL</span></div>
+                        })} <span className="text-gray-500">ZIL</span></div>
                     </div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
@@ -98,6 +99,9 @@ function PortfolioPools(props: Props) {
             
           </tbody>
         </table>
+        {filteredTokens.length === 0 &&
+          <EmptyRow message="Currently not providing liquidity." />
+        }
       </div>
     </>
   )
