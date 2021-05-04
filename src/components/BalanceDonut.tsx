@@ -85,6 +85,35 @@ function BalanceDonut(props: Props) {
     stroke: {
       width: 0
     },
+    states: {
+      active: {
+        filter: {
+          type: 'none'
+        }
+      }
+    },
+    plotOptions: {
+      pie: {
+        expandOnClick: false,
+        donut: {
+          labels: {
+            show: true,
+            name: {
+              color: resolvedTheme === 'dark' ? '#fff' : '#000',
+              fontWeight: 700
+            },
+            value: {
+              fontSize: '14px',
+              color: resolvedTheme === 'dark' ? '#fefefe' : '#333',
+              offsetY: -6,
+              formatter: function(val) {
+                return Number(val).toFixed(2)
+              }
+            }
+          }
+        }
+      }
+    },
     responsive: [{
       breakpoint: 480,
       options: {
