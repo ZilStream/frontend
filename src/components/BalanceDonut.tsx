@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import React from 'react'
 import { TokenInfo } from 'store/types'
@@ -16,8 +17,26 @@ interface Props {
 }
 
 function BalanceDonut(props: Props) {
+  const {theme, setTheme, resolvedTheme} = useTheme()
+
   let filteredTokens = props.tokens.filter(token => {
     return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
+  })
+
+  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+
+  filteredTokens.sort((a, b) => {
+    const priorTokenRate = props.latestRates.filter(rate => rate.address == a.address_bech32)[0]
+    const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
+    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(priorTokenRate.rate)
+    const priorUsdRate = priorZilRate.times(zilRate)
+
+    const nextTokenRate = props.latestRates.filter(rate => rate.address == b.address_bech32)[0]
+    const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
+    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(nextTokenRate.rate)
+    const nextUsdRate = nextZilRate.times(zilRate)
+    
+    return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
   })
 
   let totalBalance = props.tokens.reduce((sum, current) => {
@@ -44,12 +63,27 @@ function BalanceDonut(props: Props) {
     dataLabels: {
       enabled: false,
     },
+    tooltip: {
+      enabled: false
+    },
     legend: {
       position: 'bottom',
+      fontFamily: 'inherit',
+      fontSize: '12px',
+      labels: {
+        colors: resolvedTheme === 'dark' ? ['#fefefe'] : ['#333']
+      },
+      markers: {
+        width: 8,
+        height: 8
+      },
       formatter: function(val: string, opts: any) {
         const balance = toBigNumber(opts.w.globals.series[opts.seriesIndex])
         return val + ': ' + balance.dividedBy(totalBalance).times(100).toFixed(2) + '%'
       }
+    },
+    stroke: {
+      width: 0
     },
     responsive: [{
       breakpoint: 480,
