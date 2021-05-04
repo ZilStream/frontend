@@ -21,6 +21,7 @@ import { init, StakingActionTypes } from 'store/staking/actions';
 import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
+import CopyableAddress from 'components/CopyableAddress';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -209,16 +210,16 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           <div className="py-8 flex items-center">
             <div className="flex-grow">
               <h1 className="flex-grow">Portfolio</h1>
-              <div className="text-gray-600">{walletAddress}</div>
+              <CopyableAddress address={walletAddress} />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-start">
+          <div className="max-w-full flex flex-col sm:flex-row items-start">
             <PortfolioOverview
               tokens={tokenState.tokens}
               latestRates={latestRates}
               operators={stakingState.operators}
             />
-            <div className="mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
+            <div className="max-w-full mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
               <PortfolioBalances 
                 walletAddress={walletAddress} 
                 tokens={tokenState.tokens} 
