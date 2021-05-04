@@ -22,9 +22,9 @@ function PortfolioStaking(props: Props) {
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
-            <col style={{width: '200px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '390px', minWidth: 'auto'}} />
+            <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
