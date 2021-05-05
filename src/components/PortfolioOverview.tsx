@@ -74,10 +74,10 @@ function PortfolioOverview(props: Props) {
       </div>
 
       <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
 
       <div className="text-sm text-gray-500 mt-4">Fees earned</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
 
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Staking</div>
       <div className="flex items-start">
@@ -90,7 +90,7 @@ function PortfolioOverview(props: Props) {
       </div>
 
       <div className="text-sm text-gray-500 mt-4">Rewards earned</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/">learn more</Link>.</div>
+      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
     </div>
   )
 }
