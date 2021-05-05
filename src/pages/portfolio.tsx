@@ -22,6 +22,7 @@ import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
 import CopyableAddress from 'components/CopyableAddress';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -43,6 +44,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => 
 })
 
 const Portfolio: NextPage<Props> = ({ latestRates }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
@@ -57,6 +59,8 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
 
   useEffect(() => {
     if(walletAddress === '') { return }
+
+    setIsLoading(true)
 
     async function fetchState(walletAddress: string) {
       let batchResults = await getPortfolioState(walletAddress, tokenState.tokens)
@@ -170,6 +174,8 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           }
         }
       })
+
+      setIsLoading(false)
     }
 
     fetchState(walletAddress)
@@ -212,6 +218,11 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
             <div className="flex-grow">
               <h1 className="flex-grow">Portfolio</h1>
               <CopyableAddress address={walletAddress} />
+            </div>
+            <div>
+              {isLoading &&
+                <LoadingIndicator />
+              }
             </div>
           </div>
           <div className="max-w-full flex flex-col sm:flex-row items-start">
