@@ -33,12 +33,12 @@ function Portfolio() {
         </ul>
         <p className="mb-6">We'll be continuously working on expanding Premium Membership features in the future. Such as features aren't limited just to Portfolio. One of the first Premium features that will be launching outside of Portfolio is a full screen chart that includes various indicators and drawing tools.</p>
         <h2 className="text-2xl text-center mt-16 mb-4">ZilStream Premium Membership</h2>
-        <p className="mb-6">With Premium, members will be able to enjoy additional features and benefits on ZiLStream. Start with a detailed Portfolio, but expanding to more features in the near future. Central to the membership is the launch of ZilStream's very own token named <strong>STREAM</strong>, which will be launching later this month.</p>
+        <p className="mb-6">With Premium, members will be able to enjoy additional features and benefits on ZiLStream. Starting with a detailed Portfolio, but expanding to more features in the near future. Central to the membership is the launch of ZilStream's very own token named <strong>STREAM</strong>, which will be launching later this month.</p>
 
         <p className="mb-6">To become a Premium member users will have to hold $1 of <strong>STREAM</strong> for every $200 of value in their wallet. So the cost of the product scales with the investor and incentivizes holding of the token.</p>
 
         <h3 className="text-xl text-center mb-4 mt-8">STREAM Token</h3>
-        <p className="mb-6">Stream will have a fixed total supply of <strong>20,000,000 STREAM</strong>, of which <strong>7,000,000 STREAM</strong> will be circulating at launch. Decimals will be set at 8.</p>
+        <p className="mb-6">Stream will have a fixed total supply of <strong>20,000,000 STREAM</strong>, of which <strong>3,800,000 STREAM</strong> will be circulating at launch. Decimals will be set at 8.</p>
 
         <h3 className="text-xl text-center mb-4 mt-8">Tokenomics</h3>
         <ul className="list-disc ml-6 mb-6">
