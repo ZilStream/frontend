@@ -11,7 +11,7 @@ function Portfolio() {
       <div className="pt-24 pb-12 text-center">
         <h1 className="mb-1">Announcing Premium Membership</h1>
       </div>
-      <div className="bg-white dark:bg-gray-800 p-10 rounded-lg max-w-3xl mx-auto text-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-lg max-w-3xl mx-auto text-lg">
         <p className="mb-6">Since the launch of ZilStream investors in the Zilliqa ecosystem have had much better insight into the ZRC-2 market activity. The site has now been visited over 4,000,000 times. For that we’d like to thank the Zilliqa community for the warm welcome, it’s been wild ride and it’s only gonna get better.</p>
         <p className="mb-6">Today, we're pleased to announce the upcoming ZilStream Premium Membership. The best way to get deep insight into the market and your position within it. Starting with Portfolio, which launches in public beta today.</p>
 

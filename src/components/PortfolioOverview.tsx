@@ -48,7 +48,7 @@ function PortfolioOverview(props: Props) {
   totalBalance = totalBalance.plus(stakingBalance.shiftedBy(-12))  
 
   return (
-    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
+    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
       <BalanceDonut tokens={props.tokens} latestRates={props.latestRates} />
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2">Total balance</div>
       <div className="flex items-start">
