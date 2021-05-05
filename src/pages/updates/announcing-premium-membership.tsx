@@ -43,7 +43,7 @@ function Portfolio() {
         <h3 className="text-xl text-center mb-4 mt-8">Tokenomics</h3>
         <ul className="list-disc ml-6 mb-6">
           <li>Initial sale (12%): <strong>2,400,000</strong></li>
-          <li>Private sale (20%): <strong>4,000,000</strong> (Vested quarterly over 12 months, closed and led by ZILHive)</li>
+          <li>Private sale (20%): <strong>4,000,000</strong> (Vested quarterly over 12 months)</li>
           <li>Initial liquidity (3%): <strong>600,000</strong></li>
           <li>Liquidity rewards (25%): <strong>5,000,000</strong> (Linear curve over 4 years)</li>
           <li>Marketing & Operations (20%): <strong>4,000,000</strong> (Vested quarterly over 24 months)</li>
@@ -52,7 +52,7 @@ function Portfolio() {
         </ul>
 
         <h3 className="text-xl text-center mb-4 mt-8">Initial Sale</h3>
-        <p className="mb-6">The initial sale price is set at <strong>$0.10 / STREAM</strong>. The private sale price was set at <strong>$0.065 / STREAM</strong>. More details on the initial sale will be made available in the near future.</p>
+        <p className="mb-6">The initial sale price is set at <strong>$0.10 / STREAM</strong>. The private sale price was set at <strong>$0.065 / STREAM</strong>, this sale has been closed and was led by ZILHive. More details on the initial sale will be made available in the near future.</p>
 
         <h3 className="text-xl text-center mb-4 mt-8">Disclaimer</h3>
         <p className="mb-6">The <strong>STREAM</strong> token is neither a security nor an asset. It doesn't have any value outside being a proof of membership for the services provided on zilstream.com. We don't promise any returns. Cryptocurrencies are highly volatile and can lose all their value at any point.</p>
