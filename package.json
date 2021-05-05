@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@tanem/react-nprogress": "^3.0.64",
     "@tippyjs/react": "^4.2.4",
     "@zilliqa-js/zilliqa": "^2.2.1",
     "apexcharts": "^3.26.1",
