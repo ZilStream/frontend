@@ -18,7 +18,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(totalContributionsBatchRequest())
   batchRequests.push(stakingOperatorsBatchRequest())
   batchRequests.push(stakingDelegatorsBatchRequest())
-  batchRequests.push(carbonStakersBatchRequest('zil1qwlzmpfnk6xwm7rumj7zvas9fdq7gu0jmkv6ap'))
+  batchRequests.push(carbonStakersBatchRequest(walletAddress))
 
   return await sendBatchRequest(Network.MainNet, batchRequests)
 }
