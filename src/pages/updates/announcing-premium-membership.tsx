@@ -8,11 +8,14 @@ function PremiumMembership() {
       <Head>
         <title>Announcing Premium Membership | ZilStream</title>
 
-        <meta name="twitter:card" content="summary" key="twcard" />
-        <meta name="twitter:creator" content="zilstream" key="twhandle" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@zilstream" />
+        <meta name="twitter:title" content="Announcing Premium Membership | ZilStream" />
+        <meta name="twitter:description" content="Introducing ZilStream Premium Membership, Portfolio and STREAM token." />
+        <meta name="twitter:image" content="https://zilstream.com/images/zilstream-banner.png" />
 
-        <meta property="og:url" content={`${window.location.origin}/updates/announcing-premium-membership`} key="ogurl" />
-        <meta property="og:image" content={`${window.location.origin}/images/zilstream-banner.png`} key="ogimage" />
+        <meta property="og:url" content="https://zilstream.com/updates/announcing-premium-membership" key="ogurl" />
+        <meta property="og:image" content="https://zilstream.com/images/zilstream-banner.png" key="ogimage" />
         <meta property="og:site_name" content="ZilStream" key="ogsitename" />
         <meta property="og:title" content="Announcing Premium Membership | ZilStream" />
         <meta property="og:description" content="Introducing ZilStream Premium Membership, Portfolio and STREAM token." key="ogdesc" />
