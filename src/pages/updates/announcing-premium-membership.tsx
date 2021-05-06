@@ -9,7 +9,7 @@ function Portfolio() {
         <title>Announcing Premium Membership | ZilStream</title>
         <meta property="og:title" content="Terms and Conditions | ZilStream" />
       </Head>
-      <div className="max-w-3xl mx-auto pt-24 pb-12 text-center">
+      <div className="max-w-3xl mx-auto pt-20 pb-12 text-center">
         <Image 
           src="/images/zilstream-banner.png"
           alt="ZilStream"
@@ -17,7 +17,7 @@ function Portfolio() {
           height={385}
           className="rounded-lg"
         />
-        <h1 className="mb-1">Announcing Premium Membership</h1>
+        <h1 className="mt-20 mb-1">Announcing Premium Membership</h1>
       </div>
       <div className="bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-lg max-w-3xl mx-auto text-lg">
         <p className="mb-6">Since the launch of ZilStream investors in the Zilliqa ecosystem have had much better insight into the ZRC-2 market activity. The site has now been visited over 4,000,000 times. For that we’d like to thank the Zilliqa community for the warm welcome, it’s been wild ride and it’s only gonna get better.</p>
