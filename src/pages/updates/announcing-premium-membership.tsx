@@ -1,5 +1,6 @@
-import Head from 'next/head'
 import React from 'react'
+import Head from 'next/head'
+import Image from 'next/image'
 
 function Portfolio() {
   return (
@@ -8,7 +9,14 @@ function Portfolio() {
         <title>Announcing Premium Membership | ZilStream</title>
         <meta property="og:title" content="Terms and Conditions | ZilStream" />
       </Head>
-      <div className="pt-24 pb-12 text-center">
+      <div className="max-w-3xl mx-auto pt-24 pb-12 text-center">
+        <Image 
+          src="/images/zilstream-banner.png"
+          alt="ZilStream"
+          width={800}
+          height={385}
+          className="rounded-lg"
+        />
         <h1 className="mb-1">Announcing Premium Membership</h1>
       </div>
       <div className="bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-lg max-w-3xl mx-auto text-lg">
