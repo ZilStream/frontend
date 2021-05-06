@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 
-function Portfolio() {
+function PremiumMembership() {
   return (
     <>
       <Head>
@@ -78,4 +78,4 @@ function Portfolio() {
   )
 }
 
-export default Portfolio
+export default PremiumMembership

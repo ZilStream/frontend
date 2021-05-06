@@ -62,6 +62,10 @@ const Header = () => {
                 <Link href="/portfolio">
                   <a className={router.pathname === '/portfolio' ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
+
+                <Link href="/updates">
+                  <a className={router.pathname === '/updates' ? 'menu-item-active' : 'menu-item'}>Updates</a>
+                </Link>
               </div>
             </div>
           </div>
@@ -107,6 +111,10 @@ const Header = () => {
 
             <Link href="/portfolio">
               <a className={router.pathname === '/portfolio' ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Portfolio</a>
+            </Link>
+
+            <Link href="/updates">
+              <a className={router.pathname === '/updates' ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Updates</a>
             </Link>
 
             <button  
