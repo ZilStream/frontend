@@ -9,6 +9,8 @@ export type Operator = {
   // stake_amount: BigNumber
   // buffered_deposit: BigNumber
   comission: BigNumber
+  symbol: string
+  decimals: number
 }
 
 export interface StakingState {
@@ -17,6 +19,10 @@ export interface StakingState {
 
 export interface StakingInitProps {
   operators: Operator[]
+}
+
+export interface StakingAddProps {
+  operator: Operator
 }
 
 export interface StakingUpdateProps extends Partial<Operator> {

@@ -1,7 +1,7 @@
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux'
 import { StakingActionTypes } from './actions';
-import { StakingInitProps, StakingState, StakingUpdateProps } from './types';
+import { StakingAddProps, StakingInitProps, StakingState, StakingUpdateProps } from './types';
 
 const initialState: StakingState = {
   operators: []
@@ -19,6 +19,16 @@ const reducer = (state: StakingState = initialState, action: AnyAction) => {
       return {
         operators: [
           ...initProps.operators
+        ]
+      }
+
+    case StakingActionTypes.STAKING_ADD:
+      const addProps: StakingAddProps = payload
+      return {
+        ...state,
+        operators: [
+          ...state.operators,
+          addProps.operator
         ]
       }
 

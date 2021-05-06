@@ -1,5 +1,5 @@
 import { TokenInfo } from "store/types";
-import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest } from "utils/batch";
+import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
 export default async function getPortfolioState(walletAddress: string, tokens: TokenInfo[]): Promise<BatchResponse[]> {
@@ -18,6 +18,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(totalContributionsBatchRequest())
   batchRequests.push(stakingOperatorsBatchRequest())
   batchRequests.push(stakingDelegatorsBatchRequest())
+  batchRequests.push(carbonStakersBatchRequest('zil1qwlzmpfnk6xwm7rumj7zvas9fdq7gu0jmkv6ap'))
 
   return await sendBatchRequest(Network.MainNet, batchRequests)
 }

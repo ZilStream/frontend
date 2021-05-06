@@ -30,7 +30,7 @@ function PortfolioStaking(props: Props) {
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
               <th className="pl-3 pr-2 py-2 text-left">Operator</th>
-              <th className="px-2 py-2 text-right">ZIL</th>
+              <th className="px-2 py-2 text-right">Staked</th>
               <th className="px-2 py-2 text-right">USD</th>
             </tr>
           </thead>
@@ -42,9 +42,10 @@ function PortfolioStaking(props: Props) {
                     <span className="font-semibold">{operator.name}</span>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
+                    <span className="text-gray-600 dark:text-gray-400 font-medium mr-2">{operator.symbol}</span>
                     {moneyFormat(operator.staked, {
-                      symbol: 'ZIL',
-                      compression: 12,
+                      symbol: operator.symbol,
+                      compression: operator.decimals,
                       maxFractionDigits: 2,
                       showCurrency: false,
                     })}
@@ -52,7 +53,7 @@ function PortfolioStaking(props: Props) {
                   <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredOperators.length-1 ? 'rounded-br-lg' : ''}`}>
                     ${moneyFormat(operator.staked?.times(props.zilRate.rate), {
                       symbol: 'USD',
-                      compression: 12,
+                      compression: operator.decimals,
                       maxFractionDigits: 2,
                       showCurrency: false,
                     })}

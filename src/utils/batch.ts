@@ -10,7 +10,8 @@ export enum BatchRequestType {
   PoolBalance = "poolBalance",
   TotalContributions = "totalContributions",
   StakingOperators = "stakingOperators",
-  StakingDelegators = "stakingDelegators"
+  StakingDelegators = "stakingDelegators",
+  CarbonStakers = "carbonStakers"
 };
 
 const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
@@ -18,6 +19,9 @@ const zilSwapHash = fromBech32Address(zilSwapAddress)
 
 const stakingAddress = "zil1k7qwsz2m3w595u29je0dvv4nka62c5wwrp8r8p"
 const stakingHash = fromBech32Address(stakingAddress)
+
+const carbStakingAddress = "zil18r37xks4r3rj7rzydujcckzlylftdy2qerszne"
+const carbStakingHash = fromBech32Address(carbStakingAddress)
 
 interface BatchRequestItem {
   id: string;
@@ -112,8 +116,6 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
 /**
  * Create a `GetSmartContractSubState` request for the token pools.
  *
- * @param TokenInfo The token for which it's requested.
- * @param string The wallet address.
  * @returns BatchRequest
  */
  export const poolsBatchRequest = (): BatchRequest => {
@@ -136,8 +138,6 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
 /**
  * Create a `GetSmartContractSubState` request for the token pool total contributions.
  *
- * @param TokenInfo The token for which it's requested.
- * @param string The wallet address.
  * @returns BatchRequest
  */
  export const totalContributionsBatchRequest = (): BatchRequest => {
@@ -186,8 +186,6 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
 /**
  * Create a `GetSmartContractSubState` request for the staking operators.
  *
- * @param TokenInfo The token for which it's requested.
- * @param string The wallet address.
  * @returns BatchRequest
  */
  export const stakingOperatorsBatchRequest = (): BatchRequest => {
@@ -226,6 +224,29 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
         stakingHash.replace("0x", "").toLowerCase(),
         "ssn_deleg_amt",
         [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the carb stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const carbonStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.CarbonStakers,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        carbStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },
   };

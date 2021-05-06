@@ -60,20 +60,22 @@ function PortfolioPools(props: Props) {
                   </td>
                   <td className="px-2 py-2 font-normal text-right whitespace-nowrap">
                     <div>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium mr-2">{token.symbol}</span>
                       {moneyFormat(tokenAmount, {
                         symbol: token.symbol,
                         compression: token.decimals,
                         maxFractionDigits: 2,
                         showCurrency: false,
-                      })} <span className="text-gray-600 font-medium">{token.symbol}</span>
+                      })}
                     </div>
                     <div>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium mr-2">ZIL</span>
                       {moneyFormat(zilAmount, {
                         symbol: 'ZIL',
                         compression: 12,
                         maxFractionDigits: 2,
                         showCurrency: false,
-                      })} <span className="text-gray-600 font-medium">ZIL</span>
+                      })} 
                     </div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">

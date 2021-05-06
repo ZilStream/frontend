@@ -17,7 +17,7 @@ import PortfolioPools from 'components/PortfolioPools';
 import PortfolioOverview from 'components/PortfolioOverview';
 import getPortfolioState from 'lib/zilstream/getPortfolio';
 import { Operator, StakingState } from 'store/staking/types';
-import { init, StakingActionTypes } from 'store/staking/actions';
+import { StakingActionTypes } from 'store/staking/actions';
 import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
@@ -151,11 +151,13 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               operators.push({
                 name: ssnlist[address].arguments[3],
                 address: address,
-                comission: new BigNumber(ssnlist[address].arguments[6])
+                comission: new BigNumber(ssnlist[address].arguments[6]),
+                symbol: 'ZIL',
+                decimals: 12
               })
             })
 
-            dispatch(init({operators: operators}))
+            dispatch({ type: StakingActionTypes.STAKING_INIT, payload: { operators: operators }})
             return
           }
 
@@ -171,6 +173,21 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               }}) 
             })
             return
+          }
+
+          case BatchRequestType.CarbonStakers: {
+            if(result.result === null) return
+
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'Carbon',
+              address: '0x38e3e35a151c472f0c446f258c585f27d2b69140',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'CARB',
+              decimals: 8
+            }}})
           }
         }
       })
