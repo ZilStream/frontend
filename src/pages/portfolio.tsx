@@ -23,6 +23,8 @@ import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
 import CopyableAddress from 'components/CopyableAddress';
 import LoadingIndicator from 'components/LoadingIndicator';
+import { RefreshCw } from 'react-feather';
+import { useInterval } from 'utils/interval';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -45,6 +47,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => 
 
 const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [rates, setRates] = useState<SimpleRate[]>(latestRates)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
@@ -60,143 +63,153 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   useEffect(() => {
     if(walletAddress === '') { return }
 
-    setIsLoading(true)
-
-    async function fetchState(walletAddress: string) {
-      let batchResults = await getPortfolioState(walletAddress, tokenState.tokens)
-
-      batchResults.forEach(result => {
-        let token = result.request.token
-
-        switch(result.request.type) {
-          case BatchRequestType.Balance: {
-            dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-              address_bech32: token?.address_bech32,
-              balance: result.result.balance,
-              isZil: true,
-            }})
-            return
-          }
-
-          case BatchRequestType.TokenBalance: {
-            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
-            let balance: BigNumber | undefined;
-
-            if(result.result) {
-              balance = bnOrZero(result.result.balances[walletAddr])
-            }
-
-            dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-              address_bech32: token?.address_bech32,
-              balance: balance
-            }})
-            return
-          }
-
-          case BatchRequestType.Pools: {
-            let pools = result.result.pools
-            Object.keys(pools).forEach(address => {
-              let pool = pools[address]
-
-              const [x, y] = pool.arguments
-              const zilReserve = new BigNumber(x)
-              const tokenReserve = new BigNumber(y)
-              const exchangeRate = zilReserve.dividedBy(tokenReserve)
-
-              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
-                address: toBech32Address(address),
-                zilReserve,
-                tokenReserve,
-                exchangeRate
-              }})
-            })
-            return
-          }
-
-          case BatchRequestType.PoolBalance: {
-            let tokenAddress = fromBech32Address(token!.address_bech32).toLowerCase()
-            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
-
-            if(result.result === null) {
-              return
-            }
-
-            let balances = result.result.balances[tokenAddress]
-            let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
-            
-            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
-              address: token?.address_bech32,
-              userContribution
-            }})
-            return
-          }
-
-          case BatchRequestType.TotalContributions: {
-            let totalContributions = result.result.total_contributions
-            Object.keys(totalContributions).forEach(address => {
-              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
-                address: toBech32Address(address),
-                totalContribution: new BigNumber(totalContributions[address])
-              }})
-            })
-            return
-          }
-
-          case BatchRequestType.StakingOperators: {
-            let ssnlist: any[] = result.result.ssnlist
-            
-            var operators: Operator[] = []
-            Object.keys(ssnlist).forEach(ssnAddress => {
-              let address: any = ssnAddress
-              operators.push({
-                name: ssnlist[address].arguments[3],
-                address: address,
-                comission: new BigNumber(ssnlist[address].arguments[6]),
-                symbol: 'ZIL',
-                decimals: 12
-              })
-            })
-
-            dispatch({ type: StakingActionTypes.STAKING_INIT, payload: { operators: operators }})
-            return
-          }
-
-          case BatchRequestType.StakingDelegators: {
-            let ssnDelegators: any[] = result.result.ssn_deleg_amt
-            Object.keys(ssnDelegators).forEach(ssnAddress => {
-              let address: any = ssnAddress
-              let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
-              let staked = new BigNumber(amount)
-              dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
-                address: ssnAddress,
-                staked
-              }}) 
-            })
-            return
-          }
-
-          case BatchRequestType.CarbonStakers: {
-            if(result.result === null) return
-
-            let stakers: number[]  = Object.values(result.result.stakers)
-            if(stakers.length === 0) return
-
-            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
-              name: 'Carbon',
-              address: '0x38e3e35a151c472f0c446f258c585f27d2b69140',
-              staked: new BigNumber(stakers[0]),
-              symbol: 'CARB',
-              decimals: 8
-            }}})
-          }
-        }
-      })
-
-      setIsLoading(false)
-    }
-
     fetchState(walletAddress)
   }, [walletAddress])
+
+  useInterval(async () => {
+    fetchLatestRates()
+    fetchState(walletAddress)
+  }, 30000)
+
+  async function fetchLatestRates() {
+    const updatedRates = await getLatestRates()
+    setRates(updatedRates)
+  }
+
+  async function fetchState(walletAddress: string) {
+    setIsLoading(true)
+
+    let batchResults = await getPortfolioState(walletAddress, tokenState.tokens)
+
+    batchResults.forEach(result => {
+      let token = result.request.token
+
+      switch(result.request.type) {
+        case BatchRequestType.Balance: {
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+            address_bech32: token?.address_bech32,
+            balance: result.result.balance,
+            isZil: true,
+          }})
+          return
+        }
+
+        case BatchRequestType.TokenBalance: {
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+          let balance: BigNumber | undefined;
+
+          if(result.result) {
+            balance = bnOrZero(result.result.balances[walletAddr])
+          }
+
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+            address_bech32: token?.address_bech32,
+            balance: balance
+          }})
+          return
+        }
+
+        case BatchRequestType.Pools: {
+          let pools = result.result.pools
+          Object.keys(pools).forEach(address => {
+            let pool = pools[address]
+
+            const [x, y] = pool.arguments
+            const zilReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = zilReserve.dividedBy(tokenReserve)
+
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: toBech32Address(address),
+              zilReserve,
+              tokenReserve,
+              exchangeRate
+            }})
+          })
+          return
+        }
+
+        case BatchRequestType.PoolBalance: {
+          let tokenAddress = fromBech32Address(token!.address_bech32).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+
+          if(result.result === null) {
+            return
+          }
+
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+          
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+            address: token?.address_bech32,
+            userContribution
+          }})
+          return
+        }
+
+        case BatchRequestType.TotalContributions: {
+          let totalContributions = result.result.total_contributions
+          Object.keys(totalContributions).forEach(address => {
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: toBech32Address(address),
+              totalContribution: new BigNumber(totalContributions[address])
+            }})
+          })
+          return
+        }
+
+        case BatchRequestType.StakingOperators: {
+          let ssnlist: any[] = result.result.ssnlist
+          
+          var operators: Operator[] = []
+          Object.keys(ssnlist).forEach(ssnAddress => {
+            let address: any = ssnAddress
+            operators.push({
+              name: ssnlist[address].arguments[3],
+              address: address,
+              comission: new BigNumber(ssnlist[address].arguments[6]),
+              symbol: 'ZIL',
+              decimals: 12
+            })
+          })
+
+          dispatch({ type: StakingActionTypes.STAKING_INIT, payload: { operators: operators }})
+          return
+        }
+
+        case BatchRequestType.StakingDelegators: {
+          let ssnDelegators: any[] = result.result.ssn_deleg_amt
+          Object.keys(ssnDelegators).forEach(ssnAddress => {
+            let address: any = ssnAddress
+            let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
+            let staked = new BigNumber(amount)
+            dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
+              address: ssnAddress,
+              staked
+            }}) 
+          })
+          return
+        }
+
+        case BatchRequestType.CarbonStakers: {
+          if(result.result === null) return
+
+          let stakers: number[]  = Object.values(result.result.stakers)
+          if(stakers.length === 0) return
+
+          dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+            name: 'Carbon',
+            address: '0x38e3e35a151c472f0c446f258c585f27d2b69140',
+            staked: new BigNumber(stakers[0]),
+            symbol: 'CARB',
+            decimals: 8
+          }}})
+        }
+      }
+    })
+
+    setIsLoading(false)
+  }
 
   const connectZilPay = async () => {
     const zilPay = (window as any).zilPay
@@ -237,31 +250,35 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               <CopyableAddress address={walletAddress} />
             </div>
             <div>
-              {isLoading &&
+              {isLoading ? (
                 <LoadingIndicator />
-              }
+              ) : (
+                <button onClick={() => fetchState(walletAddress)}>
+                  <RefreshCw size={20} className="text-gray-500 hover:text-black dark:hover:text-white" />
+                </button>
+              )}
             </div>
           </div>
           <div className="max-w-full flex flex-col sm:flex-row items-start">
             <PortfolioOverview
               tokens={tokenState.tokens}
-              latestRates={latestRates}
+              latestRates={rates}
               operators={stakingState.operators}
             />
             <div className="max-w-full mt-6 sm:mt-0 flex-grow flex flex-col items-stretch">
               <PortfolioBalances 
                 walletAddress={walletAddress} 
                 tokens={tokenState.tokens} 
-                latestRates={latestRates} 
+                latestRates={rates} 
               />
               <PortfolioPools
                 tokens={tokenState.tokens}
-                zilRate={latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
+                zilRate={rates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
               />
               <PortfolioStaking
                 walletAddress={accountState.address}
                 operators={stakingState.operators}
-                zilRate={latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
+                zilRate={rates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
               />
             </div>
           </div>

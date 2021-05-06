@@ -9,8 +9,8 @@ function LoadingIndicator() {
   return (
     <Loader
       type="Oval"
-      width={30}
-      height={30}
+      width={20}
+      height={20}
       color={resolvedTheme === 'dark' ? '#fefefe' : '#333'}
     />
   )
