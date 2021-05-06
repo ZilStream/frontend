@@ -41,13 +41,17 @@ const Header = () => {
           </div>
           <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex-shrink-0 flex items-center">
-              <img className="block lg:hidden h-8 w-auto" src="/logo.svg" alt="ZilStream" />
-              
-              {resolvedTheme === 'dark' ? (
-                <img className="hidden lg:block h-8 w-auto" src="/logo-text-dark.svg" />
-              ) : (
-                <img className="hidden lg:block h-8 w-auto" src="/logo-text.svg" />
-              )}
+              <Link href="/">
+                <a>
+                  <img className="block lg:hidden h-8 w-auto" src="/logo.svg" alt="ZilStream" />
+                  
+                  {resolvedTheme === 'dark' ? (
+                    <img className="hidden lg:block h-8 w-auto" src="/logo-text-dark.svg" />
+                  ) : (
+                    <img className="hidden lg:block h-8 w-auto" src="/logo-text.svg" />
+                  )}
+                </a>
+              </Link>
             </div>
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
