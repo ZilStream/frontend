@@ -1,3 +1,4 @@
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
 import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
@@ -46,8 +47,15 @@ function PortfolioOverview(props: Props) {
   
 
   var stakingBalance = props.operators.reduce((sum, current) => {
-    let staked = toBigNumber(current.staked, {compression: 12})
-    return sum.plus(staked)
+    if(current.symbol === 'ZIL') {
+      let staked = toBigNumber(current.staked, {compression: 12})
+      return sum.plus(staked)
+    } else {
+      let staked = toBigNumber(current.staked, {compression: current.decimals})
+      let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.symbol == current.symbol)[0].rate : 0
+      return sum.plus(staked.times(rate))
+    }
+    
   }, new BigNumber(0))
   totalBalance = totalBalance.plus(stakingBalance.shiftedBy(-12))  
 
