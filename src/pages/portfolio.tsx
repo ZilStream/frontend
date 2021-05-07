@@ -118,6 +118,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
             const zilReserve = new BigNumber(x)
             const tokenReserve = new BigNumber(y)
             const exchangeRate = zilReserve.dividedBy(tokenReserve)
+            const userContribution = new BigNumber(0)
 
             dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
               address: toBech32Address(address),
@@ -134,6 +135,11 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if(result.result === null) {
+            let userContribution = new BigNumber(0)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: token?.address_bech32,
+              userContribution
+            }})
             return
           }
 
