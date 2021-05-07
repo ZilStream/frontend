@@ -52,16 +52,15 @@ function PortfolioOverview(props: Props) {
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
-      <BalanceDonut tokens={props.tokens} operators={props.operators} latestRates={props.latestRates} />
-      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2">Total balance</div>
-      <div className="flex items-start">
-        <div className="flex-grow flex items-center">
-          <div className="font-semibold text-xl">
-            ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
-          </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm">Current balance</div>
+      <div className="flex-grow flex flex-col items-start mb-6">
+        <div className="font-semibold text-2xl">
+          ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
         </div>
+        <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
       </div>
+
+      <BalanceDonut tokens={props.tokens} operators={props.operators} latestRates={props.latestRates} />
 
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Holding balance</div>
       <div className="flex items-start">
