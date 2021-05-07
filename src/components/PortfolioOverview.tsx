@@ -55,9 +55,8 @@ function PortfolioOverview(props: Props) {
       let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.symbol == current.symbol)[0].rate : 0
       return sum.plus(staked.times(rate))
     }
-    
   }, new BigNumber(0))
-  totalBalance = totalBalance.plus(stakingBalance.shiftedBy(-12))  
+  totalBalance = totalBalance.plus(stakingBalance)  
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
