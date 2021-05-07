@@ -7,3 +7,9 @@ export interface Rate {
   close: number
   token_id: number
 }
+
+export interface SimpleRate {
+  symbol: string
+  address: string
+  rate: number
+}

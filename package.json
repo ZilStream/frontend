@@ -8,13 +8,22 @@
     "start": "next start"
   },
   "dependencies": {
+    "@tanem/react-nprogress": "^3.0.64",
     "@tippyjs/react": "^4.2.4",
+    "@zilliqa-js/zilliqa": "^2.2.1",
+    "apexcharts": "^3.26.1",
+    "bignumber.js": "^9.0.1",
     "lightweight-charts": "^3.3.0",
     "next": "10.0.7",
+    "next-redux-wrapper": "^6.0.2",
     "next-themes": "^0.0.12",
     "react": "17.0.1",
+    "react-apexcharts": "^1.3.9",
     "react-dom": "17.0.1",
-    "react-feather": "^2.0.9"
+    "react-feather": "^2.0.9",
+    "react-loader-spinner": "^4.0.0",
+    "react-redux": "^7.2.3",
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",

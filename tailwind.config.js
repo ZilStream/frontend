@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       colors: {
         primary: '#29ccc4',
-        primaryDark: '#2FBAB3',
+        primaryDark: '#2fbab3',
       },
       spacing: {
         '128': '32rem',
@@ -14,7 +14,10 @@ module.exports = {
     },
   },
   variants: {
-    borderWidth: ['first', 'last'],
+    extend: {
+      borderWidth: ['first', 'last'],
+      borderRadius: ['first', 'last']
+    }
   },
   plugins: [],
   corePlugins: {

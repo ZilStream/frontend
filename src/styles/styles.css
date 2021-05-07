@@ -53,6 +53,22 @@ body, #__next {
     margin: 0 auto;
   }
 
+  .menu-item {
+    @apply text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium;
+  }
+
+  .menu-item-active {
+    @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white px-3 py-2 rounded-md text-sm font-medium;
+  }
+
+  .mobile-menu-item {
+    @apply text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium;
+  }
+
+  .mobile-menu-item-active {
+    @apply bg-primary text-white block px-3 py-2 rounded-md text-base font-medium;
+  }
+
   .chart-btn {
     @apply py-1 px-2 rounded-lg text-sm mr-1 focus:outline-none dark:hover:bg-gray-600 dark:hover:text-gray-400;
   }
@@ -93,6 +109,10 @@ body, #__next {
 
   .negative-change {
     @apply text-red-600 dark:text-red-500;
+  }
+
+  .zilstream-table {
+    @apply min-w-full;
   }
 
   .zilstream-table td {
