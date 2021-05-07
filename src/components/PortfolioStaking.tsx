@@ -7,11 +7,13 @@ import EmptyRow from './EmptyRow'
 interface Props {
   walletAddress: string,
   operators: Operator[],
-  zilRate: SimpleRate
+  latestRates: SimpleRate[]
 }
 
 function PortfolioStaking(props: Props) {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+
+  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]
   
   let filteredOperators = props.operators.filter(operator => {
     return operator.staked !== undefined && !toBigNumber(operator.staked).isZero()
@@ -36,6 +38,8 @@ function PortfolioStaking(props: Props) {
           </thead>
           <tbody>
             {filteredOperators.map((operator, index) => {
+              let lastRate = props.latestRates.filter(rate => rate.symbol == operator.symbol)[0]
+
               return (
                 <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === filteredOperators.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -51,12 +55,26 @@ function PortfolioStaking(props: Props) {
                     })}
                   </td>
                   <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredOperators.length-1 ? 'rounded-br-lg' : ''}`}>
-                    ${moneyFormat(operator.staked?.times(props.zilRate.rate), {
-                      symbol: 'USD',
-                      compression: operator.decimals,
-                      maxFractionDigits: 2,
-                      showCurrency: false,
-                    })}
+                    {operator.symbol === 'ZIL' ? (
+                      <>
+                        ${moneyFormat(operator.staked?.times(zilRate.rate), {
+                          symbol: 'USD',
+                          compression: operator.decimals,
+                          maxFractionDigits: 2,
+                          showCurrency: false,
+                        })}
+                      </>
+                    ): (
+                      <>
+                        ${moneyFormat(operator.staked?.times(lastRate.rate).times(zilRate.rate), {
+                          symbol: 'USD',
+                          compression: operator.decimals,
+                          maxFractionDigits: 2,
+                          showCurrency: false,
+                        })}
+                      </>
+                    )}
+                    
                   </td>
                 </tr>
               )

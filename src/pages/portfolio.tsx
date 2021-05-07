@@ -284,7 +284,7 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
               <PortfolioStaking
                 walletAddress={accountState.address}
                 operators={stakingState.operators}
-                zilRate={rates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]}
+                latestRates={rates}
               />
             </div>
           </div>
