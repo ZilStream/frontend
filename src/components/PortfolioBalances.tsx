@@ -53,18 +53,18 @@ function PortfolioBalances(props: Props) {
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
-            <col style={{width: '276px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '240px', minWidth: 'auto'}} />
+            <col style={{width: '120px', minWidth: 'auto'}} />
+            <col style={{width: '120px', minWidth: 'auto'}} />
+            <col style={{width: '120px', minWidth: 'auto'}} />
+            <col style={{width: '80px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
               <th className="pl-4 pr-2 py-2 text-left">Token</th>
+              <th className="px-2 py-2 text-right">Price</th>
               <th className="px-2 py-2 text-right">Balance</th>
-              <th className="px-2 py-2 text-right">ZIL</th>
-              <th className="px-2 py-2 text-right">USD</th>
+              <th className="px-2 py-2 text-right">Holdings</th>
               <th className="px-2 py-2 text-right">Share</th>
             </tr>
           </thead>
@@ -92,6 +92,14 @@ function PortfolioBalances(props: Props) {
                     </Link>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
+                    {moneyFormat(rate, {
+                      symbol: 'ZIL',
+                      compression: 0,
+                      maxFractionDigits: 2,
+                      showCurrency: false,
+                    })}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
                     {moneyFormat(token.balance, {
                       symbol: token.symbol,
                       compression: token.decimals,
@@ -99,24 +107,26 @@ function PortfolioBalances(props: Props) {
                       showCurrency: false,
                     })}
                   </td>
-                  <td className="px-2 py-2 font-normal text-right">
-                    <FlashChange value={zilBalance}>
-                      {token.isZil ? (
-                        <span>{moneyFormat(token.balance, {
-                          symbol: token.symbol,
-                          compression: token.decimals,
-                          maxFractionDigits: 2,
-                          showCurrency: false,
-                        })}</span>
-                      ) : (
-                        <span>{moneyFormat(zilBalance, {compression: 0, maxFractionDigits: 2})}</span>
-                      )}
-                    </FlashChange>
-                  </td>
-                  <td className="px-2 py-2 font-normal text-right">
-                    <FlashChange value={usdBalance}>
-                      <span>${moneyFormat(usdBalance, {compression: 0, maxFractionDigits: 2})}</span>
-                    </FlashChange>
+                  <td className="px-2 py-2 font-normal text-right whitespace-nowrap">
+                    <div>
+                      <FlashChange value={usdBalance}>
+                        <span>${moneyFormat(usdBalance, {compression: 0, maxFractionDigits: 2})}</span>
+                      </FlashChange>
+                    </div>
+                    <div className="text-gray-500">
+                      <FlashChange value={zilBalance}>
+                        {token.isZil ? (
+                          <span>{moneyFormat(token.balance, {
+                            symbol: token.symbol,
+                            compression: token.decimals,
+                            maxFractionDigits: 2,
+                            showCurrency: false,
+                          })}</span>
+                        ) : (
+                          <span>{moneyFormat(zilBalance, {compression: 0, maxFractionDigits: 2})}</span>
+                        )}
+                      </FlashChange> ZIL
+                    </div>
                   </td>
                   <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-br-lg' : ''}`}>
                     {moneyFormat(share, {

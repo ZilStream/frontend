@@ -91,7 +91,6 @@ function BalanceDonut(props: Props) {
   }, new BigNumber(0))
 
   let series = filteredTokens.map(token => {
-    console.log(token.symbol, token.totalBalance.toNumber())
     return token.totalBalance.toNumber()
   })
 

@@ -6,6 +6,7 @@ import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
+import FlashChange from './FlashChange'
 
 interface Props {
   tokens: TokenInfo[]
@@ -55,7 +56,9 @@ function PortfolioOverview(props: Props) {
       <div className="text-gray-600 dark:text-gray-400 text-sm">Current balance</div>
       <div className="flex-grow flex flex-col items-start mb-6">
         <div className="font-semibold text-2xl">
-          ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          <FlashChange value={totalBalance.times(zilRate).toNumber()}>
+            ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          </FlashChange>
         </div>
         <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
       </div>
