@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
+import { prependOnceListener } from 'node:process'
 import React from 'react'
-import { TokenInfo } from 'store/types'
+import { Operator, TokenInfo } from 'store/types'
 import { SimpleRate } from 'types/rate.interface'
+import { BIG_ZERO } from 'utils/strings'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 
 const ReactApexChart = dynamic(
@@ -13,46 +15,84 @@ const ReactApexChart = dynamic(
 
 interface Props {
   tokens: TokenInfo[]
+  operators: Operator[]
   latestRates: SimpleRate[]
 }
 
 function BalanceDonut(props: Props) {
   const {theme, setTheme, resolvedTheme} = useTheme()
 
-  let filteredTokens = props.tokens.filter(token => {
-    return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
+  interface TokenTotal {
+    name: string
+    symbol: string
+    address: string
+    isZil: boolean
+    totalBalance: BigNumber
+  }
+  var tokenTotals: TokenTotal[] = []
+  var zilTotal = new BigNumber(0)
+
+  props.tokens.forEach(token => {
+    let balance = toBigNumber(token.balance).shiftedBy(-token.decimals)
+    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
+    var total = new BigNumber(0)
+
+    if(token.isZil) {
+      zilTotal = zilTotal.plus(balance)
+    } else {  
+      total = total.plus(balance.times(rate))
+    }
+
+    if(token.pool && token.pool.userContribution) {
+      let contributionPercentage = token.pool.userContribution.dividedBy(token.pool.totalContribution).times(100)
+      let contributionShare = contributionPercentage.shiftedBy(-2)
+      let zilAmount = contributionShare?.times(token.pool?.zilReserve ?? BIG_ZERO)
+      let tokenAmount = contributionShare.times(token.pool?.tokenReserve ?? BIG_ZERO)
+
+      total = total.plus(tokenAmount.times(rate).shiftedBy(-token.decimals))
+      zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
+    }
+
+    if(!token.isZil) {
+      tokenTotals.push({
+        name: token.name,
+        symbol: token.symbol,
+        address: token.address_bech32,
+        isZil: false,
+        totalBalance: total
+      })
+    }
   })
 
-  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+  props.operators.forEach(operator => {
+    let staked = toBigNumber(operator.staked)
+    zilTotal = zilTotal.plus(staked.shiftedBy(-12))
+  })
+
+  tokenTotals.push({
+    name: "Zilliqa",
+    symbol: "ZIL",
+    address: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
+    isZil: true,
+    totalBalance: zilTotal
+  })
+
+  let filteredTokens = tokenTotals.filter(token => {
+    return token.totalBalance !== null && token.totalBalance !== undefined && !toBigNumber(token.totalBalance).isZero()
+  })
 
   filteredTokens.sort((a, b) => {
-    const priorTokenRate = props.latestRates.filter(rate => rate.address == a.address_bech32)[0]
-    const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
-    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(priorTokenRate.rate)
-    const priorUsdRate = priorZilRate.times(zilRate)
-
-    const nextTokenRate = props.latestRates.filter(rate => rate.address == b.address_bech32)[0]
-    const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
-    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(nextTokenRate.rate)
-    const nextUsdRate = nextZilRate.times(zilRate)
-    
-    return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
+    return (a.totalBalance.isLessThan(b.totalBalance)) ? 1 : -1
   })
 
-  let totalBalance = props.tokens.reduce((sum, current) => {
-    let balance = toBigNumber(current.balance, {compression: current.decimals})
-
-    if(current.isZil) return sum.plus(balance)
-
-    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == current.address_bech32)[0].rate : 0
-    return sum.plus(balance.times(rate))
+  let totalBalance = filteredTokens.reduce((sum, current) => {
+    let balance = toBigNumber(current.totalBalance)
+    return sum.plus(balance)
   }, new BigNumber(0))
 
   let series = filteredTokens.map(token => {
-    let balance = toBigNumber(token.balance)
-    if(token.isZil) return balance.shiftedBy(-token.decimals).toNumber()
-    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
-    return balance.times(rate).shiftedBy(-token.decimals).toNumber()
+    console.log(token.symbol, token.totalBalance.toNumber())
+    return token.totalBalance.toNumber()
   })
 
   let options: ApexCharts.ApexOptions = {

@@ -18,7 +18,9 @@ function PortfolioOverview(props: Props) {
 
   let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
 
-  var totalBalance = props.tokens.reduce((sum, current) => {
+  var totalBalance = new BigNumber(0)
+
+  var holdingBalance = props.tokens.reduce((sum, current) => {
     let balance = toBigNumber(current.balance, {compression: current.decimals})
 
     if(current.isZil) return sum.plus(balance)
@@ -26,6 +28,7 @@ function PortfolioOverview(props: Props) {
     let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == current.address_bech32)[0].rate : 0
     return sum.plus(balance.times(rate))
   }, new BigNumber(0))
+  totalBalance = totalBalance.plus(holdingBalance)
 
   var liquidityBalance = props.tokens.reduce((sum, current) => {
     if(!current.pool || !current.pool.userContribution)  return sum 
@@ -49,7 +52,7 @@ function PortfolioOverview(props: Props) {
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
-      <BalanceDonut tokens={props.tokens} latestRates={props.latestRates} />
+      <BalanceDonut tokens={props.tokens} operators={props.operators} latestRates={props.latestRates} />
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2">Total balance</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
@@ -58,9 +61,16 @@ function PortfolioOverview(props: Props) {
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
-        {/* <div className="bg-green-500 py-1 px-2 text-sm font-semibold rounded-lg">
-          +5%
-        </div> */}
+      </div>
+
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Holding balance</div>
+      <div className="flex items-start">
+        <div className="flex-grow flex items-center">
+          <div className="font-medium text-xl">
+            ${moneyFormat(holdingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          </div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(holdingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+        </div>
       </div>
 
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Liquidity Pools</div>
