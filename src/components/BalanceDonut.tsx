@@ -53,6 +53,13 @@ function BalanceDonut(props: Props) {
       zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
     }
 
+    props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
+      if(operator.symbol !== 'ZIL') {
+        let staked = toBigNumber(operator.staked, {compression: operator.decimals})
+        total = total.plus(staked.times(rate))
+      }
+    })
+
     if(!token.isZil) {
       tokenTotals.push({
         name: token.name,
@@ -65,8 +72,10 @@ function BalanceDonut(props: Props) {
   })
 
   props.operators.forEach(operator => {
-    let staked = toBigNumber(operator.staked)
-    zilTotal = zilTotal.plus(staked.shiftedBy(-12))
+    if(operator.symbol === 'ZIL') {
+      let staked = toBigNumber(operator.staked, {compression: 12})
+      zilTotal = zilTotal.plus(staked)
+    }
   })
 
   tokenTotals.push({
