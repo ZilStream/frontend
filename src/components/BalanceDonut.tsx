@@ -104,6 +104,7 @@ function BalanceDonut(props: Props) {
 
   let options: ApexCharts.ApexOptions = {
     chart: {
+      id: `donut-${Math.random()}`,
       type: 'donut',
     },
     labels: filteredTokens.map(token => token.symbol),
