@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { AccountState, RootState, TokenState } from 'store/types';
 import {wrapper} from 'store/store'
 import { TokenActionTypes } from 'store/token/actions';
-import { BatchRequestType } from 'utils/batch';
+import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch';
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto';
 import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings';
@@ -25,6 +25,7 @@ import CopyableAddress from 'components/CopyableAddress';
 import LoadingIndicator from 'components/LoadingIndicator';
 import { RefreshCw } from 'react-feather';
 import { useInterval } from 'utils/interval';
+import { Network } from 'utils/network';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -47,6 +48,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => 
 
 const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [loadedStaking, setLoadedStaking] = useState<boolean>(false)
   const [rates, setRates] = useState<SimpleRate[]>(latestRates)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
@@ -66,6 +68,12 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
     fetchState(walletAddress)
   }, [walletAddress])
 
+  useEffect(() => {
+    if(loadedStaking == true || stakingState.operators.length === 0) return
+    setLoadedStaking(true)
+    fetchStakingState()
+  }, [stakingState])
+
   useInterval(async () => {
     fetchLatestRates()
     fetchState(walletAddress)
@@ -79,8 +87,22 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   async function fetchState(walletAddress: string) {
     setIsLoading(true)
 
-    let batchResults = await getPortfolioState(walletAddress, tokenState.tokens)
+    let batchResults = await getPortfolioState(walletAddress, tokenState.tokens, stakingState.operators)
+    await processBatchResults(batchResults)
 
+    setIsLoading(false)
+  }
+
+  async function fetchStakingState() {
+    const batchRequests: any[] = [];
+    stakingState.operators.forEach(operator => {
+      batchRequests.push(stakingDelegatorsBatchRequest(operator, walletAddress))
+    })
+    let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
+    await processBatchResults(batchResults)
+  }
+
+  async function processBatchResults(batchResults: BatchResponse[]) {
     batchResults.forEach(result => {
       let token = result.request.token
 
@@ -184,16 +206,18 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
         }
 
         case BatchRequestType.StakingDelegators: {
-          let ssnDelegators: any[] = result.result.ssn_deleg_amt
-          Object.keys(ssnDelegators).forEach(ssnAddress => {
-            let address: any = ssnAddress
-            let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
-            let staked = new BigNumber(amount)
-            dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
-              address: ssnAddress,
-              staked
-            }}) 
-          })
+          if(result.result !== null) {
+            let ssnDelegators: any[] = result.result.ssn_deleg_amt
+            Object.keys(ssnDelegators).forEach(ssnAddress => {
+              let address: any = ssnAddress
+              let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
+              let staked = new BigNumber(amount)
+              dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
+                address: ssnAddress,
+                staked
+              }}) 
+            })
+          }
           return
         }
 
@@ -213,8 +237,6 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
         }
       }
     })
-
-    setIsLoading(false)
   }
 
   const connectZilPay = async () => {

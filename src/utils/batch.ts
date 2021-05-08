@@ -1,5 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
-import { TokenInfo } from "store/types";
+import { Operator, TokenInfo } from "store/types";
 import { Network } from "./network";
 
 export enum BatchRequestType {
@@ -208,11 +208,11 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
 /**
  * Create a `GetSmartContractSubState` request for the staking delegators.
  *
- * @param TokenInfo The token for which it's requested.
+ * @param Operator The operator for which it's requested.
  * @param string The wallet address.
  * @returns BatchRequest
  */
- export const stakingDelegatorsBatchRequest = (): BatchRequest => {
+ export const stakingDelegatorsBatchRequest = (operator: Operator, walletAddress: string): BatchRequest => {
   return {
     type: BatchRequestType.StakingDelegators,
     token: undefined,
@@ -223,7 +223,10 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
       params: [
         stakingHash.replace("0x", "").toLowerCase(),
         "ssn_deleg_amt",
-        [],
+        [
+          operator.address,
+          fromBech32Address(walletAddress).toLowerCase()
+        ],
       ],
     },
   };
