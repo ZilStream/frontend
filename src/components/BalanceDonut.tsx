@@ -94,14 +94,13 @@ function BalanceDonut(props: Props) {
     return (a.totalBalance.isLessThan(b.totalBalance)) ? 1 : -1
   })
 
-  let totalBalance = filteredTokens.reduce((sum, current) => {
-    let balance = toBigNumber(current.totalBalance)
-    return sum.plus(balance)
-  }, new BigNumber(0))
-
   let series = filteredTokens.map(token => {
     return token.totalBalance.toNumber()
   })
+
+  let totalBalance = series.reduce((sum, current) => {
+    return sum + current
+  }, 0)
 
   let options: ApexCharts.ApexOptions = {
     chart: {
