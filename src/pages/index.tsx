@@ -51,7 +51,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
       setRates(newRates)
       setSecondsSinceUpdate(0)
     },
-    50000
+    30000
   )
 
   useInterval(() => {
