@@ -11,6 +11,7 @@ import getToken from 'lib/zilstream/getToken'
 import getRatesForToken from 'lib/zilstream/getRatesForToken'
 import TokenIcon from 'components/TokenIcon'
 import Score from 'components/Score'
+import { Reward } from 'types/token.interface'
 
 const Candles = dynamic(
   () => import('components/Candles'),
@@ -162,20 +163,42 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
           <div className="text-gray-700 dark:text-gray-400 text-sm">Volume (24h)</div>
           <div className="font-medium">{currencyFormat(token.market_data.daily_volume)}</div>
 
-          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Volume / Market Cap</div>
-          <div className="font-medium">{numberFormat(token.market_data.daily_volume / token.market_data.market_cap, 3)}</div>
+          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">All Time High</div>
+          <div className="font-medium">{currencyFormat(token.market_data.ath, '')} ZIL</div>
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
-          <div className="text-gray-700 dark:text-gray-400 text-sm">All Time High</div>
-          <div className="font-medium">{currencyFormat(token.market_data.ath, '')} ZIL</div>
-
-          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity</div>
+          <div className="text-gray-700 dark:text-gray-400 text-sm">Liquidity</div>
           <div className="font-medium">{currencyFormat(token.market_data.current_liquidity)}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
+
+          {token.rewards.length > 0 ? (
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity Rewards</div>
+              <div>
+                {token.rewards.map((reward: Reward) => {
+                  return (
+                    <div className="text-sm flex items-center">
+                      <div className="w-4 h-4 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
+                      <span className="mr-1">{cryptoFormat(reward.amount)}</span>
+                      <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
+                      <span>/ week</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
+              <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
+            </>
+          )}
         </div>
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
+          
+          
         </div>
       </div>
       

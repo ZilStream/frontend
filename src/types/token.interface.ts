@@ -32,6 +32,7 @@ export interface TokenDetail {
   rate: number
   rate_usd: number
   market_data: MarketData
+  rewards: Reward[]
 }
 
 export interface MarketData {
@@ -52,4 +53,15 @@ export interface MarketData {
   change_percentage_7d: number
   change_percentage_14d: number
   change_percentage_30d: number
+}
+
+export interface Reward {
+  type: string
+  amount: number
+  max_individual_amount: number
+  reward_token_address: string
+  reward_token_symbol: string
+  frequency: number
+  frequency_type: string
+  excluded_addresses: string
 }

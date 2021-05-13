@@ -13,7 +13,9 @@ export function numberFormat(num: number, decimals: number = 2): string {
 }
 
 export function cryptoFormat(num: number): string {
-  if(num < 0.1) {
+  if(num % 1 === 0) {
+    return num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  } else if(num < 0.1) {
     return num.toFixed(5)
   }
   return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
