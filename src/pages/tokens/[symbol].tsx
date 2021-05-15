@@ -88,7 +88,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
             {currencyFormat(token.rate_usd)}
             <div className="bg-gray-300 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
               <div className={`font-medium ${token.market_data.change_24h >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_24h)} %
+                {numberFormat(token.market_data.change_percentage_24h)}%
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
             <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium">
               <div className="mr-2 text-gray-500">7D</div>
               <div className={`${token.market_data.change_percentage_7d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_7d)} %
+                {numberFormat(token.market_data.change_percentage_7d)}%
               </div>
             </div>
           }
@@ -136,7 +136,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
             <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
               <div className="mr-2 text-gray-500">14D</div>
               <div className={`${token.market_data.change_percentage_14d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_14d)} %
+                {numberFormat(token.market_data.change_percentage_14d)}%
               </div>
             </div>
           }
@@ -145,7 +145,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
             <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
               <div className="mr-2 text-gray-500">30D</div>
               <div className={`${token.market_data.change_percentage_30d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_30d)} %
+                {numberFormat(token.market_data.change_percentage_30d)}%
               </div>
             </div>
           }
@@ -177,8 +177,8 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
               <div>
                 {token.rewards.map((reward: Reward) => {
                   return (
-                    <div className="text-sm flex items-center">
-                      <div className="w-4 h-4 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
+                    <div className="text-sm flex items-center whitespace-nowrap">
+                      <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
                       <span className="mr-1">{cryptoFormat(reward.amount)}</span>
                       <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
                       <span>/ week</span>
