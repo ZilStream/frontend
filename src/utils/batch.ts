@@ -17,7 +17,7 @@ export enum BatchRequestType {
 const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
 const zilSwapHash = fromBech32Address(zilSwapAddress)
 
-const stakingAddress = "zil1k7qwsz2m3w595u29je0dvv4nka62c5wwrp8r8p"
+const stakingAddress = "zil15lr86jwg937urdeayvtypvhy6pnp6d7p8n5z09"
 const stakingHash = fromBech32Address(stakingAddress)
 
 const carbStakingAddress = "zil18r37xks4r3rj7rzydujcckzlylftdy2qerszne"
