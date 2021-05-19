@@ -2,6 +2,7 @@ import TokenIcon from 'components/TokenIcon'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import React from 'react'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
@@ -64,11 +65,15 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
-                    <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
-                      <TokenIcon address={token.address} />
-                    </div>
-                    <span className="hidden lg:inline">{token.name}</span>
-                    <span className="lg:font-normal ml-2 lg:text-gray-500">{token.symbol}</span>
+                   <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+                      <a className="flex items-center">
+                        <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
+                          <TokenIcon address={token.address} />
+                        </div>
+                        <span className="hidden lg:inline">{token.name}</span>
+                        <span className="lg:font-normal ml-2 lg:text-gray-500">{token.symbol}</span>
+                      </a>
+                    </Link>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     <div>{cryptoFormat(token.zil_reserve)} <span className="font-medium">ZIL</span></div>
