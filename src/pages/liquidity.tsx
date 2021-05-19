@@ -62,7 +62,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           <tbody>
             {tokens.map((token: any, index: number) => {
               return (
-                <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
                     <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
                       <TokenIcon address={token.address} />
