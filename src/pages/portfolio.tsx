@@ -26,6 +26,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import { RefreshCw } from 'react-feather';
 import { useInterval } from 'utils/interval';
 import { Network } from 'utils/network';
+import ConnectWalletButton from 'components/ConnectWalletButton';
 
 interface Props {
   latestRates: SimpleRate[]
@@ -264,6 +265,22 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
     localStorage.setItem('zilpay', 'true')
   }
 
+  const connectZeeves = async () => {
+    const zeeves = (window as any).Zeeves
+    
+    if (!zeeves) {
+      throw new Error('Zeeves is not supported');
+    }
+      
+    //authentication in Zeeves
+    const walletInfo = await zeeves.getSession();
+  
+    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MainNet });
+    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletInfo.bech32 });
+
+    localStorage.setItem('zilpay', 'false');
+  }
+
   return (
     <>
       <Head>
@@ -312,7 +329,10 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
           </div>
         </>
       ) : (
-        <PortfolioOnboard onConnect={() => connectZilPay()} />
+        <PortfolioOnboard>
+          <ConnectWalletButton walletName={'ZilPay'} connectWallet={() => connectZilPay()}></ConnectWalletButton>
+          <ConnectWalletButton walletName={'Zeeves'} connectWallet={() => connectZeeves()}></ConnectWalletButton>
+        </PortfolioOnboard>
       )}
     </>
   )

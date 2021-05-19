@@ -5,6 +5,7 @@ import '../styles/tailwind.css'
 import '../styles/styles.css'
 import Layout from '../components/Layout'
 import { ThemeProvider } from 'next-themes'
+import dynamic from 'next/dynamic'
 import { useDispatch } from 'react-redux'
 import { AccountActionTypes } from 'store/account/actions'
 
@@ -37,6 +38,11 @@ const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => {
       console.error(e)
     }
   }, [])
+
+  if (typeof(window) !== 'undefined') {
+    // @ts-ignore
+    import('zeeves-auth-sdk-js');
+  }
 
   return (
     <ThemeProvider defaultTheme="system" enableSystem={true} attribute="class">
