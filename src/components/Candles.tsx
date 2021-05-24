@@ -139,7 +139,7 @@ function Candles(props: Props) {
     } else if(currentInterval == "4h") {
       numberOfDays = 12
     } else if(currentInterval == "1d") {
-      numberOfDays = 90
+      numberOfDays = 60
     }
 
     chart?.timeScale().setVisibleRange({
@@ -193,10 +193,10 @@ function Candles(props: Props) {
 
         <span className="uppercase text-xs text-gray-500 mx-3">Time</span>
         <button 
-          onClick={() => setChartToInterval('1d', '8w')}
+          onClick={() => setChartToInterval('1d', '12w')}
           className={`chart-btn ${(currentInterval == '1d') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>1D</button>
         <button 
-          onClick={() => setChartToInterval('4h', '4w')}
+          onClick={() => setChartToInterval('4h', '6w')}
           className={`chart-btn ${(currentInterval == '4h') ? 'chart-btn-selected' : 'chart-btn-unselected'}`}>4H</button>
         <button 
           onClick={() => setChartToInterval('1h', '2w')}
