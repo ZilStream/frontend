@@ -109,12 +109,12 @@ function Candles(props: Props) {
   }, [resolvedTheme])
 
   useEffect(() => {
-    getRatesForToken(props.token.symbol, currentInterval, currentPeriod).then(data => {
+    getRatesForToken(props.token.symbol, currentInterval, currentPeriod, currency).then(data => {
       setRates(data)
       series?.setData(prepareData(data))
       setVisibleRange()
     })
-  }, [currentInterval, currentPeriod])
+  }, [currentInterval, currentPeriod, currency])
 
   function setSizeListener() {
     window.addEventListener('resize', updateSize)
@@ -139,7 +139,7 @@ function Candles(props: Props) {
     } else if(currentInterval == "4h") {
       numberOfDays = 12
     } else if(currentInterval == "1d") {
-      numberOfDays = 60
+      numberOfDays = 90
     }
 
     chart?.timeScale().setVisibleRange({
@@ -154,23 +154,13 @@ function Candles(props: Props) {
     if(!Array.isArray(providedRates)) { return [] }
     
     providedRates.forEach(rate => {
-      if(currency === 'USD') {
-        data.push({
-          time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
-          low: rate.low * props.zilRate.value,
-          high: rate.high * props.zilRate.value,
-          open: rate.open * props.zilRate.value,
-          close: rate.close * props.zilRate.value,
-        })
-      } else {
-        data.push({
-          time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
-          low: rate.low,
-          high: rate.high,
-          open: rate.open,
-          close: rate.close,
-        })
-      }
+      data.push({
+        time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
+        low: rate.low,
+        high: rate.high,
+        open: rate.open,
+        close: rate.close,
+      })
     })
 
     data.sort((a,b) => (a.time > b.time) ? 1 : -1)
