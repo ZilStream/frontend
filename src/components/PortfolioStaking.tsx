@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import React from 'react'
 import { Operator } from 'store/staking/types'
 import { SimpleRate } from 'types/rate.interface'
@@ -17,6 +18,12 @@ function PortfolioStaking(props: Props) {
   
   let filteredOperators = props.operators.filter(operator => {
     return operator.staked !== undefined && !toBigNumber(operator.staked).isZero()
+  })
+
+  filteredOperators.sort((a,b) => {
+    let beforeStaked = a.staked ?? new BigNumber(0)
+    let afterStaked = b.staked ?? new BigNumber(0)
+    return beforeStaked.isLessThan(afterStaked) ? 1 : -1
   })
 
   return (

@@ -38,7 +38,7 @@ function PremiumMembership() {
         <p className="mb-6">With Portfolio you’ll be able to see all the tokens you’re currently holding in your wallet, what each of those assets is worth, and your total net worth. Updated live as new balance and price updates come in. All with the speed and clean UI you’re used to from ZilStream.</p>
         <p className="mb-6">Tracking your portfolio is as easy as connecting your wallet through ZilPay. From there you’ll be taken to a complete and fully featured dashboard with a complete breakdown of the wallet. Including your Balances, Liquidity Pools, Staking and more.</p>
         <h3 className="text-xl text-center mb-4 mt-8">Features</h3>
-        <p className="mb-6">Starting today you'll be able to use some features of Portfolio for free. This includes tracking of your balances, liquidity pools you've entered and ZIL you've staked at the various staking node operators. When Premium Membership launches later this month, ZilStream Premium members will be able to enjoy many additional features, most of which will be available at launch.</p>
+        <p className="mb-6">Starting today you'll be able to use some features of Portfolio for free. This includes tracking of your balances, liquidity pools you've entered and ZIL you've staked at the various staking node operators. When Premium Membership launches later this quarter, ZilStream Premium members will be able to enjoy many additional features, most of which will be available at launch.</p>
         <ul className="list-disc ml-6 mb-6">
           <li>Tracking of 0.3% fees earned in Liquidity Pools.</li>
           <li>Tracking of earned staking rewards.</li>
@@ -52,7 +52,7 @@ function PremiumMembership() {
         </ul>
         <p className="mb-6">We'll be continuously working on expanding Premium Membership features in the future. Such as features aren't limited just to Portfolio. One of the first Premium features that will be launching outside of Portfolio is a full screen chart that includes various indicators and drawing tools.</p>
         <h2 className="text-2xl text-center mt-16 mb-4">ZilStream Premium Membership</h2>
-        <p className="mb-6">With Premium, members will be able to enjoy additional features and benefits on ZiLStream. Starting with a detailed Portfolio, but expanding to more features in the near future. Central to the membership is the launch of ZilStream's very own token named <strong>STREAM</strong>, which will be launching later this month.</p>
+        <p className="mb-6">With Premium, members will be able to enjoy additional features and benefits on ZiLStream. Starting with a detailed Portfolio, but expanding to more features in the near future. Central to the membership is the launch of ZilStream's very own token named <strong>STREAM</strong>, which will be launching later this quarter.</p>
 
         <p className="mb-6">To become a Premium member users will have to hold $1 of <strong>STREAM</strong> for every $200 of value in their wallet. So the cost of the product scales with the investor and incentivizes holding of the token.</p>
 
