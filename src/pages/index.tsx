@@ -16,19 +16,19 @@ import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
   const tokens = await getTokens()
-  const unlistedTokens = await getTokens(true)
+  const unvettedTokens = await getTokens(true)
   const initialRates = await getRates()
   
   return {
     props: {
       tokens,
-      unlistedTokens,
+      unvettedTokens,
       initialRates,
     },
   }
 }
 
-function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
@@ -37,7 +37,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   useEffect(() => {
     const allTokens: Token[] = []
     allTokens.push(...tokens)
-    allTokens.push(...unlistedTokens)
+    allTokens.push(...unvettedTokens)
     const totalCap = allTokens.reduce((sum, current) => {
       const tokenRates = rates.filter(rate => rate.token_id == current.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
       const lastRate = tokenRates.length > 0 ? tokenRates[0].value : 0
@@ -83,7 +83,7 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
   const listTokens: Token[] = Object.assign([], tokens)
   const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
   
-  unlistedTokens.sort(sortTokensByMarketCap)
+  unvettedTokens.sort(sortTokensByMarketCap)
 
   var displayedTokens: Token[] = []
   if(currentList == ListType.Volume) {
@@ -94,8 +94,8 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
     displayedTokens = listTokens.sort((a,b) => {
       return (a.current_liquidity < b.current_liquidity) ? 1 : -1
     })
-  } else if(currentList == ListType.Unlisted) {
-    displayedTokens = unlistedTokens
+  } else if(currentList == ListType.Unvetted) {
+    displayedTokens = unvettedTokens
   } else {
     displayedTokens = listTokens.sort(sortTokensByMarketCap)
   }
@@ -160,9 +160,9 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
               className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Highest liquidity</button>
             <button 
-              onClick={() => setCurrentList(ListType.Unlisted)}
-              className={`${currentList == ListType.Unlisted ? 'list-btn-selected' : 'list-btn-disabled'}`}
-            >Unlisted</button>
+              onClick={() => setCurrentList(ListType.Unvetted)}
+              className={`${currentList == ListType.Unvetted ? 'list-btn-selected' : 'list-btn-disabled'}`}
+            >Unvetted</button>
           </div>
           <div className="flex items-center">
             
@@ -174,12 +174,12 @@ function Home({ tokens, unlistedTokens, initialRates }: InferGetServerSidePropsT
           </div>
         </div>
       </div>
-      {currentList == ListType.Unlisted &&
+      {currentList == ListType.Unvetted &&
         <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row mb-6">
           <AlertCircle className="mb-2 sm:mr-3" />
           <div>
-            <div className="font-medium">Unlisted tokens, be extra cautious</div>
-            <div className="text-sm">Unlisted tokens are not screened or audited by ZilStream. Please verify the legitimacy of these tokens yourself.</div>
+            <div className="font-medium">Unvetted tokens, be extra cautious</div>
+            <div className="text-sm">Unvetted tokens are not screened or audited by ZilStream. Please verify the legitimacy of these tokens yourself.</div>
           </div>
         </div>
       }
