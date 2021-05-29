@@ -15,10 +15,17 @@ const StateProvider = (props: Props) => {
   async function loadTokens() {
     const tokens = await getTokens()
     dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+    loadRates()
   }
 
   async function loadRates() {
     const latestRates = await getLatestRates()
+    latestRates.forEach(rate => {
+      dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+        address_bech32: rate.address,
+        rate: rate.rate
+      }})
+    })
   }
 
   useEffect(() => {

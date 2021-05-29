@@ -1,4 +1,5 @@
 export function currencyFormat(num: number, symbol: string = "$"): string {
+  if(num === undefined) return ''
   if(num < 0.1) {
     return symbol + num.toFixed(5)
   }

@@ -34,6 +34,7 @@ export type TokenPool = {
 
 export interface TokenState {
   initialized: boolean,
+  zilRate: number,
   tokens: TokenInfo[]
 }
 

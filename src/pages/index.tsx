@@ -1,8 +1,6 @@
 import RatesBlock from 'components/ChartBlock'
-import ExchangeStats from 'components/ExchangeStats'
 import TokenRow from 'components/TokenRow'
 import getRates from 'lib/zilstream/getRates'
-import getTokens from 'lib/zilstream/getTokens'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -12,7 +10,6 @@ import { useSelector } from 'react-redux'
 import { RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
-import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
@@ -30,19 +27,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
-  const [totalMarketCap, setTotalMarketCap] = useState(0)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0})
 
   const tokens = tokenState.tokens
-
-  useEffect(() => {
-    const totalCap = tokens.reduce((sum, current) => {
-      const tokenRates = rates.filter(rate => rate.token_id == current.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-      const lastRate = tokenRates.length > 0 ? tokenRates[0].value : 0
-      return sum + (current.current_supply * (zilRates.lastRate * lastRate))
-    }, 0)
-    setTotalMarketCap(totalCap)
-  }, [rates, zilRates])
 
   useEffect(() => {
     if(tokens.length === 0) return
@@ -128,12 +115,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               )}
             </div>
           </div>
-          <ExchangeStats 
-            total_liquidity={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0)}
-            volume={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0)}
-            total_liquidity_usd={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * zilRates.lastRate}
-            volume_usd={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * zilRates.lastRate}
-          />
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
@@ -166,14 +147,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               onClick={() => setCurrentList(ListType.Unvetted)}
               className={`${currentList == ListType.Unvetted ? 'list-btn-selected' : 'list-btn-disabled'}`}
             >Unvetted</button>
-          </div>
-          <div className="flex items-center">
-            
-
-            <div className="text-xs">
-              <span className="text-gray-500 dark:text-gray-400">Market Cap: </span>
-              <span className="font-medium">{currencyFormat(totalMarketCap)}</span>
-            </div>
           </div>
         </div>
       </div>
