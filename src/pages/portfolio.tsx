@@ -1,6 +1,6 @@
 import PortfolioBalances from 'components/PortfolioBalances';
 import getTokens from 'lib/zilstream/getTokens';
-import { NextPage } from 'next';
+import { InferGetServerSidePropsType, NextPage } from 'next';
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { AccountState, RootState, TokenState } from 'store/types';
@@ -31,12 +31,7 @@ interface Props {
   latestRates: SimpleRate[]
 }
 
-export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => {
-  if(store.getState().token.tokens.length === 0) {
-    const tokens = await getTokens()
-    store.dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
-  }
-  
+export const getServerSideProps = async () => {
   const latestRates = await getLatestRates()
 
   return {
@@ -44,9 +39,9 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({store}) => 
       latestRates: latestRates
     },
   }
-})
+}
 
-const Portfolio: NextPage<Props> = ({ latestRates }) => {
+const Portfolio = ({ latestRates }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [loadedStaking, setLoadedStaking] = useState<boolean>(false)
   const [rates, setRates] = useState<SimpleRate[]>(latestRates)
@@ -56,11 +51,6 @@ const Portfolio: NextPage<Props> = ({ latestRates }) => {
   const dispatch = useDispatch()
 
   let walletAddress = accountState.address
-
-  useEffect(() => {
-    if(localStorage.getItem('zilpay') === 'true')
-      connectZilPay()
-  }, [])
 
   useEffect(() => {
     if(walletAddress === '') { return }

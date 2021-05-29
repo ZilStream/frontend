@@ -8,43 +8,49 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { AlertCircle } from 'react-feather'
+import { useSelector } from 'react-redux'
+import { RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
-import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
-  const tokens = await getTokens()
-  const unvettedTokens = await getTokens(true)
   const initialRates = await getRates()
   
   return {
     props: {
-      tokens,
-      unvettedTokens,
       initialRates,
     },
   }
 }
 
-function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [totalMarketCap, setTotalMarketCap] = useState(0)
+  const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0})
+
+  const tokens = tokenState.tokens
 
   useEffect(() => {
-    const allTokens: Token[] = []
-    allTokens.push(...tokens)
-    allTokens.push(...unvettedTokens)
-    const totalCap = allTokens.reduce((sum, current) => {
+    const totalCap = tokens.reduce((sum, current) => {
       const tokenRates = rates.filter(rate => rate.token_id == current.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
       const lastRate = tokenRates.length > 0 ? tokenRates[0].value : 0
-      return sum + (current.current_supply * (latestZilRate.value * lastRate))
+      return sum + (current.current_supply * (zilRates.lastRate * lastRate))
     }, 0)
     setTotalMarketCap(totalCap)
-  }, [rates])
+  }, [rates, zilRates])
+
+  useEffect(() => {
+    if(tokens.length === 0) return
+
+    const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
+    const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
+    setZilRates({firstRate: zilRates[zilRates.length - 1].value, lastRate: zilRates[0].value})
+  }, [tokens])
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -58,34 +64,31 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
     setSecondsSinceUpdate(secondsSinceUpdate + 1)
   }, 1000)
 
-  const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
-  const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
-  const firstZilRate = zilRates[zilRates.length - 1]
-  const latestZilRate = zilRates[0]
   
-  const change = ((latestZilRate.value - firstZilRate.value) / firstZilRate.value) * 100
+  
+  const change = ((zilRates.lastRate - zilRates.firstRate) / zilRates.firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100
 
-  const sortTokensByMarketCap = (a: Token, b: Token) => {
+  const sortTokensByMarketCap = (a: TokenInfo, b: TokenInfo) => {
     const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
     const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
-    const priorUsdRate = priorLastRate * latestZilRate.value
+    const priorUsdRate = priorLastRate * zilRates.lastRate
     const priorMarketCap = a.current_supply * priorUsdRate
 
     const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
     const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
-    const nextUsdRate = nextLastRate * latestZilRate.value
+    const nextUsdRate = nextLastRate * zilRates.lastRate
     const nextMarketCap = b.current_supply * nextUsdRate
 
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const listTokens: Token[] = Object.assign([], tokens)
+  const listTokens: TokenInfo[] = Object.assign([], tokens)
   const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
   
-  unvettedTokens.sort(sortTokensByMarketCap)
+  // unvettedTokens.sort(sortTokensByMarketCap)
 
-  var displayedTokens: Token[] = []
+  var displayedTokens: TokenInfo[] = []
   if(currentList == ListType.Volume) {
     displayedTokens = listTokens.sort((a,b) => {
       return (a.daily_volume < b.daily_volume) ? 1 : -1
@@ -95,7 +98,7 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
       return (a.current_liquidity < b.current_liquidity) ? 1 : -1
     })
   } else if(currentList == ListType.Unvetted) {
-    displayedTokens = unvettedTokens
+    // displayedTokens = unvettedTokens
   } else {
     displayedTokens = listTokens.sort(sortTokensByMarketCap)
   }
@@ -113,7 +116,7 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
           <div className="flex-grow">
             <h1 className="mb-1">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
-              Zilliqa is currently valued at <span className="font-medium">${Math.round(latestZilRate.value * 10000) / 10000}, </span>
+              Zilliqa is currently valued at <span className="font-medium">${Math.round(zilRates.lastRate * 10000) / 10000}, </span>
               {change >= 0 ? (
                 <div className="inline">
                   up <span className="text-green-600 dark:text-green-500 font-medium">{changeRounded}%</span> from yesterday.
@@ -128,8 +131,8 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
           <ExchangeStats 
             total_liquidity={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0)}
             volume={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0)}
-            total_liquidity_usd={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * latestZilRate.value}
-            volume_usd={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * latestZilRate.value}
+            total_liquidity_usd={tokens.reduce((sum, current) => { return sum + current.current_liquidity}, 0) * zilRates.lastRate}
+            volume_usd={tokens.reduce((sum, current) => { return sum + current.daily_volume}, 0) * zilRates.lastRate}
           />
         </div>
       </div>
@@ -138,7 +141,7 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
           return (
             <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
               <a>
-                <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={latestZilRate} />
+                <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={zilRates.lastRate} />
               </a>
             </Link>
           )
@@ -217,7 +220,7 @@ function Home({ tokens, unvettedTokens, initialRates }: InferGetServerSidePropsT
                   token={token} 
                   rank={index+1} 
                   rates={rates.filter(rate => rate.token_id == token.id)} 
-                  zilRate={latestZilRate} 
+                  zilRate={zilRates.lastRate} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
                 />
               )

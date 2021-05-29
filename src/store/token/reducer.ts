@@ -13,6 +13,7 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
 
   switch (action.type) {
     case HYDRATE:
+      console.log(state, action.payload)
       return {...state, ...action.payload.token}
 
     case TokenActionTypes.TOKEN_INIT:

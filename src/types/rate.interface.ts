@@ -5,7 +5,7 @@ export interface Rate {
   high: number
   open: number
   close: number
-  token_id: number
+  token_id: string
 }
 
 export interface SimpleRate {

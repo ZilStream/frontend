@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 export type TokenInfo = {
+  id: string
   name: string
   symbol: string
   icon: string
@@ -17,6 +18,7 @@ export type TokenInfo = {
   viewblock_score: number
   supply_skip_addresses: string
   isZil: boolean
+  rate: number
   balance?: BigNumber = 0
   pool?: TokenPool
 }
