@@ -1,10 +1,10 @@
 import React from 'react'
 
 interface Props {
-  onConnect: () => void
+  children: React.ReactNode,
 }
 
-function PortfolioOnboard(props: Props) {
+const PortfolioOnboard = (props: Props) => {
   return (
     <>
       <div className="mt-12 pt-8 pb-2 md:pb-8 text-center">
@@ -14,11 +14,8 @@ function PortfolioOnboard(props: Props) {
         <div className="mt-12 flex justify-center">
           <div className="p-6 w-128 bg-white dark:bg-gray-700 rounded-lg flex flex-col items-center">
             <div className="font-bold text-xl">Connect your wallet</div>
-            <div className="py-12 flex flex-col items-stretch">
-              <button 
-                className="bg-gray-300 dark:bg-gray-800 py-3 px-6 rounded-full font-medium focus:outline-none"
-                onClick={() => props.onConnect()}
-              >ZilPay</button>
+            <div className="py-12 flex items-stretch gap-10">
+              {props.children}
             </div>
             <div className="text-sm text-gray-400"><span className="font-semibold">Note:</span> Connecting your Wallet does not give ZilStream access to your private keys, and no transactions can be sent. ZilStream does not store your wallet address on its servers.</div>
           </div>
