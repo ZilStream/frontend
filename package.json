@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NEXT_PUBLIC_BACKEND_URL=https://api.zilstream.com next dev",
+    "dev": "NEXT_PUBLIC_BACKEND_URL=https://api.zilstream.com next dev",
     "build": "next build",
     "start": "next start"
   },
@@ -31,7 +31,6 @@
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "autoprefixer": "^10.2.4",
-    "cross-env": "^7.0.3",
     "postcss": "^8.2.6",
     "tailwindcss": "^2.0.3",
     "typescript": "^4.1.5"
