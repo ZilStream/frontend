@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import React from 'react'
 import { TokenInfo } from 'store/types'
 import { SimpleRate } from 'types/rate.interface'
@@ -16,6 +17,12 @@ function PortfolioPools(props: Props) {
 
   let filteredTokens = props.tokens.filter(token => {
     return token.pool && token.pool.userContribution && !token.pool.userContribution.isZero()
+  })
+
+  filteredTokens.sort((a,b) => {
+    let beforeContribution = a.pool?.userContribution ?? new BigNumber(0)
+    let afterContribution = b.pool?.userContribution ?? new BigNumber(0)
+    return beforeContribution.isLessThan(afterContribution) ? 1 : -1
   })
 
   return (
