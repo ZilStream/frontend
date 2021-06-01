@@ -16,6 +16,8 @@ const StreamPopover = () => {
   var streamBalance = new BigNumber(0)
   var streamBalanceUSD = new BigNumber(0)
   var totalBalance = new BigNumber(0)
+  var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
+  var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
 
   useEffect(() => {
     if(streamToken) {
@@ -83,20 +85,22 @@ const StreamPopover = () => {
                 <img className="h-12 w-12" src="/stream.svg" alt="STREAM" />
                 <div className="mt-2 font-semibold">{cryptoFormat(streamBalance.toNumber())}</div>
                 <div className="text-gray-600 dark:text-gray-400 text-sm">${moneyFormat(streamBalanceUSD, {maxFractionDigits: 2})}</div>
-                <div className="border-2 border-primary rounded-full text-sm font-medium text-primary px-2 mt-2">ZilStream Member</div>
+                {streamBalanceUSD.isGreaterThan(membershipUSD) &&
+                  <div className="border-2 border-primary rounded-full text-sm font-medium text-primary px-2 mt-2">ZilStream Member</div>
+                }
               </div>
               <div className="mt-4 text-sm">
                 <div className="flex items-center mb-1">
                   <div className="flex-grow text-gray-600 dark:text-gray-400">
                     Wallet balance
                   </div>
-                  <div>${moneyFormat(totalBalance.times(tokenState.zilRate), {maxFractionDigits: 2})}</div>
+                  <div>${moneyFormat(totalBalanceUSD, {maxFractionDigits: 2})}</div>
                 </div>
                 <div className="flex items-center">
                   <div className="flex-grow text-gray-600 dark:text-gray-400">
                     Membership
                   </div>
-                  <div>${moneyFormat(totalBalance.times(tokenState.zilRate).dividedBy(200), {maxFractionDigits: 2})}</div>
+                  <div>${moneyFormat(membershipUSD, {maxFractionDigits: 2})}</div>
                 </div>
               </div>
             </Popover.Panel>
