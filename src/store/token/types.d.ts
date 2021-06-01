@@ -19,6 +19,7 @@ export type TokenInfo = {
   supply_skip_addresses: string
   unvetted: boolean
   isZil: boolean
+  isStream: boolean
   rate: number
   balance?: BigNumber = 0
   pool?: TokenPool

@@ -2,37 +2,33 @@ import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
 import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
-import { Operator, TokenInfo } from 'store/types'
+import { useSelector } from 'react-redux'
+import { Operator, RootState, StakingState, TokenInfo, TokenState } from 'store/types'
 import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
 import FlashChange from './FlashChange'
 
-interface Props {
-  tokens: TokenInfo[]
-  latestRates: SimpleRate[]
-  operators: Operator[]
-}
-
-function PortfolioOverview(props: Props) {
+function PortfolioOverview() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const stakingState = useSelector<RootState, StakingState>(state => state.staking)
 
-  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+  let zilRate = tokenState.zilRate
 
   var totalBalance = new BigNumber(0)
 
-  var holdingBalance = props.tokens.reduce((sum, current) => {
+  var holdingBalance = tokenState.tokens.reduce((sum, current) => {
     let balance = toBigNumber(current.balance, {compression: current.decimals})
 
     if(current.isZil) return sum.plus(balance)
 
-    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == current.address_bech32)[0].rate : 0
-    return sum.plus(balance.times(rate))
+    return sum.plus(balance.times(current.rate))
   }, new BigNumber(0))
   totalBalance = totalBalance.plus(holdingBalance)
 
-  var liquidityBalance = props.tokens.reduce((sum, current) => {
+  var liquidityBalance = tokenState.tokens.reduce((sum, current) => {
     if(!current.pool || !current.pool.userContribution)  return sum 
 
     let pool = current.pool!
@@ -46,13 +42,13 @@ function PortfolioOverview(props: Props) {
   totalBalance = totalBalance.plus(liquidityBalance.shiftedBy(-12))
   
 
-  var stakingBalance = props.operators.reduce((sum, current) => {
+  var stakingBalance = stakingState.operators.reduce((sum, current) => {
     if(current.symbol === 'ZIL') {
       let staked = toBigNumber(current.staked, {compression: 12})
       return sum.plus(staked)
     } else {
       let staked = toBigNumber(current.staked, {compression: current.decimals})
-      let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.symbol == current.symbol)[0].rate : 0
+      let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].rate
       return sum.plus(staked.times(rate))
     }
   }, new BigNumber(0))
@@ -70,7 +66,7 @@ function PortfolioOverview(props: Props) {
         <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
       </div>
 
-      <BalanceDonut tokens={props.tokens} operators={props.operators} latestRates={props.latestRates} />
+      <BalanceDonut tokens={tokenState.tokens} operators={stakingState.operators} />
 
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Holding balance</div>
       <div className="flex items-start">

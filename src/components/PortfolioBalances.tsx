@@ -1,50 +1,41 @@
 import BigNumber from "bignumber.js"
-import Head from "next/head"
 import Link from "next/link"
 import React from "react"
-import { TokenInfo } from "store/types"
-import { SimpleRate } from "types/rate.interface"
+import { useSelector } from "react-redux"
+import { RootState, TokenState } from "store/types"
 import useMoneyFormatter, { toBigNumber } from "utils/useMoneyFormatter"
 import EmptyRow from "./EmptyRow"
 import FlashChange from "./FlashChange"
 import TokenIcon from "./TokenIcon"
 
-interface Props {
-  walletAddress: string
-  tokens: TokenInfo[]
-  latestRates: SimpleRate[]
-}
-
-function PortfolioBalances(props: Props) {
+function PortfolioBalances() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
-  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0].rate
+  let zilRate = tokenState.zilRate
 
-  let filteredTokens = props.tokens.filter(token => {
+  let filteredTokens = tokenState.tokens.filter(token => {
     return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
   })
 
   filteredTokens.sort((a, b) => {
-    const priorTokenRate = props.latestRates.filter(rate => rate.address == a.address_bech32)[0]
     const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
-    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(priorTokenRate.rate)
+    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.rate)
     const priorUsdRate = priorZilRate.times(zilRate)
 
-    const nextTokenRate = props.latestRates.filter(rate => rate.address == b.address_bech32)[0]
     const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
-    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(nextTokenRate.rate)
+    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.rate)
     const nextUsdRate = nextZilRate.times(zilRate)
     
     return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
   })
 
-  var totalBalance = props.tokens.reduce((sum, current) => {
+  var totalBalance = tokenState.tokens.reduce((sum, current) => {
     let balance = toBigNumber(current.balance, {compression: current.decimals})
 
     if(current.isZil) return sum.plus(balance)
 
-    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == current.address_bech32)[0].rate : 0
-    return sum.plus(balance.times(rate))
+    return sum.plus(balance.times(current.rate))
   }, new BigNumber(0))
 
   return (
@@ -72,7 +63,7 @@ function PortfolioBalances(props: Props) {
             {filteredTokens.map((token, index) => {
               let balance = toBigNumber(token.balance, {compression: token.decimals})
 
-              let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
+              let rate = token.rate
               let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
               let usdBalance = zilBalance * zilRate
 
