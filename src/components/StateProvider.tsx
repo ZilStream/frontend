@@ -26,7 +26,6 @@ const StateProvider = (props: Props) => {
         rate: rate.rate
       }})
     })
-
     dispatch({type: TokenActionTypes.TOKEN_INITIALIZED})
   }
 

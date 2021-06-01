@@ -1,4 +1,6 @@
 import RatesBlock from 'components/ChartBlock'
+import LoadingChartBlock from 'components/LoadingChartBlock'
+import LoadingTokenRows from 'components/LoadingTokenRows'
 import TokenRow from 'components/TokenRow'
 import getRates from 'lib/zilstream/getRates'
 import { InferGetServerSidePropsType } from 'next'
@@ -120,15 +122,25 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {topTokens.map( token => {                
-          return (
-            <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-              <a>
-                <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={zilRates.lastRate} />
-              </a>
-            </Link>
-          )
-        })}     
+        {tokenState.initialized === false ? (
+          <>
+            <LoadingChartBlock />
+            <LoadingChartBlock />
+            <LoadingChartBlock />
+          </>
+        ) : (
+          <>
+            {topTokens.map( token => {                
+              return (
+                <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
+                  <a>
+                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={zilRates.lastRate} />
+                  </a>
+                </Link>
+              )
+            })}
+          </>
+        )}
       </div>
       <div className="token-order-list">
         <div className="flex items-center" style={{minWidth: '600px'}}>
@@ -200,6 +212,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 />
               )
             })}
+
+            {tokenState.initialized === false &&
+              <LoadingTokenRows />
+            }
           </tbody>
       </table>
     </div>
