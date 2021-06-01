@@ -1,4 +1,5 @@
 import React from 'react'
+import Shimmer from './Shimmer'
 
 const LoadingChartBlock = () => {
   return (
@@ -6,16 +7,16 @@ const LoadingChartBlock = () => {
       <div className="pt-2 px-2">
         <div className="flex items-center text-xl">
           <div className="flex-grow mb-2 flex items-center">
-            <div className="h-6 w-12 mr-2 rounded shimmer"></div>
-            <div className="h-6 w-12 rounded shimmer"></div>
+            <Shimmer className="h-6 w-12 mr-2" />
+            <Shimmer className="h-6 w-12" />
           </div>
-          <div className="h-6 w-12 rounded shimmer"></div>
+          <Shimmer className="h-6 w-12" />
         </div>
         <div>
-          <div className="h-6 w-12 rounded shimmer"></div>
+          <Shimmer className="h-6 w-12" />
         </div>
       </div>
-      <div className="mt-4 h-full w-full rounded shimmer"></div>
+      <Shimmer className="mt-4 h-full w-full" />
     </div>
   )
 }
