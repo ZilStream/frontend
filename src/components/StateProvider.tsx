@@ -35,7 +35,9 @@ const StateProvider = (props: Props) => {
     latestRates.forEach(rate => {
       dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
         address_bech32: rate.address,
-        rate: rate.rate
+        rate: rate.rate,
+        isZil: rate.address === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
+        isStream: rate.address === 'zil1504065pp76uuxm7s9m2c4gwszhez8pu3mp6r8c'
       }})
     })
     dispatch({type: TokenActionTypes.TOKEN_INITIALIZED})

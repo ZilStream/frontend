@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
 import Account from './Account'
 import { useRouter } from 'next/dist/client/router'
-import { Popover, Transition } from '@headlessui/react'
+import StreamPopover from './StreamPopover'
 
 const Header = () => {
   const router = useRouter()
@@ -75,50 +75,7 @@ const Header = () => {
               <div className="flex items-center">
                 {accountState.isConnected ? (
                   <>
-                    <Popover>
-                     {({ open }) => (
-                        <>
-                          <Popover.Button className="menu-item-active focus:outline-none flex items-center mr-2">
-                            <span className="mr-2">1,500</span>
-                            <img className="h-4 w-4" src="/stream.svg" alt="STREAM" />
-                          </Popover.Button>
-                          <Transition
-                            show={open}
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Popover.Panel className="origin-top-right absolute right-0 z-50 bg-white shadow-lg border border-gray-100 rounded-lg p-4 w-72">
-                              <div className="flex flex-col items-center">
-                                <div className="font-semibold mb-3">STREAM balance</div>
-                                <img className="h-12 w-12" src="/stream.svg" alt="STREAM" />
-                                <div className="mt-2 font-semibold">1,500</div>
-                                <div className="text-gray-500 text-sm">$600</div>
-                                <div className="border-2 border-primary rounded-full text-sm font-medium text-primary px-2 mt-2">ZilStream Member</div>
-                              </div>
-                              <div className="mt-4 text-sm">
-                                <div className="flex items-center mb-1">
-                                  <div className="flex-grow text-gray-500">
-                                    Wallet balance
-                                  </div>
-                                  <div>$2,000</div>
-                                </div>
-                                <div className="flex items-center">
-                                  <div className="flex-grow text-gray-500">
-                                    Membership
-                                  </div>
-                                  <div>$10</div>
-                                </div>
-                              </div>
-                            </Popover.Panel>
-                          </Transition>
-                          </>
-                      )}
-                    </Popover>
+                    <StreamPopover />
 
                     <button 
                       className="menu-item-active" 

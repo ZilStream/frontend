@@ -1,27 +1,15 @@
 import PortfolioBalances from 'components/PortfolioBalances';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { AccountState, RootState, TokenState } from 'store/types';
-import { TokenActionTypes } from 'store/token/actions';
-import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch';
-import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto';
-import BigNumber from 'bignumber.js'
-import { bnOrZero } from 'utils/strings';
 import Head from 'next/head';
 import PortfolioPools from 'components/PortfolioPools';
 import PortfolioOverview from 'components/PortfolioOverview';
-import getPortfolioState from 'lib/zilstream/getPortfolio';
-import { Operator, StakingState } from 'store/staking/types';
-import { StakingActionTypes } from 'store/staking/actions';
+import { StakingState } from 'store/staking/types';
 import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
 import CopyableAddress from 'components/CopyableAddress';
-import LoadingIndicator from 'components/LoadingIndicator';
-import { RefreshCw } from 'react-feather';
-import { useInterval } from 'utils/interval';
-import { Network } from 'utils/network';
-import getLatestRates from 'lib/zilstream/getLatestRates';
 
 const Portfolio = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
