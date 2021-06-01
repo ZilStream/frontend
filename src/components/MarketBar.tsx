@@ -4,8 +4,10 @@ import { Moon } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { RootState, TokenState } from 'store/types'
 import { currencyFormat } from 'utils/format'
+import useMoneyFormatter from 'utils/useMoneyFormatter'
 
 const MarketBar = () => {
+  const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   const {theme, setTheme, resolvedTheme} = useTheme()
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
@@ -27,7 +29,7 @@ const MarketBar = () => {
         <div className="flex items-center flex-grow">
           <div className="flex items-center mr-4">
             <span className="text-gray-400 mr-2">ZIL:</span>
-            <span>{currencyFormat(tokenState.zilRate)}</span>
+            <span>${moneyFormat(tokenState.zilRate, {maxFractionDigits: 3})}</span>
           </div>
           <div className="flex items-center mr-4">
             <span className="text-gray-400 mr-2">Market Cap:</span>
