@@ -17,6 +17,7 @@ export type TokenInfo = {
   whitepaper: string
   viewblock_score: number
   supply_skip_addresses: string
+  unvetted: boolean
   isZil: boolean
   rate: number
   balance?: BigNumber = 0

@@ -4,7 +4,8 @@ export const TokenActionTypes = {
   TOKEN_INIT: "TOKEN_INIT",
   TOKEN_UPDATE: "TOKEN_UPDATE",
   TOKEN_ADD: "TOKEN_ADD",
-  TOKEN_UPDATE_POOL: "TOKEN_UPDATE_POOL"
+  TOKEN_UPDATE_POOL: "TOKEN_UPDATE_POOL",
+  TOKEN_INITIALIZED: "TOKEN_INITIALIZED"
 }
 
 export function init(payload: TokenInitProps) {

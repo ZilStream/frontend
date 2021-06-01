@@ -23,11 +23,13 @@ export const getServerSideProps = async () => {
 }
 
 function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [isLoading, setIsLoading] = useState(true)
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
-  const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0})
+  const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = tokenState.tokens
 
@@ -36,8 +38,17 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
     const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
     const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
-    setZilRates({firstRate: zilRates[zilRates.length - 1].value, lastRate: zilRates[0].value})
-  }, [tokens])
+    const firstRate = zilRates[zilRates.length - 1].value
+    const lastRate = zilRates[0].value
+    const change = ((lastRate - firstRate) / firstRate) * 100
+
+    setZilRates({
+      firstRate: firstRate, 
+      lastRate: lastRate,
+      change: change,
+      changeRounded: Math.round(change * 100) / 100
+    })
+  }, [tokens, rates])
 
   useInterval(async () => {
       let newRates = await getRates()
@@ -51,44 +62,35 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     setSecondsSinceUpdate(secondsSinceUpdate + 1)
   }, 1000)
 
-  
-  
-  const change = ((zilRates.lastRate - zilRates.firstRate) / zilRates.firstRate) * 100
-  const changeRounded = Math.round(change * 100) / 100
-
   const sortTokensByMarketCap = (a: TokenInfo, b: TokenInfo) => {
-    const priorTokenRates = rates.filter(rate => rate.token_id == a.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-    const priorLastRate = priorTokenRates.length > 0 ? priorTokenRates[0].value : 0
-    const priorUsdRate = priorLastRate * zilRates.lastRate
-    const priorMarketCap = a.current_supply * priorUsdRate
-
-    const nextTokenRates = rates.filter(rate => rate.token_id == b.id).sort((x,y) => (x.time < y.time) ? 1 : -1)
-    const nextLastRate = nextTokenRates.length > 0 ? nextTokenRates[0].value : 0
-    const nextUsdRate = nextLastRate * zilRates.lastRate
-    const nextMarketCap = b.current_supply * nextUsdRate
+    const priorMarketCap = a.current_supply * (a.rate * tokenState.zilRate)
+    const nextMarketCap = b.current_supply * (b.rate * tokenState.zilRate)
 
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const listTokens: TokenInfo[] = Object.assign([], tokens)
   const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
-  
-  // unvettedTokens.sort(sortTokensByMarketCap)
 
-  var displayedTokens: TokenInfo[] = []
-  if(currentList == ListType.Volume) {
-    displayedTokens = listTokens.sort((a,b) => {
-      return (a.daily_volume < b.daily_volume) ? 1 : -1
-    })
-  } else if(currentList == ListType.Liquidity) {
-    displayedTokens = listTokens.sort((a,b) => {
-      return (a.current_liquidity < b.current_liquidity) ? 1 : -1
-    })
-  } else if(currentList == ListType.Unvetted) {
-    // displayedTokens = unvettedTokens
-  } else {
-    displayedTokens = listTokens.sort(sortTokensByMarketCap)
-  }
+  useEffect(() => {
+    if(currentList == ListType.Unvetted) {
+      setDisplayedTokens(tokens.filter(token => token.unvetted === true))
+      displayedTokens.sort(sortTokensByMarketCap)
+    } else {
+      setDisplayedTokens(tokens.filter(token => token.unvetted === false))
+  
+      if(currentList == ListType.Volume) {
+        displayedTokens.sort((a,b) => {
+          return (a.daily_volume < b.daily_volume) ? 1 : -1
+        })
+      } else if(currentList == ListType.Liquidity) {
+        displayedTokens.sort((a,b) => {
+          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+        })
+      } else {
+        displayedTokens.sort(sortTokensByMarketCap)
+      }
+    }
+  }, [currentList, tokenState.initialized])
 
   return (
     <>
@@ -104,13 +106,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <h1 className="mb-1">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
               Zilliqa is currently valued at <span className="font-medium">${Math.round(zilRates.lastRate * 10000) / 10000}, </span>
-              {change >= 0 ? (
+              {zilRates.change >= 0 ? (
                 <div className="inline">
-                  up <span className="text-green-600 dark:text-green-500 font-medium">{changeRounded}%</span> from yesterday.
+                  up <span className="text-green-600 dark:text-green-500 font-medium">{zilRates.changeRounded}%</span> from yesterday.
                 </div>
               ) : (
                 <div className="inline">
-                  down <span className="text-red-600 dark:text-red-500 font-medium">{changeRounded}%</span> from yesterday.
+                  down <span className="text-red-600 dark:text-red-500 font-medium">{zilRates.changeRounded}%</span> from yesterday.
                 </div>
               )}
             </div>
