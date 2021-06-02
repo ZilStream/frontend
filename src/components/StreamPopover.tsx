@@ -1,21 +1,20 @@
 import { Popover, Transition } from '@headlessui/react'
 import BigNumber from 'bignumber.js'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, StakingState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { cryptoFormat } from 'utils/format'
-import { BIG_ZERO } from 'utils/strings'
-import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
+import useMoneyFormatter from 'utils/useMoneyFormatter'
 
 const StreamPopover = () => {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
-  const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const streamTokens = tokenState.tokens.filter(token => token.isStream)
   const streamToken: TokenInfo|null = streamTokens[0] ?? null
   var streamBalance = new BigNumber(0)
   var streamBalanceUSD = new BigNumber(0)
-  var totalBalance = new BigNumber(0)
+  var totalBalance = accountState.totalBalance
   var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
   var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
 
@@ -24,41 +23,6 @@ const StreamPopover = () => {
       streamBalance = streamToken.balance ?? new BigNumber(0)
       streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
     }
-  
-    const holdingBalance = tokenState.tokens.reduce((sum, current) => {
-      let balance = toBigNumber(current.balance, {compression: current.decimals})
-  
-      if(current.isZil) return sum.plus(balance)
-  
-      return sum.plus(balance.times(current.rate))
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(holdingBalance)
-  
-    const liquidityBalance = tokenState.tokens.reduce((sum, current) => {
-      if(!current.pool || !current.pool.userContribution)  return sum 
-  
-      let pool = current.pool!
-      let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-      let contributionShare = contributionPercentage.shiftedBy(-2)
-      let zilAmount = contributionShare?.times(current.pool?.zilReserve ?? BIG_ZERO);
-      let totalZilAmount = zilAmount.times(2)
-  
-      return sum.plus(totalZilAmount)
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(liquidityBalance.shiftedBy(-12))
-    
-  
-    const stakingBalance = stakingState.operators.reduce((sum, current) => {
-      if(current.symbol === 'ZIL') {
-        let staked = toBigNumber(current.staked, {compression: 12})
-        return sum.plus(staked)
-      } else {
-        let staked = toBigNumber(current.staked, {compression: current.decimals})
-        let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].rate
-        return sum.plus(staked.times(rate))
-      }
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(stakingBalance)
   }, [tokenState])
 
   return (

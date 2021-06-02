@@ -1,6 +1,7 @@
 export const AccountActionTypes = {
   NETWORK_UPDATE: "NETWORK_UPDATE",
-  WALLET_UPDATE: "WALLET_UPDATE"
+  WALLET_UPDATE: "WALLET_UPDATE",
+  BALANCES_UPDATE: "BALANCES_UPDATE"
 }
 
 export function updateNetwork(payload: string) {

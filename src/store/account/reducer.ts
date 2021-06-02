@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js';
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux';
 import { AccountActionTypes } from './actions';
-import { AccountState } from './types';
+import { AccountState, BalanceUpdateProps } from './types';
 
 export const Network = {
   MAIN_NET: "mainnet",
@@ -11,7 +12,11 @@ export const Network = {
 const initialState: AccountState = {
   network: Network.MAIN_NET,
   isConnected: false,
-  address: ''
+  address: '',
+  totalBalance: new BigNumber(0),
+  holdingBalance: new BigNumber(0),
+  liquidityBalance: new BigNumber(0),
+  stakingBalance: new BigNumber(0)
 }
 
 const reducer = (state: AccountState = initialState, action: AnyAction) => {
@@ -34,6 +39,16 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
         ...state,
         address: walletAddress,
         isConnected: walletAddress !== ''
+      }
+
+    case AccountActionTypes.BALANCES_UPDATE:
+      const balanceProps: BalanceUpdateProps = payload
+      return {
+        ...state,
+        totalBalance: balanceProps.totalBalance,
+        holdingBalance: balanceProps.holdingBalance,
+        liquidityBalance: balanceProps.liquidityBalance,
+        stakingBalance: balanceProps.stakingBalance
       }
 
     default:
