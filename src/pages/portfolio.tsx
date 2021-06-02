@@ -1,22 +1,19 @@
 import PortfolioBalances from 'components/PortfolioBalances';
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { AccountState, RootState, TokenState } from 'store/types';
+import { AccountState, RootState } from 'store/types';
 import Head from 'next/head';
 import PortfolioPools from 'components/PortfolioPools';
 import PortfolioOverview from 'components/PortfolioOverview';
-import { StakingState } from 'store/staking/types';
 import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import { AccountActionTypes } from 'store/account/actions'
 import CopyableAddress from 'components/CopyableAddress';
+import ConnectWalletButton from 'components/ConnectWalletButton';
+import { Network } from 'utils/network';
 
 const Portfolio = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [loadedStaking, setLoadedStaking] = useState<boolean>(false)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
-  const tokenState = useSelector<RootState, TokenState>(state => state.token)
-  const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
 
   let walletAddress = accountState.address
@@ -44,6 +41,22 @@ const Portfolio = () => {
     dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
 
     localStorage.setItem('zilpay', 'true')
+  }
+
+  const connectZeeves = async () => {
+    const zeeves = (window as any).Zeeves
+    
+    if (!zeeves) {
+      throw new Error('Zeeves is not supported');
+    }
+      
+    //authentication in Zeeves
+    const walletInfo = await zeeves.getSession();
+  
+    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MainNet });
+    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletInfo.bech32 });
+
+    localStorage.setItem('zilpay', 'false');
   }
 
   return (
@@ -79,7 +92,10 @@ const Portfolio = () => {
           </div>
         </>
       ) : (
-        <PortfolioOnboard onConnect={() => connectZilPay()} />
+        <PortfolioOnboard>
+          <ConnectWalletButton walletName={'ZilPay'} connectWallet={() => connectZilPay()}></ConnectWalletButton>
+          <ConnectWalletButton walletName={'Zeeves'} connectWallet={() => connectZeeves()}></ConnectWalletButton>
+        </PortfolioOnboard>
       )}
     </>
   )

@@ -285,6 +285,11 @@ const StateProvider = (props: Props) => {
       console.error(e)
     }
   }, [])
+
+  if (typeof(window) !== 'undefined') {
+    // @ts-ignore
+    import('zeeves-auth-sdk-js');
+  }
   
   return <>{props.children}</>
 }
