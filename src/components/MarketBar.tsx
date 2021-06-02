@@ -1,4 +1,5 @@
 import { useTheme } from 'next-themes'
+import Link from 'next/link'
 import React from 'react'
 import { Moon } from 'react-feather'
 import { useSelector } from 'react-redux'
@@ -37,9 +38,13 @@ const MarketBar = () => {
           </div>
           <div className="flex items-center mr-4">
             <span className="text-gray-400 mr-2">TVL:</span>
-            <span>{currencyFormat(liquidity * tokenState.zilRate)}</span>
-            <span className="mx-1">-</span>
-            <span>{currencyFormat(liquidity, '')} ZIL</span>
+            <Link href="/liquidity">
+              <a className="font-normal">
+                <span>{currencyFormat(liquidity * tokenState.zilRate)}</span>
+                <span className="mx-1">-</span>
+                <span>{currencyFormat(liquidity, '')} ZIL</span>
+              </a>
+            </Link>
           </div>
           <div className="flex items-center">
             <span className="text-gray-400 mr-2">Volume (24h):</span>
