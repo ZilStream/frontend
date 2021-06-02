@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'

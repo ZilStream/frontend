@@ -25,16 +25,14 @@ export const getServerSideProps = async () => {
 }
 
 function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [isLoading, setIsLoading] = useState(true)
   const [rates, setRates] = useState<Rate[]>(initialRates)
-  const [secondsSinceUpdate, setSecondsSinceUpdate] = useState(0)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = tokenState.tokens
-
+  
   useEffect(() => {
     if(tokens.length === 0) return
 
@@ -50,19 +48,14 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       change: change,
       changeRounded: Math.round(change * 100) / 100
     })
-  }, [tokens, rates])
+  }, [tokenState.initialized, rates])
 
   useInterval(async () => {
       let newRates = await getRates()
       setRates(newRates)
-      setSecondsSinceUpdate(0)
     },
     30000
   )
-
-  useInterval(() => {
-    setSecondsSinceUpdate(secondsSinceUpdate + 1)
-  }, 1000)
 
   const sortTokensByMarketCap = (a: TokenInfo, b: TokenInfo) => {
     const priorMarketCap = a.current_supply * (a.rate * tokenState.zilRate)
@@ -93,7 +86,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       }
     }
   }, [currentList, tokenState.initialized])
-
+  
   return (
     <>
       <Head>
@@ -200,7 +193,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </tr>
           </thead>
           <tbody>
-            {displayedTokens.filter(token => token.symbol != 'ZIL').map((token, index) => {                
+            {displayedTokens.filter(token => token.symbol != 'ZIL').map((token, index) => {  
               return (
                 <TokenRow 
                   key={token.id} 
@@ -218,10 +211,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             }
           </tbody>
       </table>
-    </div>
-    <div className="flex items-center justify-center text-sm text-gray-500 mt-8 py-2">
-      <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-      <div>Last updated: {secondsSinceUpdate} seconds ago</div>
     </div>
   </>
   )
