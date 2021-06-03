@@ -4,7 +4,8 @@ import { StakingActionTypes } from './actions';
 import { StakingAddProps, StakingInitProps, StakingState, StakingUpdateProps } from './types';
 
 const initialState: StakingState = {
-  operators: []
+  operators: [],
+  initialized: false
 }
 
 const reducer = (state: StakingState = initialState, action: AnyAction) => {
@@ -19,7 +20,8 @@ const reducer = (state: StakingState = initialState, action: AnyAction) => {
       return {
         operators: [
           ...initProps.operators
-        ]
+        ],
+        initialized: true
       }
 
     case StakingActionTypes.STAKING_ADD:

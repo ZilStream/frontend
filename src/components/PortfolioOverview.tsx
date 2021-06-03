@@ -4,6 +4,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, StakingState, TokenState } from 'store/types'
 import { BIG_ZERO } from 'utils/strings'
+import useBalances from 'utils/useBalances'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
 import FlashChange from './FlashChange'
@@ -13,6 +14,7 @@ function PortfolioOverview() {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance } = useBalances()
 
   let zilRate = tokenState.zilRate
 
@@ -21,11 +23,11 @@ function PortfolioOverview() {
       <div className="text-gray-600 dark:text-gray-400 text-sm">Current balance</div>
       <div className="flex-grow flex flex-col items-start mb-6">
         <div className="font-semibold text-2xl">
-          <FlashChange value={accountState.totalBalance.times(zilRate).toNumber()}>
-            ${moneyFormat(accountState.totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          <FlashChange value={totalBalance.times(zilRate).toNumber()}>
+            ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
           </FlashChange>
         </div>
-        <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(accountState.totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+        <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
       </div>
 
       <BalanceDonut tokens={tokenState.tokens} operators={stakingState.operators} />
@@ -34,9 +36,9 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(accountState.holdingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            ${moneyFormat(holdingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
           </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(accountState.holdingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(holdingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
 
@@ -44,9 +46,9 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(accountState.liquidityBalance.times(zilRate), {compression: 12, maxFractionDigits: 2})}
+            ${moneyFormat(liquidityBalance.times(zilRate), {compression: 12, maxFractionDigits: 2})}
           </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(accountState.liquidityBalance, {compression: 12, maxFractionDigits: 2})} ZIL</div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(liquidityBalance, {compression: 12, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
 
@@ -60,9 +62,9 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(accountState.stakingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            ${moneyFormat(stakingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
           </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(accountState.stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
 

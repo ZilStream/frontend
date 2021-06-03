@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import getLatestRates from 'lib/zilstream/getLatestRates'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 import { AccountActionTypes } from 'store/account/actions'
 import { StakingActionTypes } from 'store/staking/actions'
@@ -24,6 +24,7 @@ const StateProvider = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
+  const [stakingLoaded, setStakingLoaded] = useState(false)
 
   async function loadTokens() {
     const tokens = await getTokens()
@@ -51,8 +52,6 @@ const StateProvider = (props: Props) => {
 
     let batchResults = await getPortfolioState(accountState.address, tokenState.tokens, stakingState.operators)
     await processBatchResults(batchResults)
-    await fetchStakingState()
-    setBalances()
   }
 
   async function fetchStakingState() {
@@ -62,6 +61,7 @@ const StateProvider = (props: Props) => {
     })
     let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
     await processBatchResults(batchResults)
+    dispatch({type: StakingActionTypes.STAKING_INITIALIZED})
   }
 
   async function processBatchResults(batchResults: BatchResponse[]) {
@@ -202,51 +202,6 @@ const StateProvider = (props: Props) => {
     })
   }
 
-  function setBalances() {
-    var totalBalance = new BigNumber(0)
-    const holdingBalance = tokenState.tokens.reduce((sum, current) => {
-      let balance = toBigNumber(current.balance, {compression: current.decimals})
-  
-      if(current.isZil) return sum.plus(balance)
-  
-      return sum.plus(balance.times(current.rate))
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(holdingBalance)
-  
-    const liquidityBalance = tokenState.tokens.reduce((sum, current) => {
-      if(!current.pool || !current.pool.userContribution)  return sum 
-  
-      let pool = current.pool!
-      let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-      let contributionShare = contributionPercentage.shiftedBy(-2)
-      let zilAmount = contributionShare?.times(current.pool?.zilReserve ?? BIG_ZERO);
-      let totalZilAmount = zilAmount.times(2)
-  
-      return sum.plus(totalZilAmount)
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(liquidityBalance.shiftedBy(-12))
-    
-  
-    const stakingBalance = stakingState.operators.reduce((sum, current) => {
-      if(current.symbol === 'ZIL') {
-        let staked = toBigNumber(current.staked, {compression: 12})
-        return sum.plus(staked)
-      } else {
-        let staked = toBigNumber(current.staked, {compression: current.decimals})
-        let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].rate
-        return sum.plus(staked.times(rate))
-      }
-    }, new BigNumber(0))
-    totalBalance = totalBalance.plus(stakingBalance)
-
-    dispatch({ type: AccountActionTypes.BALANCES_UPDATE, payload: {
-      totalBalance,
-      holdingBalance,
-      liquidityBalance,
-      stakingBalance
-    }})
-  }
-
   useInterval(async () => {
     loadRates()
   }, 30000)
@@ -258,6 +213,12 @@ const StateProvider = (props: Props) => {
   useEffect(() => {
     loadWalletState()
   }, [accountState.address, tokenState.initialized])
+
+  useEffect(() => {
+    if(stakingState.operators.length === 0 || stakingState.initialized === true || stakingLoaded) return
+    setStakingLoaded(true)
+    fetchStakingState()
+  }, [stakingState])
 
   useEffect(() => {
     const zilPay = (window as any).zilPay
