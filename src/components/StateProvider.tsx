@@ -61,7 +61,6 @@ const StateProvider = (props: Props) => {
     })
     let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
     await processBatchResults(batchResults)
-    dispatch({type: StakingActionTypes.STAKING_INITIALIZED})
   }
 
   async function processBatchResults(batchResults: BatchResponse[]) {

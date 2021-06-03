@@ -4,17 +4,17 @@ import React, { Fragment, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { cryptoFormat } from 'utils/format'
+import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 
 const StreamPopover = () => {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
-  const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const { totalBalance } = useBalances()
   const streamTokens = tokenState.tokens.filter(token => token.isStream)
   const streamToken: TokenInfo|null = streamTokens[0] ?? null
   var streamBalance = new BigNumber(0)
   var streamBalanceUSD = new BigNumber(0)
-  var totalBalance = accountState.totalBalance
   var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
   var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
 
