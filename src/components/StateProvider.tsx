@@ -214,7 +214,7 @@ const StateProvider = (props: Props) => {
   }, [accountState.address, tokenState.initialized])
 
   useEffect(() => {
-    if(stakingState.operators.length === 0 || stakingState.initialized === true || stakingLoaded) return
+    if(stakingState.operators.length === 0 || stakingLoaded) return
     setStakingLoaded(true)
     fetchStakingState()
   }, [stakingState])
