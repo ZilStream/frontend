@@ -23,9 +23,6 @@ export default function useBalances() {
       return sum.plus(balance.times(current.rate))
     }, new BigNumber(0))
     totalBalance = totalBalance.plus(holdingBalance)
-
-    console.log(holdingBalance.toNumber())
-    console.log("total", totalBalance.toNumber())
   
     liquidityBalance = tokenState.tokens.reduce((sum, current) => {
       if(!current.pool || !current.pool.userContribution)  return sum 
@@ -39,9 +36,6 @@ export default function useBalances() {
       return sum.plus(totalZilAmount)
     }, new BigNumber(0))
     totalBalance = totalBalance.plus(liquidityBalance.shiftedBy(-12))
-
-    console.log(liquidityBalance.toNumber())
-    console.log("total", totalBalance.toNumber())
     
     stakingBalance = stakingState.operators.reduce((sum, current) => {
       if(current.symbol === 'ZIL') {
@@ -54,8 +48,6 @@ export default function useBalances() {
       }
     }, new BigNumber(0))
     totalBalance = totalBalance.plus(stakingBalance)
-    console.log(stakingBalance.toNumber())
-    console.log("total", totalBalance.toNumber())
   }
 
   return { totalBalance, holdingBalance, liquidityBalance, stakingBalance }
