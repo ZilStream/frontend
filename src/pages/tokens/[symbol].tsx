@@ -11,6 +11,7 @@ import TokenIcon from 'components/TokenIcon'
 import Score from 'components/Score'
 import { Reward } from 'types/token.interface'
 import { ResolutionString } from 'charting_library/charting_library'
+import { useTheme } from 'next-themes'
 
 
 const TVChartContainer = dynamic(
@@ -41,6 +42,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const {theme, setTheme, resolvedTheme} = useTheme()
   return (
     <>
       <Head>
@@ -195,7 +197,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       </div>
       
       <div className="rounded-lg overflow-hidden shadow-md">
-        <TVChartContainer symbol={token.symbol} interval={'240' as ResolutionString} autosize={true} fullscreen={false} />
+        <TVChartContainer 
+          symbol={token.symbol} 
+          interval={'240' as ResolutionString} 
+          autosize={true} 
+          fullscreen={false} 
+          theme={resolvedTheme}
+        />
       </div>
     </>
   )

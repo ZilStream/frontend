@@ -24,6 +24,7 @@ export interface ChartContainerProps {
 	autosize: ChartingLibraryWidgetOptions['autosize'];
 	studiesOverrides: ChartingLibraryWidgetOptions['studies_overrides'];
 	containerId: ChartingLibraryWidgetOptions['container_id'];
+	theme: string;
 }
 
 export interface ChartContainerState {
@@ -49,11 +50,13 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 		fullscreen: false,
 		autosize: true,
 		studiesOverrides: {},
+		theme: 'Light'
 	};
 
 	private tvWidget: IChartingLibraryWidget | null = null;
 
 	public componentDidMount(): void {
+		console.log(this.props.theme)
 		const widgetOptions: ChartingLibraryWidgetOptions = {
       // debug: true,
 			symbol: this.props.symbol as string,
@@ -74,6 +77,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			fullscreen: this.props.fullscreen,
 			autosize: this.props.autosize,
 			studies_overrides: this.props.studiesOverrides,
+			theme: this.props.theme === 'dark' ? 'Dark' : 'Light'
 		};
 
 		const tvWidget = new widget(widgetOptions);
@@ -85,6 +89,10 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			this.tvWidget.remove();
 			this.tvWidget = null;
 		}
+	}
+
+	public componentDidUpdate(): void {
+		this.tvWidget?.changeTheme(this.props.theme === 'dark' ? 'Dark' : 'Light')
 	}
 
 	public render(): JSX.Element {
