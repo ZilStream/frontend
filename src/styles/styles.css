@@ -58,7 +58,7 @@ body, #__next {
   }
 
   .menu-item-active {
-    @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white px-3 py-2 rounded-md text-sm font-medium;
+    @apply bg-gray-100 dark:bg-gray-900 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white px-3 py-2 rounded-md text-sm font-medium;
   }
 
   .mobile-menu-item {
@@ -126,5 +126,45 @@ body, #__next {
 
   .scrollable-table-container::-webkit-scrollbar {
     display: none;
+  }
+
+  .shimmer {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 200px; 
+    display: block;
+    position: relative; 
+    
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards; 
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+  }
+
+  .dark-shimmer {
+    background: #283342;
+    background-image: linear-gradient(to right, #283342 0%, #374151 20%, #283342 40%, #283342 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 200px; 
+    display: block;
+    position: relative; 
+    
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards; 
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+  }
+
+  @-webkit-keyframes placeholderShimmer {
+    0% {
+      background-position: -468px 0;
+    }
+    
+    100% {
+      background-position: 468px 0; 
+    }
   }
 }

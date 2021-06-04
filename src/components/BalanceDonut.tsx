@@ -16,7 +16,6 @@ const ReactApexChart = dynamic(
 interface Props {
   tokens: TokenInfo[]
   operators: Operator[]
-  latestRates: SimpleRate[]
 }
 
 function BalanceDonut(props: Props) {
@@ -34,13 +33,12 @@ function BalanceDonut(props: Props) {
 
   props.tokens.forEach(token => {
     let balance = toBigNumber(token.balance).shiftedBy(-token.decimals)
-    let rate = (Array.isArray(props.latestRates)) ? props.latestRates.filter(rate => rate.address == token.address_bech32)[0].rate : 0
     var total = new BigNumber(0)
 
     if(token.isZil) {
       zilTotal = zilTotal.plus(balance)
     } else {  
-      total = total.plus(balance.times(rate))
+      total = total.plus(balance.times(token.rate))
     }
 
     if(token.pool && token.pool.userContribution) {
@@ -49,14 +47,14 @@ function BalanceDonut(props: Props) {
       let zilAmount = contributionShare?.times(token.pool?.zilReserve ?? BIG_ZERO)
       let tokenAmount = contributionShare.times(token.pool?.tokenReserve ?? BIG_ZERO)
 
-      total = total.plus(tokenAmount.times(rate).shiftedBy(-token.decimals))
+      total = total.plus(tokenAmount.times(token.rate).shiftedBy(-token.decimals))
       zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
     }
 
     props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
       if(operator.symbol !== 'ZIL') {
         let staked = toBigNumber(operator.staked, {compression: operator.decimals})
-        total = total.plus(staked.times(rate))
+        total = total.plus(staked.times(token.rate))
       }
     })
 

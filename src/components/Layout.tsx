@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Footer from './Footer'
 import { useRouter } from 'next/dist/client/router'
 import PageLoading from './PageLoading'
+import MarketBar from './MarketBar'
 
 interface Props {
   children: React.ReactNode
@@ -66,6 +67,7 @@ export default function Layout(props: Props) {
       <div className="flex flex-col h-full">
         <PageLoading isRouteChanging={state.isRouteChanging} key={state.loadingKey} />
         <Header />
+        <MarketBar />
         <div className="container">
           <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
         </div>

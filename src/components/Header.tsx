@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
 import Account from './Account'
 import { useRouter } from 'next/dist/client/router'
+import StreamPopover from './StreamPopover'
 
 const Header = () => {
   const router = useRouter()
@@ -70,25 +71,23 @@ const Header = () => {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <button  
-              onClick={() => setTheme(resolvedTheme == 'dark' ? 'light' : 'dark')}
-              className="hidden sm:block p-1 rounded-full text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none">
-              <Moon size={22} />
-            </button>
-
             <div className="ml-3 relative">
-              <div>
+              <div className="flex items-center">
                 {accountState.isConnected ? (
-                  <button 
-                    className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-2 text-sm focus:outline-none" 
-                    onClick={() => setIsComponentVisible(!isComponentVisible)}
-                  >
-                    <span className="sr-only">Open account menu</span>
-                    {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
-                  </button>
+                  <>
+                    <StreamPopover />
+
+                    <button 
+                      className="menu-item-active" 
+                      onClick={() => setIsComponentVisible(!isComponentVisible)}
+                    >
+                      <span className="sr-only">Open account menu</span>
+                      {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
+                    </button>
+                  </>
                 ) : (
                   <button 
-                    className="bg-gray-300 dark:bg-gray-900 py-1 px-3 rounded-full font-bold ml-2 text-sm focus:outline-none" 
+                    className="menu-item-active" 
                     onClick={() => setIsComponentVisible(!isComponentVisible)}
                   >
                     <span className="sr-only">Open connect wallet menu</span>

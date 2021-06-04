@@ -1,5 +1,5 @@
-import React, { useEffect, useLayoutEffect } from 'react'
-import { createChart, IChartApi, Time, UTCTimestamp } from 'lightweight-charts'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { createChart, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
 import { Rate } from 'types/rate.interface';
 
 interface Props {
@@ -16,11 +16,12 @@ interface ChartDataPoint {
 
 function Chart(props: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
-  var chart: IChartApi|null = null;
+  const [chart, setChart] = useState<IChartApi|null>(null)
+  const [series, setSeries] = useState<ISeriesApi<"Area">|null>(null)
 
   useEffect(() => {
     if(ref.current) {
-      chart = createChart(ref.current, {
+      let newChart = createChart(ref.current, {
         width: ref.current.clientWidth, 
         height: ref.current.clientHeight,
         handleScroll: props.isUserInteractionEnabled ? true : false,
@@ -68,7 +69,7 @@ function Chart(props: Props) {
         })
       })
 
-      const series = chart.addAreaSeries({
+      const newSeries = newChart.addAreaSeries({
         topColor: props.isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
         bottomColor: props.isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
         lineColor: props.isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
@@ -82,11 +83,26 @@ function Chart(props: Props) {
         }),
       });
 
-      series.setData(data)
+      newSeries.setData(data)
 
-      chart.timeScale().fitContent()
+      newChart.timeScale().fitContent()
+      setChart(newChart)
+      setSeries(newSeries)
     }
   }, [])
+
+  useEffect(() => {
+    var data: ChartDataPoint[] = [];
+
+    props.data.forEach(rate => {
+      data.push({
+        time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
+        value: rate.value
+      })
+    })
+    series?.setData(data)
+    chart?.timeScale().fitContent()
+  }, [props.data])
 
   useLayoutEffect(() => {
     function updateSize() {

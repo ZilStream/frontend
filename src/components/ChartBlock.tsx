@@ -4,6 +4,7 @@ import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 import FlashChange from './FlashChange'
+import { TokenInfo } from 'store/types'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -11,9 +12,9 @@ const Chart = dynamic(
 )
 
 interface Props {
-  token: Token,
+  token: TokenInfo,
   rates: Rate[],
-  zilRate: Rate,
+  zilRate: number,
 }
 
 const RatesBlock = (props: Props) => {
@@ -21,7 +22,7 @@ const RatesBlock = (props: Props) => {
   const lastRate = sortedRates.length > 0 ? sortedRates[0].value : 0
   const firstRate = sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
   const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
-  const usdRate = lastRate * props.zilRate.value
+  const usdRate = lastRate * props.zilRate
 
   const change = ((lastRate - firstRate) / firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100

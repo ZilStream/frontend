@@ -1,22 +1,19 @@
 import BigNumber from 'bignumber.js'
 import React from 'react'
-import { Operator } from 'store/staking/types'
-import { SimpleRate } from 'types/rate.interface'
+import { useSelector } from 'react-redux'
+import { StakingState } from 'store/staking/types'
+import { RootState, TokenState } from 'store/types'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import EmptyRow from './EmptyRow'
 
-interface Props {
-  walletAddress: string,
-  operators: Operator[],
-  latestRates: SimpleRate[]
-}
-
-function PortfolioStaking(props: Props) {
+function PortfolioStaking() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const stakingState = useSelector<RootState, StakingState>(state => state.staking)
 
-  let zilRate = props.latestRates.filter(rate => rate.address == 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz')[0]
+  let zilRate = tokenState.zilRate
   
-  let filteredOperators = props.operators.filter(operator => {
+  let filteredOperators = stakingState.operators.filter(operator => {
     return operator.staked !== undefined && !toBigNumber(operator.staked).isZero()
   })
 
@@ -45,7 +42,7 @@ function PortfolioStaking(props: Props) {
           </thead>
           <tbody>
             {filteredOperators.map((operator, index) => {
-              let lastRate = props.latestRates.filter(rate => rate.symbol == operator.symbol)[0]
+              let lastRate = tokenState.tokens.filter(token => token.symbol == operator.symbol)[0].rate
 
               return (
                 <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
@@ -64,7 +61,7 @@ function PortfolioStaking(props: Props) {
                   <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredOperators.length-1 ? 'rounded-br-lg' : ''}`}>
                     {operator.symbol === 'ZIL' ? (
                       <>
-                        ${moneyFormat(operator.staked?.times(zilRate.rate), {
+                        ${moneyFormat(operator.staked?.times(zilRate), {
                           symbol: 'USD',
                           compression: operator.decimals,
                           maxFractionDigits: 2,
@@ -73,7 +70,7 @@ function PortfolioStaking(props: Props) {
                       </>
                     ): (
                       <>
-                        ${moneyFormat(operator.staked?.times(lastRate.rate).times(zilRate.rate), {
+                        ${moneyFormat(operator.staked?.times(lastRate).times(zilRate), {
                           symbol: 'USD',
                           compression: operator.decimals,
                           maxFractionDigits: 2,

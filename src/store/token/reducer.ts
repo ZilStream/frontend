@@ -5,6 +5,7 @@ import { TokenAddProps, TokenInitProps, TokenPoolUpdateProps, TokenState, TokenU
 
 const initialState: TokenState = {
   initialized: false,
+  zilRate: 0,
   tokens: []
 }
 
@@ -18,16 +19,23 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
     case TokenActionTypes.TOKEN_INIT:
       const initProps: TokenInitProps = payload
       return {
-        initialized: true,
+        ...state,
         tokens: [
           ...initProps.tokens
         ]
+      }
+    
+    case TokenActionTypes.TOKEN_INITIALIZED:
+      return {
+        ...state,
+        initialized: true
       }
     
     case TokenActionTypes.TOKEN_UPDATE:
       const updateProps: TokenUpdateProps = payload
       return {
         ...state,
+        zilRate: (updateProps.address_bech32 === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz' && updateProps.rate) ? updateProps.rate : state.zilRate,
         tokens: state.tokens.map(token => token.address_bech32 === updateProps.address_bech32 ?
           {...token, ...updateProps} :
           token

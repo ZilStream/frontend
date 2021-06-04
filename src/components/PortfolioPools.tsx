@@ -1,21 +1,17 @@
 import BigNumber from 'bignumber.js'
 import React from 'react'
-import { TokenInfo } from 'store/types'
-import { SimpleRate } from 'types/rate.interface'
+import { useSelector } from 'react-redux'
+import { RootState, TokenState } from 'store/types'
 import { BIG_ZERO } from 'utils/strings'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 import EmptyRow from './EmptyRow'
 import TokenIcon from './TokenIcon'
 
-interface Props {
-  tokens: TokenInfo[],
-  zilRate: SimpleRate
-}
-
-function PortfolioPools(props: Props) {
+function PortfolioPools() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
-  let filteredTokens = props.tokens.filter(token => {
+  let filteredTokens = tokenState.tokens.filter(token => {
     return token.pool && token.pool.userContribution && !token.pool.userContribution.isZero()
   })
 
@@ -86,7 +82,7 @@ function PortfolioPools(props: Props) {
                     </div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    ${moneyFormat(zilAmount.times(2).times(props.zilRate.rate), {
+                    ${moneyFormat(zilAmount.times(2).times(tokenState.zilRate), {
                       symbol: 'USD',
                       compression: 12,
                       maxFractionDigits: 2,

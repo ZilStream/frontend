@@ -15,6 +15,7 @@ export type Operator = {
 
 export interface StakingState {
   operators: Operator[]
+  initialized: boolean
 }
 
 export interface StakingInitProps {

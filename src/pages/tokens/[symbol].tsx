@@ -12,9 +12,11 @@ import getRatesForToken from 'lib/zilstream/getRatesForToken'
 import TokenIcon from 'components/TokenIcon'
 import Score from 'components/Score'
 import { Reward } from 'types/token.interface'
+import { ResolutionString } from 'charting_library/charting_library'
 
-const Candles = dynamic(
-  () => import('components/Candles'),
+
+const TVChartContainer = dynamic(
+  () => import('components/TVChartContainer'),
   { ssr: false }
 )
 
@@ -59,6 +61,9 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
         <meta property="og:title" content={`${token.symbol} price and info | ZilStream`} />
         <meta name="description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
         <meta property="og:description" content={`Get the latest ${token.symbol} price, market capitalization, volume, supply in circulation and more.`} />
+
+        <script type="text/javascript" src="/datafeeds/udf/dist/polyfills.js"></script>
+		    <script type="text/javascript" src="/datafeeds/udf/dist/bundle.js"></script>
       </Head>
       {!token.listed &&
         <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row">
@@ -177,7 +182,7 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
               <div>
                 {token.rewards.map((reward: Reward) => {
                   return (
-                    <div className="text-sm flex items-center whitespace-nowrap">
+                    <div key={reward.reward_token_address} className="text-sm flex items-center whitespace-nowrap">
                       <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
                       <span className="mr-1">{cryptoFormat(reward.amount)}</span>
                       <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
@@ -202,7 +207,10 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
         </div>
       </div>
       
-      <Candles token={token} data={rates} zilRate={zilRate} />
+      <div className="rounded-lg overflow-hidden shadow-md">
+        <TVChartContainer symbol={token.symbol} autosize={true} fullscreen={false} />
+      </div>
+      {/* <Candles token={token} data={rates} zilRate={zilRate} /> */}
     </>
   )
 }
