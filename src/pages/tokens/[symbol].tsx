@@ -1,18 +1,15 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
-import { Rate } from 'types/rate.interface'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
 import { Link, FileText, Box, ExternalLink, AlertCircle } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
 import getToken from 'lib/zilstream/getToken'
-import getRatesForToken from 'lib/zilstream/getRatesForToken'
 import TokenIcon from 'components/TokenIcon'
 import Score from 'components/Score'
 import { Reward } from 'types/token.interface'
-import { ResolutionString } from 'charting_library/charting_library'
 
 
 const TVChartContainer = dynamic(
@@ -22,10 +19,6 @@ const TVChartContainer = dynamic(
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {  
   const { symbol } = context.query
-
-  const [zilRatesRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rates?symbol=ZIL`)
-  ])
 
   const token = await getToken(symbol as string).catch(error => {
     return
@@ -38,22 +31,15 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       },
     }
   }
-  
-  const rates = await getRatesForToken(symbol as string)
-  const zilRates: Rate[] = await zilRatesRes.json()
 
   return {
     props: {
       token,
-      rates,
-      zilRates,
     },
   }
 }
 
-function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const zilRate = zilRates.sort((a: Rate, b: Rate) => (a.time < b.time) ? 1 : -1)[0]
-
+function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
       <Head>
@@ -210,7 +196,6 @@ function TokenDetail({ token, rates, zilRates }: InferGetServerSidePropsType<typ
       <div className="rounded-lg overflow-hidden shadow-md">
         <TVChartContainer symbol={token.symbol} autosize={true} fullscreen={false} />
       </div>
-      {/* <Candles token={token} data={rates} zilRate={zilRate} /> */}
     </>
   )
 }
