@@ -224,8 +224,7 @@ const StateProvider = (props: Props) => {
     
     try {
       if(typeof zilPay !== "undefined") {
-        
-        if(zilPay.wallet.isConnect) {
+        if(zilPay.wallet.isConnect || localStorage.getItem('zilpay') === 'true') {
           const walletAddress = zilPay.wallet.defaultAccount.bech32
           const network = zilPay.wallet.net
           
