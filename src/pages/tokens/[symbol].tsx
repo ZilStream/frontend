@@ -10,6 +10,7 @@ import getToken from 'lib/zilstream/getToken'
 import TokenIcon from 'components/TokenIcon'
 import Score from 'components/Score'
 import { Reward } from 'types/token.interface'
+import { ResolutionString } from 'charting_library/charting_library'
 
 
 const TVChartContainer = dynamic(
@@ -194,7 +195,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       </div>
       
       <div className="rounded-lg overflow-hidden shadow-md">
-        <TVChartContainer symbol={token.symbol} autosize={true} fullscreen={false} />
+        <TVChartContainer symbol={token.symbol} interval={'240' as ResolutionString} autosize={true} fullscreen={false} />
       </div>
     </>
   )
