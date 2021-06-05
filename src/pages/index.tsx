@@ -68,22 +68,25 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   useEffect(() => {
     if(currentList == ListType.Unvetted) {
-      setDisplayedTokens(tokens.filter(token => token.unvetted === true))
-      displayedTokens.sort(sortTokensByMarketCap)
+      let unvettedTokens = tokens.filter(token => token.unvetted === true)
+      unvettedTokens.sort(sortTokensByMarketCap)
+      setDisplayedTokens(unvettedTokens)
     } else {
-      setDisplayedTokens(tokens.filter(token => token.unvetted === false))
-  
+      let vettedTokens = tokens.filter(token => token.unvetted === false)
+      
       if(currentList == ListType.Volume) {
-        displayedTokens.sort((a,b) => {
+        vettedTokens.sort((a,b) => {
           return (a.daily_volume < b.daily_volume) ? 1 : -1
         })
       } else if(currentList == ListType.Liquidity) {
-        displayedTokens.sort((a,b) => {
+        vettedTokens.sort((a,b) => {
           return (a.current_liquidity < b.current_liquidity) ? 1 : -1
         })
       } else {
-        displayedTokens.sort(sortTokensByMarketCap)
+        vettedTokens.sort(sortTokensByMarketCap)
       }
+
+      setDisplayedTokens(vettedTokens)
     }
   }, [currentList, tokenState.initialized])
   
