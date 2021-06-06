@@ -30,7 +30,8 @@ export default {
 			description: symbolName,
 			type: 'crypto',
 			exchange: 'ZilSwap',
-			minmov: 0.00001,
+			format: "price",
+			minmov: 1,
 			pricescale: 100,
 			has_intraday: true,
 			// intraday_multipliers: ['15', '60'],
@@ -89,14 +90,14 @@ export default {
       })
 	},
 	subscribeBars: (symbolInfo: any, resolution: any, onRealtimeCallback: any, subscribeUID: any, onResetCacheNeededCallback: any) => {
+		// console.log('subscribe bars')
 	},
 	unsubscribeBars: (subscriberUID: any) => {
+		// console.log('unsub bars')
 	},
 	calculateHistoryDepth: (resolution: any, resolutionBack: any, intervalBack: any) => {
 		//optional
-		// while optional, this makes sure we request 24 hours of minute data at a time
-		// CryptoCompare's minute data endpoint will throw an error if we request data beyond 7 days in the past, and return no data
-		return resolution < 60 ? {resolutionBack: 'D', intervalBack: '1'} : undefined
+		return undefined
 	},
 	getMarks: (symbolInfo: any, startDate: any, endDate: any, onDataCallback: any, resolution: any) => {
 		//optional

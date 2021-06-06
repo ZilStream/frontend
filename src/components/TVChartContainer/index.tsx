@@ -56,9 +56,8 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 	private tvWidget: IChartingLibraryWidget | null = null;
 
 	public componentDidMount(): void {
-		console.log(this.props.theme)
 		const widgetOptions: ChartingLibraryWidgetOptions = {
-      // debug: true,
+      debug: true,
 			symbol: this.props.symbol as string,
 			// BEWARE: no trailing slash is expected in feed URL
 			// tslint:disable-next-line:no-any
@@ -68,7 +67,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			library_path: this.props.libraryPath as string,
 
 			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings', 'header_symbol_search', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints'],
+			disabled_features: ['use_localstorage_for_settings', 'header_symbol_search', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode'],
 			charts_storage_url: this.props.chartsStorageUrl,
 			charts_storage_api_version: this.props.chartsStorageApiVersion,
