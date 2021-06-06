@@ -57,7 +57,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 
 	public componentDidMount(): void {
 		const widgetOptions: ChartingLibraryWidgetOptions = {
-      debug: true,
+      // debug: true,
 			symbol: this.props.symbol as string,
 			// BEWARE: no trailing slash is expected in feed URL
 			// tslint:disable-next-line:no-any

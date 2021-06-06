@@ -25,8 +25,8 @@ export default function useBalances() {
     totalBalance = totalBalance.plus(holdingBalance)
   
     liquidityBalance = tokenState.tokens.reduce((sum, current) => {
-      if(!current.pool || !current.pool.userContribution)  return sum 
-  
+      if(!current.pool || !current.pool.userContribution || !current.pool.totalContribution)  return sum 
+      
       let pool = current.pool!
       let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
       let contributionShare = contributionPercentage.shiftedBy(-2)
