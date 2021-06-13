@@ -67,7 +67,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			library_path: this.props.libraryPath as string,
 
 			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings', 'header_symbol_search', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date'],
+			disabled_features: ['use_localstorage_for_settings', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode'],
 			charts_storage_url: this.props.chartsStorageUrl,
 			charts_storage_api_version: this.props.chartsStorageApiVersion,
@@ -81,6 +81,23 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 
 		const tvWidget = new widget(widgetOptions);
 		this.tvWidget = tvWidget;
+
+		tvWidget.onChartReady(() => {
+			tvWidget.headerReady().then(() => {
+				const button = tvWidget.createButton();
+				button.setAttribute('title', 'Click to switch between ZIL and USD');
+				button.classList.add('apply-common-tooltip');
+				button.addEventListener('click', () => {
+					const symbols = tvWidget.chart(0).symbol().split('/')
+					const symbol = symbols[0].split(':')[1]
+					const oldCurrency = symbols[1]
+					const newCurrency = symbols[1] === 'ZIL' ? 'USD' : 'ZIL'
+					tvWidget.setSymbol(symbol + '/' + newCurrency, tvWidget.chart(0).resolution(), () => {})
+					button.innerHTML = 'Change to ' + oldCurrency
+				})
+				button.innerHTML = 'Change to USD';
+			})
+		})
 	}
 
 	public componentWillUnmount(): void {

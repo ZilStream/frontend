@@ -198,7 +198,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       
       <div className="rounded-lg overflow-hidden shadow-md">
         <TVChartContainer 
-          symbol={token.symbol} 
+          symbol={`${token.symbol}/ZIL`} 
           interval={'240' as ResolutionString} 
           autosize={true} 
           fullscreen={false} 

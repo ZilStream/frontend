@@ -21,7 +21,7 @@ export default {
 	onReady: (cb: any) => {
 		setTimeout(() => cb(config), 0)
 	},
-	searchSymbols: () => {
+	searchSymbols: (userInput: string, exchange: string, symbolType: string, onResultReadyCallback: any) => {
 	},
 	resolveSymbol: (symbolName: string, onSymbolResolvedCallback: any, onResolveErrorCallback: any) => {
 		// expects a symbolInfo object in response
@@ -63,7 +63,13 @@ export default {
 		} else if(resolution === '1D') {
 			res = '1day'
 		}
-    fetch(`https://api.zilstream.com/rates/${symbolInfo.name}?interval=${res}&from=${from}&to=${to}`)
+		var symbols = symbolInfo.name.split('/')
+		var currency = 'ZIL'
+		if(symbols.length === 2) {
+			currency = symbols[1]
+		}
+
+    fetch(`https://api.zilstream.com/rates/${symbols[0]}?interval=${res}&from=${from}&to=${to}&currency=${currency}`)
       .then(response => response.json())
       .then((data: any) => {
         if (data.length) {
@@ -85,7 +91,6 @@ export default {
         }
       })
       .catch((err: any) => {
-        console.log({err})
         onErrorCallback(err)
       })
 	},
