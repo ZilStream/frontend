@@ -203,6 +203,7 @@ const StateProvider = (props: Props) => {
 
   useInterval(async () => {
     loadRates()
+    loadWalletState()
   }, 30000)
 
   useEffect(() => {
