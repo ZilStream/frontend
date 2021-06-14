@@ -58,7 +58,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row">
           <AlertCircle className="mb-2 sm:mr-3" />
           <div>
-            <div className="font-medium">This token is unlisted, be extra cautious</div>
+            <div className="font-medium">This token is unvetted, be extra cautious</div>
             <div className="text-sm">{token.name} is not screened or audited by ZilStream. Please verify the legitimacy of this token yourself.</div>
           </div>
         </div>
