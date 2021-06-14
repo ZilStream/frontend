@@ -67,14 +67,14 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			library_path: this.props.libraryPath as string,
 
 			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status'],
+			disabled_features: ['use_localstorage_for_settings', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode'],
 			charts_storage_url: this.props.chartsStorageUrl,
 			charts_storage_api_version: this.props.chartsStorageApiVersion,
 			client_id: this.props.clientId,
 			user_id: this.props.userId,
 			fullscreen: this.props.fullscreen,
-			autosize: this.props.autosize,
+			autosize: true,
 			studies_overrides: this.props.studiesOverrides,
 			theme: this.props.theme === 'dark' ? 'Dark' : 'Light'
 		};
