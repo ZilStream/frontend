@@ -58,8 +58,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   )
 
   const sortTokensByMarketCap = (a: TokenInfo, b: TokenInfo) => {
-    const priorMarketCap = a.current_supply * (a.rate * tokenState.zilRate)
-    const nextMarketCap = b.current_supply * (b.rate * tokenState.zilRate)
+    const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
+    const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
 
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
@@ -67,6 +67,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
 
   useEffect(() => {
+    if(!tokenState.initialized) return
+
     if(currentList == ListType.Unvetted) {
       let unvettedTokens = tokens.filter(token => token.unvetted === true)
       unvettedTokens.sort(sortTokensByMarketCap)
@@ -88,7 +90,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
       setDisplayedTokens(vettedTokens)
     }
-  }, [currentList, tokenState.initialized])
+  }, [currentList, tokenState])
   
   return (
     <>

@@ -13,7 +13,10 @@ const MarketBar = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
   const marketCap = tokenState.tokens.reduce((sum, current) => {
-    return sum + (current.current_supply * (tokenState.zilRate * current.rate))
+    const rate = current.rate ?? 0
+    const zilRate = tokenState.zilRate ?? 0
+    const supply = current.current_supply ?? 0
+    return sum + (supply * (zilRate * rate))
   }, 0)
 
   const liquidity = tokenState.tokens.reduce((sum, current) => {
