@@ -12,7 +12,7 @@ const PortfolioOnboard = (props: Props) => {
         <p className="text-lg">Track the performance of your Zilliqa wallet</p>
 
         <div className="mt-12 flex justify-center">
-          <div className="p-6 w-128 bg-white dark:bg-gray-700 rounded-lg flex flex-col items-center">
+          <div className="p-6 w-128 bg-white dark:bg-gray-900 rounded-lg flex flex-col items-center">
             <div className="font-bold text-xl">Connect your wallet</div>
             <div className="py-12 flex items-stretch gap-10">
               {props.children}

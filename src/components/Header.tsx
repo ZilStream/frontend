@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
-import ConnectWallet from './ConnectWallet'
-import useComponentVisible from 'utils/useComponentVisible'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
-import Account from './Account'
 import { useRouter } from 'next/dist/client/router'
 import StreamPopover from './StreamPopover'
+import WalletPopover from './WalletPopover'
+import ConnectPopover from './ConnectPopover'
 
 const Header = () => {
   const router = useRouter()
@@ -16,7 +15,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const {theme, setTheme, resolvedTheme} = useTheme()
   const accountState = useSelector<RootState, AccountState>(state => state.account)
-  const {ref, isComponentVisible, setIsComponentVisible} = useComponentVisible(false)
 
   useEffect(() => setMounted(true), [])
 
@@ -76,23 +74,10 @@ const Header = () => {
                 {accountState.isConnected ? (
                   <>
                     <StreamPopover />
-
-                    <button 
-                      className="menu-item-active" 
-                      onClick={() => setIsComponentVisible(!isComponentVisible)}
-                    >
-                      <span className="sr-only">Open account menu</span>
-                      {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
-                    </button>
+                    <WalletPopover />
                   </>
                 ) : (
-                  <button 
-                    className="menu-item-active" 
-                    onClick={() => setIsComponentVisible(!isComponentVisible)}
-                  >
-                    <span className="sr-only">Open connect wallet menu</span>
-                    Connect wallet
-                  </button>
+                  <ConnectPopover />
                 )
                 }
               </div>
@@ -123,14 +108,6 @@ const Header = () => {
             </button>
           </div>
         </div>
-      }
-
-      {!accountState.isConnected && isComponentVisible &&
-        <ConnectWallet innerRef={ref} dismissAction={() => setIsComponentVisible(false)} />
-      }
-
-      {accountState.isConnected && isComponentVisible &&
-        <Account innerRef={ref} dismissAction={() => setIsComponentVisible(false)} />
       }
     </nav>
   )
