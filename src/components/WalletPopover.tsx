@@ -12,6 +12,7 @@ const WalletPopover = () => {
   const logout = () => {
     dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: '' })
     localStorage.removeItem('zilpay')
+    localStorage.removeItem('avatar')
   }
 
   return (

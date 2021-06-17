@@ -12,8 +12,7 @@ import { AccountState, Operator, RootState, StakingState, TokenState } from 'sto
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
-import { BIG_ZERO, bnOrZero } from 'utils/strings'
-import { toBigNumber } from 'utils/useMoneyFormatter'
+import { bnOrZero } from 'utils/strings'
 
 interface Props {
   children: React.ReactNode
@@ -223,26 +222,36 @@ const StateProvider = (props: Props) => {
   useEffect(() => {
     const zilPay = (window as any).zilPay
     
-    try {
-      if(typeof zilPay !== "undefined") {
-        if(localStorage.getItem('zilpay') === 'true') {
-          const walletAddress = zilPay.wallet.defaultAccount.bech32
-          const network = zilPay.wallet.net
-          
-          dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-          dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+    if(typeof zilPay !== "undefined" && localStorage.getItem('zilpay') === 'true') {
+      try {
+        const walletAddress = zilPay.wallet.defaultAccount.bech32
+        const network = zilPay.wallet.net
+        
+        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+
+        zilPay.wallet.observableAccount().subscribe(function(account: any) {
+          dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
+        })
   
-          zilPay.wallet.observableAccount().subscribe(function(account: any) {
-            dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
-          })
-    
-          zilPay.wallet.observableNetwork().subscribe(function(network: any) {
-            dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-          })
-        }
+        zilPay.wallet.observableNetwork().subscribe(function(network: any) {
+          dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+        })
+      } catch (e) {
+        console.error(e)
       }
-    } catch (e) {
-      console.error(e)
+    } else if(localStorage.getItem('avatar') !== null && localStorage.getItem('avatar') !== '') {
+      fetch('https://api.carbontoken.info/api/v1/avatar/' + localStorage.getItem('avatar'))
+      .then(response => response.json())
+      .then(data => {
+        let address = data.address
+        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MainNet });
+        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: toBech32Address(address) });
+      })
+      .catch(error => {
+        console.log('Avatar doesn\'t exist')
+        localStorage.removeItem('avatar')
+      })
     }
   }, [])
 
