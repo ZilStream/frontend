@@ -114,7 +114,7 @@ const ConnectPopover = () => {
                   </>
                 ) : (
                   <>
-                    <div className="font-semibold mb-7">Connect wallet</div>
+                    <div className="font-semibold mb-5">Connect wallet</div>
                     <div className="mb-4 flex flex-col items-stretch gap-3 w-full">
                       <ConnectWalletButton walletName={'ZilPay'} connectWallet={() => connectZilPay()}></ConnectWalletButton>
                       <ConnectWalletButton walletName={'Zeeves'} connectWallet={() => connectZeeves()}></ConnectWalletButton>
