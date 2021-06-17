@@ -14,50 +14,8 @@ import { Network } from 'utils/network';
 
 const Portfolio = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
-  const dispatch = useDispatch()
 
   let walletAddress = accountState.address
-
-  const connectZilPay = async () => {
-    const zilPay = (window as any).zilPay
-    
-    // Check if ZilPay is installed
-    if(typeof zilPay === "undefined") {
-      console.log("ZilPay extension not installed")
-      return
-    }
-      
-    const result = await zilPay.wallet.connect()
-
-    if(result !== zilPay.wallet.isConnect) {
-      console.log("Could not connect to ZilPay")
-      return
-    }
-
-    const walletAddress = zilPay.wallet.defaultAccount.bech32
-    const network = zilPay.wallet.net
-    
-    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
-
-    localStorage.setItem('zilpay', 'true')
-  }
-
-  const connectZeeves = async () => {
-    const zeeves = (window as any).Zeeves
-    
-    if (!zeeves) {
-      throw new Error('Zeeves is not supported');
-    }
-      
-    //authentication in Zeeves
-    const walletInfo = await zeeves.getSession();
-  
-    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MainNet });
-    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletInfo.bech32 });
-
-    localStorage.setItem('zilpay', 'false');
-  }
 
   return (
     <>
@@ -92,10 +50,7 @@ const Portfolio = () => {
           </div>
         </>
       ) : (
-        <PortfolioOnboard>
-          <ConnectWalletButton walletName={'ZilPay'} connectWallet={() => connectZilPay()}></ConnectWalletButton>
-          <ConnectWalletButton walletName={'Zeeves'} connectWallet={() => connectZeeves()}></ConnectWalletButton>
-        </PortfolioOnboard>
+        <PortfolioOnboard />
       )}
     </>
   )

@@ -1,10 +1,6 @@
 import React from 'react'
 
-interface Props {
-  children: React.ReactNode,
-}
-
-const PortfolioOnboard = (props: Props) => {
+const PortfolioOnboard = () => {
   return (
     <>
       <div className="mt-12 pt-8 pb-2 md:pb-8 text-center">
@@ -12,12 +8,11 @@ const PortfolioOnboard = (props: Props) => {
         <p className="text-lg">Track the performance of your Zilliqa wallet</p>
 
         <div className="mt-12 flex justify-center">
-          <div className="p-6 w-128 bg-white dark:bg-gray-900 rounded-lg flex flex-col items-center">
-            <div className="font-bold text-xl">Connect your wallet</div>
-            <div className="py-12 flex items-stretch gap-10">
-              {props.children}
+          <div className="p-6 rounded-lg flex flex-col items-center">
+            <div className="rounded-lg overflow-hidden border-gray-900 shadow-md mb-6">
+              <img src="/images/connect-wallet.png" className="block" />
             </div>
-            <div className="text-sm text-gray-400"><span className="font-semibold">Note:</span> Connecting your Wallet does not give ZilStream access to your private keys, and no transactions can be sent. ZilStream does not store your wallet address on its servers.</div>
+            <div>Connect your wallet to start tracking your portfolio.</div>
           </div>
         </div>
       </div>

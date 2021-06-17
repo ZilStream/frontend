@@ -79,7 +79,7 @@ const ConnectPopover = () => {
   }
 
   const handleAvatarNameChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setAvatarName(e.currentTarget.value.replace(/\W/g, '').toLowerCase())
+    setAvatarName(e.currentTarget.value.replaceAll(' ', '').toLowerCase())
     setAvatarErrorMessage('')
   }
 
