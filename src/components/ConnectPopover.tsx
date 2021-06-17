@@ -55,6 +55,10 @@ const ConnectPopover = () => {
   }
 
   const connectAvatar = async () => {
+    if(avatarName === '') {
+      setAvatarErrorMessage('Please enter your avatar')
+      return
+    }
     setAvatarIsLoading(true)
 
     fetch('https://api.carbontoken.info/api/v1/avatar/' + avatarName)
@@ -75,7 +79,7 @@ const ConnectPopover = () => {
   }
 
   const handleAvatarNameChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setAvatarName(e.currentTarget.value)
+    setAvatarName(e.currentTarget.value.replace(/\W/g, '').toLowerCase())
     setAvatarErrorMessage('')
   }
 
