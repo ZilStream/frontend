@@ -1,10 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
-import { prependOnceListener } from 'node:process'
 import React from 'react'
 import { Operator, TokenInfo } from 'store/types'
-import { SimpleRate } from 'types/rate.interface'
 import { BIG_ZERO } from 'utils/strings'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 

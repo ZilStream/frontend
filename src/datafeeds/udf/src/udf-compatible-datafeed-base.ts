@@ -73,6 +73,7 @@ function extractField<Field extends keyof Mark>(data: UdfDatafeedMark, field: Fi
 function extractField<Field extends keyof TimescaleMark>(data: UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): TimescaleMark[Field];
 function extractField<Field extends keyof(TimescaleMark | Mark)>(data: UdfDatafeedMark | UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): (TimescaleMark | Mark)[Field] {
 	const value = data[field];
+	// @ts-ignore
 	return Array.isArray(value) ? value[arrayIndex] : value;
 }
 
