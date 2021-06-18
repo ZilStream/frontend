@@ -1,8 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
-import BigNumber from 'bignumber.js'
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, TokenInfo, TokenState } from 'store/types'
+import { RootState, TokenState } from 'store/types'
 import { cryptoFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
@@ -10,27 +9,16 @@ import useMoneyFormatter from 'utils/useMoneyFormatter'
 const StreamPopover = () => {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
-  const { totalBalance } = useBalances()
-  const streamTokens = tokenState.tokens.filter(token => token.isStream)
-  const streamToken: TokenInfo|null = streamTokens[0] ?? null
-  var streamBalance = new BigNumber(0)
-  var streamBalanceUSD = new BigNumber(0)
-  var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
-  var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
+  const { totalBalance, membership } = useBalances()
 
-  useEffect(() => {
-    if(streamToken) {
-      streamBalance = streamToken.balance ?? new BigNumber(0)
-      streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
-    }
-  }, [tokenState])
+  var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
 
   return (
     <Popover>
       {({ open }) => (
         <>
           <Popover.Button className="menu-item-active focus:outline-none flex items-center mr-2">
-            <span className="mr-2">{cryptoFormat(streamBalance.toNumber())}</span>
+            <span className="mr-2">{cryptoFormat(membership.streamBalance.toNumber())}</span>
             <img className="h-4 w-4" src="/stream.svg" alt="STREAM" />
           </Popover.Button>
           <Transition
@@ -47,9 +35,9 @@ const StreamPopover = () => {
               <div className="flex flex-col items-center">
                 <div className="font-semibold mb-3">STREAM balance</div>
                 <img className="h-12 w-12" src="/stream.svg" alt="STREAM" />
-                <div className="mt-2 font-semibold">{cryptoFormat(streamBalance.toNumber())}</div>
-                <div className="text-gray-600 dark:text-gray-400 text-sm">${moneyFormat(streamBalanceUSD, {maxFractionDigits: 2})}</div>
-                {streamBalanceUSD.isGreaterThan(membershipUSD) &&
+                <div className="mt-2 font-semibold">{cryptoFormat(membership.streamBalance.toNumber())}</div>
+                <div className="text-gray-600 dark:text-gray-400 text-sm">${moneyFormat(membership.streamBalanceUSD, {maxFractionDigits: 2})}</div>
+                {membership.isMember &&
                   <div className="border-2 border-primary rounded-full text-sm font-medium text-primary px-2 mt-2">ZilStream Member</div>
                 }
               </div>
@@ -64,7 +52,7 @@ const StreamPopover = () => {
                   <div className="flex-grow text-gray-600 dark:text-gray-400">
                     Membership
                   </div>
-                  <div>${moneyFormat(membershipUSD, {maxFractionDigits: 2})}</div>
+                  <div>${moneyFormat(membership.membershipUSD, {maxFractionDigits: 2})}</div>
                 </div>
               </div>
             </Popover.Panel>

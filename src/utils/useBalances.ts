@@ -1,13 +1,23 @@
+import React from 'react'
 import BigNumber from 'bignumber.js'
-import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, StakingState, TokenState } from 'store/types'
+import { RootState, StakingState, TokenInfo, TokenState } from 'store/types'
 import { BIG_ZERO } from './strings'
 import { toBigNumber } from './useMoneyFormatter'
 
 export default function useBalances() {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+
+  const streamTokens = tokenState.tokens.filter(token => token.isStream)
+  const streamToken: TokenInfo|null = streamTokens[0] ?? null
+  var streamBalance = new BigNumber(0)
+  var streamBalanceUSD = new BigNumber(0)
+
+  if(streamToken) {
+    streamBalance = streamToken.balance ?? new BigNumber(0)
+    streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
+  }
 
   var totalBalance = new BigNumber(0)
   var holdingBalance = new BigNumber(0)
@@ -50,5 +60,18 @@ export default function useBalances() {
     totalBalance = totalBalance.plus(stakingBalance)
   }
 
-  return { totalBalance, holdingBalance, liquidityBalance, stakingBalance }
+  var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
+
+  return { 
+    totalBalance, 
+    holdingBalance, 
+    liquidityBalance, 
+    stakingBalance,
+    membership: {
+      streamBalance,
+      streamBalanceUSD,
+      membershipUSD,
+      isMember: streamBalanceUSD >= membershipUSD
+    }
+  }
 }

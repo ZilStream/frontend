@@ -1,11 +1,9 @@
-import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, StakingState, TokenState } from 'store/types'
-import { BIG_ZERO } from 'utils/strings'
 import useBalances from 'utils/useBalances'
-import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
+import useMoneyFormatter from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
 import FlashChange from './FlashChange'
 
@@ -14,7 +12,7 @@ function PortfolioOverview() {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
-  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance } = useBalances()
+  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership } = useBalances()
 
   let zilRate = tokenState.zilRate
 
@@ -53,10 +51,18 @@ function PortfolioOverview() {
       </div>
 
       <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+      {membership.isMember ? (
+        <div></div>
+      ) : (
+        <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+      )}
 
-      <div className="text-sm text-gray-500 mt-4">Fees earned</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+      <div className="text-sm text-gray-500 mt-4">Estimated fees earned</div>
+      {membership.isMember ? (
+        <div></div>
+      ) : (
+        <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+      )}
 
       <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Staking</div>
       <div className="flex items-start">
@@ -67,9 +73,6 @@ function PortfolioOverview() {
           <div className="text-gray-500 text-md ml-2">{moneyFormat(stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
-
-      <div className="text-sm text-gray-500 mt-4">Rewards earned</div>
-      <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
     </div>
   )
 }
