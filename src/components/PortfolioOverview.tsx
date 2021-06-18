@@ -1,9 +1,10 @@
+import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, StakingState, TokenState } from 'store/types'
 import useBalances from 'utils/useBalances'
-import useMoneyFormatter from 'utils/useMoneyFormatter'
+import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
 import FlashChange from './FlashChange'
 
@@ -15,6 +16,18 @@ function PortfolioOverview() {
   const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership } = useBalances()
 
   let zilRate = tokenState.zilRate
+
+  const estimatedFees = tokenState.tokens.reduce((sum, current) => {
+    if(!current.pool || !current.pool.userContribution || !current.pool.totalContribution)  return sum 
+      
+    let pool = current.pool!
+    let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+    let contributionShare = contributionPercentage.shiftedBy(-2)
+
+    let volume = toBigNumber(current.daily_volume)
+    let fees = volume.times(0.003).times(contributionShare)
+    return sum.plus(fees)
+  }, new BigNumber(0))
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
@@ -59,7 +72,12 @@ function PortfolioOverview() {
 
       <div className="text-sm text-gray-500 mt-4">Estimated fees earned</div>
       {membership.isMember ? (
-        <div></div>
+        <div className="flex-grow flex items-center">
+          <div className="font-medium text-xl">
+            ${moneyFormat(estimatedFees.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          </div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(estimatedFees, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+        </div>
       ) : (
         <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
       )}
