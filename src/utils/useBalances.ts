@@ -16,6 +16,15 @@ export default function useBalances() {
 
   if(streamToken) {
     streamBalance = streamToken.balance ?? new BigNumber(0)
+
+    if(streamToken.pool) {
+      let pool = streamToken.pool!
+      let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+      let contributionShare = contributionPercentage.shiftedBy(-2)
+      let streamLiquidityAmount = contributionShare?.times(streamToken.pool?.tokenReserve ?? BIG_ZERO);
+      streamBalance = streamBalance.plus(streamLiquidityAmount)
+    }
+
     streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
   }
 
