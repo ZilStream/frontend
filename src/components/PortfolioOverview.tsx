@@ -72,7 +72,7 @@ function PortfolioOverview() {
         </>
       )}
 
-      <div className="text-sm text-gray-500 mt-4">Estimated fees earned</div>
+      <div className="text-sm text-gray-500 mt-4">Estimated fees earned (24h)</div>
       {membership.isMember ? (
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">

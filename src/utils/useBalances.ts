@@ -69,7 +69,8 @@ export default function useBalances() {
     totalBalance = totalBalance.plus(stakingBalance)
   }
 
-  var membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
+  const membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
+  const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD)
 
   return { 
     totalBalance, 
@@ -80,7 +81,7 @@ export default function useBalances() {
       streamBalance,
       streamBalanceUSD,
       membershipUSD,
-      isMember: streamBalanceUSD >= membershipUSD
+      isMember: isMember
     }
   }
 }
