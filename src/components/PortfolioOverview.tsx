@@ -63,11 +63,13 @@ function PortfolioOverview() {
         </div>
       </div>
 
-      <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
       {membership.isMember ? (
         <div></div>
       ) : (
+        <>
+        <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
         <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+        </>
       )}
 
       <div className="text-sm text-gray-500 mt-4">Estimated fees earned</div>
