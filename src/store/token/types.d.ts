@@ -21,8 +21,21 @@ export type TokenInfo = {
   isZil: boolean
   isStream: boolean
   rate: number
+  rewards: Reward[]
   balance?: BigNumber = 0
   pool?: TokenPool
+}
+
+export interface Reward {
+  type: string
+  amount: number
+  max_individual_amount: number
+  reward_token_address: string
+  reward_token_symbol: string
+  frequency: number
+  frequency_type: string
+  excluded_addresses: string
+  adjusted_total_contributed: string
 }
 
 export type TokenPool = {

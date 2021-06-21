@@ -5,6 +5,12 @@ import { RootState, StakingState, TokenInfo, TokenState } from 'store/types'
 import { BIG_ZERO } from './strings'
 import { toBigNumber } from './useMoneyFormatter'
 
+export interface TokenReward {
+  amount: BigNumber
+  address: string
+  symbol: string
+}
+
 export default function useBalances() {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
@@ -72,6 +78,38 @@ export default function useBalances() {
   const membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
   const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD)
 
+  var rewards: {[key: string]: TokenReward} = {}
+  tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
+    let pool = token.pool!
+    
+    token.rewards.forEach(reward => {
+      let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
+        pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
+        pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+      let contributionShare = contributionPercentage.shiftedBy(-2)
+      let currentReward = rewards[reward.reward_token_address]
+      let newReward = toBigNumber(reward.amount).times(contributionShare)
+
+      if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
+        newReward = toBigNumber(reward.max_individual_amount)
+      }
+
+      if(currentReward !== undefined) {
+        rewards[reward.reward_token_address] = {
+          amount: currentReward.amount.plus(newReward),
+          address: reward.reward_token_address,
+          symbol: reward.reward_token_symbol
+        }
+      } else {
+        rewards[reward.reward_token_address] = {
+          amount: newReward,
+          address: reward.reward_token_address,
+          symbol: reward.reward_token_symbol
+        }
+      }
+    })
+  })
+
   return { 
     totalBalance, 
     holdingBalance, 
@@ -82,6 +120,7 @@ export default function useBalances() {
       streamBalanceUSD,
       membershipUSD,
       isMember: isMember
-    }
+    },
+    rewards
   }
 }

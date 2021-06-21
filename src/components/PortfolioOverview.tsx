@@ -2,18 +2,18 @@ import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, StakingState, TokenState } from 'store/types'
+import { RootState, StakingState, TokenState } from 'store/types'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
 import FlashChange from './FlashChange'
+import TokenIcon from './TokenIcon'
 
 function PortfolioOverview() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
-  const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
-  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership } = useBalances()
+  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useBalances()
 
   let zilRate = tokenState.zilRate
 
@@ -27,6 +27,12 @@ function PortfolioOverview() {
     let volume = toBigNumber(current.daily_volume)
     let fees = volume.times(0.003).times(contributionShare)
     return sum.plus(fees)
+  }, new BigNumber(0))
+
+  const totalRewardZil = Object.keys(rewards).reduce((sum, current) => {
+    let reward = rewards[current]
+    let token = tokenState.tokens.filter(token => token.address_bech32 === reward.address)[0]
+    return sum.plus(reward.amount.times(token.rate))
   }, new BigNumber(0))
 
   return (
@@ -63,13 +69,30 @@ function PortfolioOverview() {
         </div>
       </div>
 
+      <div className="text-sm text-gray-500 mt-4">Estimated weekly rewards</div>
       {membership.isMember ? (
-        <div></div>
-      ) : (
         <>
-        <div className="text-sm text-gray-500 mt-4">Estimated ZWAP rewards</div>
-        <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
+          <div className="flex-grow flex items-center">
+            <div className="font-medium text-xl">
+              ${moneyFormat(totalRewardZil.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            </div>
+            <div className="text-gray-500 text-md ml-2">{moneyFormat(totalRewardZil, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+          </div>
+          <div className="text-sm">
+            {Object.keys(rewards).map(address => {
+              let reward = rewards[address]
+              return (
+                <div key={address} className="flex items-center">
+                  <span className="w-4 h-4 mr-2"><TokenIcon address={reward.address} /></span>
+                  <span className="mr-1">{moneyFormat(reward.amount, {compression: 0, maxFractionDigits: 2})}</span>
+                  <span className="font-medium">{reward.symbol}</span>
+                </div>
+              )
+            })}
+          </div>
         </>
+      ) : (
+        <div className="text-sm text-gray-700 dark:text-gray-300">Requires Premium, <Link href="/updates/announcing-premium-membership">learn more</Link>.</div>
       )}
 
       <div className="text-sm text-gray-500 mt-4">Estimated fees earned (24h)</div>
