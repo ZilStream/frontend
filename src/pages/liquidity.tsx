@@ -18,12 +18,10 @@ export const getServerSideProps = async () => {
 }
 
 const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const moneyFormat = useMoneyFormatter({maxFractionDigits: 5})
-
   const tokens = stats.tokens.filter((token: any) => token.liquidity > 0)
 
   tokens.sort((a: any, b: any) => {
-    return (a.liquidity < b.liquidity) ? 1 : -1
+    return (a.liquidity_ema30_zil < b.liquidity_ema30_zil) ? 1 : -1
   })
   
   return (
@@ -50,6 +48,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
@@ -58,10 +57,21 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">ZIL</th>
               <th className="px-2 py-2 text-right">EMA30</th>
+              <th className="pl-2 pr-3 py-2 text-right">Rewards Tier</th>
             </tr>
           </thead>
           <tbody>
             {tokens.map((token: any, index: number) => {
+              var tier = <></>
+              if(token.address === 'zil1p5suryq6q647usxczale29cu3336hhp376c627') {
+                tier = <span className="bg-green-400 py-1 px-2 rounded font-medium">ZWAP</span>
+              } else if(token.liquidity_ema30_zil > 50000000) {
+                tier = <span className="bg-purple-400 py-1 px-2 rounded font-medium">Tier 1</span>
+              } else if(token.liquidity_ema30_zil > 5000000) {
+                tier = <span className="bg-indigo-400 py-1 px-2 rounded font-medium">Tier 2</span>
+              } else if(token.liquidity_ema30_zil > 500000) {
+                tier = <span className="bg-blue-400 py-1 px-2 rounded font-medium">Tier 3</span>
+              }
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -83,8 +93,11 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                   <td className="px-2 py-2 font-normal text-right">
                     {cryptoFormat(token.liquidity_zil)}
                   </td>
-                  <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
+                  <td className={`px-2 py-2 font-normal text-right`}>
                   {cryptoFormat(token.liquidity_ema30_zil)}
+                  </td>
+                  <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
+                    {tier}
                   </td>
                 </tr>
               )
