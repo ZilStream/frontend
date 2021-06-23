@@ -162,8 +162,9 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Liquidity</div>
-          <div className="font-medium">{currencyFormat(token.market_data.current_liquidity)}</div>
+          <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity)}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
+          <div className="text-xs text-gray-500"><span className="font-semibold">{numberFormat(token.market_data.liquidity_providers, 0)}</span> liquidity providers</div>
 
           {token.rewards.length > 0 ? (
             <>
