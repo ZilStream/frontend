@@ -53,9 +53,9 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
               <th className="pl-3 pr-2 py-2 text-left">Token</th>
+              <th className="px-2 py-2 text-right">Volume</th>
               <th className="px-2 py-2 text-right">Reserve</th>
               <th className="px-2 py-2 text-right">Liquidity</th>
-              <th className="px-2 py-2 text-right">ZIL</th>
               <th className="px-2 py-2 text-right">EMA30</th>
               <th className="pl-2 pr-3 py-2 text-right">Rewards Tier</th>
             </tr>
@@ -85,13 +85,14 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                       </a>
                     </Link>
                   </td>
+                  <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.volume_24h)}</td>
                   <td className="px-2 py-2 font-normal text-right">
                     <div>{cryptoFormat(token.zil_reserve)} <span className="font-medium">ZIL</span></div>
                     <div>{cryptoFormat(token.token_reserve)} <span className="font-medium">{token.symbol}</span></div>
                   </td>
-                  <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.liquidity)}</td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {cryptoFormat(token.liquidity_zil)}
+                    <div>{currencyFormat(token.liquidity)}</div>
+                    <div>{cryptoFormat(token.liquidity_zil)} <span className="font-medium">ZIL</span></div>
                   </td>
                   <td className={`px-2 py-2 font-normal text-right`}>
                   {cryptoFormat(token.liquidity_ema30_zil)}
