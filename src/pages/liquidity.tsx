@@ -56,7 +56,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               <th className="px-2 py-2 text-right">Reserve</th>
               <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">Volume (EMA30)</th>
-              <th className="px-2 py-2 text-right">EMA30</th>
+              <th className="px-2 py-2 text-right">Liquidity (EMA30)</th>
               <th className="pl-2 pr-3 py-2 text-right">Rewards Tier</th>
             </tr>
           </thead>
