@@ -15,7 +15,7 @@ const Score = (props: Props) => {
   )
 
   return (
-    <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded mr-2 font-medium text-sm">
+    <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded mr-2 font-medium text-xs sm:text-sm">
       <span
         className={`
           ${props.value < 20 ? 'text-red-500' : ''}

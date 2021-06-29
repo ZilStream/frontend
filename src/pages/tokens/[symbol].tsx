@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link, FileText, Box, ExternalLink, AlertCircle } from 'react-feather'
+import { Link, FileText, Box, ExternalLink, AlertCircle, MessageCircle } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -92,7 +92,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="flex items-center justify-center mt-2 sm:mt-0">
           <Score value={token.viewblock_score} />
         </div>
-        <div className="flex-grow flex items-center justify-center sm:justify-start text-sm mt-2 sm:mt-0">
+        <div className="flex-grow flex items-center justify-center sm:justify-start text-xs sm:text-sm mt-2 sm:mt-0">
           {token.website &&
             <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
               <Link size={12} className="mr-1" />
@@ -104,7 +104,17 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           {token.whitepaper &&
             <a href={token.whitepaper} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
               <FileText size={12} className="mr-1" />
-              Whitepaper
+              <span className="hidden sm:inline">Whitepaper</span>
+              <span className="inline sm:hidden">WP</span>
+              <ExternalLink size={10} className="ml-1 text-gray-600" />
+            </a>
+          }
+
+          {token.telegram &&
+            <a href={token.telegram} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
+              <MessageCircle size={12} className="mr-1" />
+              <span className="hidden sm:inline">Telegram</span>
+              <span className="inline sm:hidden">TG</span>
               <ExternalLink size={10} className="ml-1 text-gray-600" />
             </a>
           }
@@ -116,7 +126,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           </a>
         </div>
 
-        <div className="flex items-center justify-center sm:justify-end text-sm">
+        <div className="flex items-center justify-center sm:justify-end text-xs sm:text-sm">
           {token.market_data.change_percentage_7d !== 0 &&
             <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium">
               <div className="mr-2 text-gray-500">7D</div>
