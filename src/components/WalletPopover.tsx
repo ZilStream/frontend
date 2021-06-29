@@ -19,7 +19,7 @@ const WalletPopover = () => {
     <Popover>
       {({ open }) => (
         <>
-          <Popover.Button className="menu-item-active focus:outline-none flex items-center mr-2">
+          <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Open account menu</span>
             {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
           </Popover.Button>

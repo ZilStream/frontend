@@ -87,7 +87,7 @@ const ConnectPopover = () => {
     <Popover>
       {({ open }) => (
         <>
-          <Popover.Button className="menu-item-active focus:outline-none flex items-center mr-2">
+          <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Connect wallet</span>
             Connect wallet
           </Popover.Button>
