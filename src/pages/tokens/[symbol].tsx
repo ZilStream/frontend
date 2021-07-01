@@ -57,9 +57,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
     var totalRewardsValue = new BigNumber(0)
     rewards.forEach(reward => {
-      const rewardToken = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)[0]
-      const rewardsValue = toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate)
-      totalRewardsValue = totalRewardsValue.plus(rewardsValue)
+      const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
+      if(rewardTokens.length > 0) {
+        const rewardToken = rewardTokens[0]
+        const rewardsValue = toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate)
+        totalRewardsValue = totalRewardsValue.plus(rewardsValue)
+      }
+      
     })
 
     const roiPerEpoch = totalRewardsValue.dividedBy(token.market_data.current_liquidity)
@@ -68,7 +72,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
     return {
       apr
     }
-  }, [token])
+  }, [token, tokenState.tokens])
 
   return (
     <>
