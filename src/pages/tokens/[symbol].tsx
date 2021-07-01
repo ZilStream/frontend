@@ -12,6 +12,11 @@ import Score from 'components/Score'
 import { Reward } from 'types/token.interface'
 import { ResolutionString } from 'charting_library/charting_library'
 import { useTheme } from 'next-themes'
+import { useSelector } from 'react-redux'
+import { RootState, TokenState } from 'store/types'
+import { toBigNumber } from 'utils/useMoneyFormatter'
+import BigNumber from 'bignumber.js'
+import { bnOrZero } from 'utils/strings'
 
 
 const TVChartContainer = dynamic(
@@ -43,6 +48,28 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const {theme, setTheme, resolvedTheme} = useTheme()
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+
+  const {
+    apr
+  } = React.useMemo(() => {
+    const rewards: Reward[] = token.rewards
+
+    var totalRewardsValue = new BigNumber(0)
+    rewards.forEach(reward => {
+      const rewardToken = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)[0]
+      const rewardsValue = toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate)
+      totalRewardsValue = totalRewardsValue.plus(rewardsValue)
+    })
+
+    const roiPerEpoch = totalRewardsValue.dividedBy(token.market_data.current_liquidity)
+    const apr = bnOrZero(roiPerEpoch.times(52).shiftedBy(2).decimalPlaces(1))
+
+    return {
+      apr
+    }
+  }, [token])
+
   return (
     <>
       <Head>
@@ -179,6 +206,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           {token.rewards.length > 0 ? (
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity Rewards</div>
+              <div className="text-sm">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
               <div>
                 {token.rewards.map((reward: Reward) => {
                   return (
