@@ -131,6 +131,15 @@ const initialState: CurrencyState = {
       isFiat: true,
       isCrypto: false
     },
+    {
+      name: 'Malaysian Ringgit',
+      code: 'MYR',
+      symbol: 'RM',
+      rate: 0,
+      isPopular: false,
+      isFiat: true,
+      isCrypto: false
+    },
   ],
   selectedCurrency: 'USD'
 }

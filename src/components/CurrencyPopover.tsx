@@ -36,13 +36,13 @@ const CurrencyPopover = () => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Popover.Panel className="origin-top-right absolute right-4 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
-              <div className="font-semibold text-center mb-3 text-gray-500 max-h-screen overflow-y-auto">Popular currencies</div>
+              <div className="font-semibold text-center mb-3 text-gray-500 dark:text-gray-400 max-h-screen overflow-y-auto">Popular currencies</div>
               <div className="w-full flex flex-col items-stretch">
                 {currencyState.currencies.filter(currency => currency.isPopular).map(currency => {
                   return (
-                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200' : ''}`}>
+                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200 dark:bg-gray-700' : ''}`}>
                       <div className="flex-shrink-0 flex-grow-0 mr-2">
-                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 border border-gray-100 rounded-full" />
+                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 dark:bg-gray-700 border border-gray-100 dark:border-gray-900 rounded-full" />
                       </div>
                       <div className="flex-grow text-left">
                         <div className="font-medium">{currency.name}</div>
@@ -57,13 +57,13 @@ const CurrencyPopover = () => {
                 })}
               </div>
 
-              <div className="font-semibold text-center my-3 text-gray-500 max-h-screen overflow-y-auto border-t border-gray-100 pt-3">Fiat currencies</div>
+              <div className="font-semibold text-center my-3 text-gray-500 dark:text-gray-400 max-h-screen overflow-y-auto border-t border-gray-100 dark:border-gray-700 pt-3">Fiat currencies</div>
               <div className="w-full flex flex-col items-stretch">
                 {currencyState.currencies.filter(currency => currency.isFiat).sort((a,b) => a.name < b.name ? -1 : 1).map(currency => {
                   return (
-                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200' : ''}`}>
+                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200 dark:bg-gray-700' : ''}`}>
                       <div className="flex-shrink-0 flex-grow-0 mr-2">
-                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 border border-gray-100 rounded-full" />
+                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 dark:bg-gray-700 border border-gray-100 dark:border-gray-900 rounded-full" />
                       </div>
                       <div className="flex-grow text-left">
                         <div className="font-medium">{currency.name}</div>
@@ -78,13 +78,13 @@ const CurrencyPopover = () => {
                 })}
               </div>
 
-              <div className="font-semibold text-center my-3 text-gray-500 max-h-screen overflow-y-auto border-t border-gray-100 pt-3">Crypto currencies</div>
+              <div className="font-semibold text-center my-3 text-gray-500 dark:text-gray-400 max-h-screen overflow-y-auto border-t border-gray-100 dark:border-gray-700 pt-3">Crypto currencies</div>
               <div className="w-full flex flex-col items-stretch">
                 {currencyState.currencies.filter(currency => currency.isCrypto).sort((a,b) => a.name < b.name ? -1 : 1).map(currency => {
                   return (
-                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200' : ''}`}>
+                    <button key={currency.code} onClick={() => selectCurrency(currency)} className={`flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer focus:outline-none py-1 px-2 ${currency.code === currencyState.selectedCurrency ? 'bg-gray-200 dark:bg-gray-700' : ''}`}>
                       <div className="flex-shrink-0 flex-grow-0 mr-2">
-                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 border border-gray-100 rounded-full" />
+                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 dark:bg-gray-700 border border-gray-100 dark:border-gray-900 rounded-full" />
                       </div>
                       <div className="flex-grow text-left">
                         <div className="font-medium">{currency.name}</div>
