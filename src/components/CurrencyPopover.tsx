@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import React, { Fragment } from 'react'
+import React, { Fragment, useRef } from 'react'
 import { ChevronDown } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { Currency, CurrencyState } from 'store/currency/types'
@@ -9,17 +9,19 @@ import actions from 'store/actions'
 const CurrencyPopover = () => {
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const dispatch = useDispatch()
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   async function selectCurrency(currency: Currency) {
     dispatch(actions.Currency.select({currency: currency.code}))
     localStorage.setItem('selectedCurrency', currency.code)
+    buttonRef.current?.click()
   }
 
   return (
     <Popover>
       {({ open }) => (
         <>
-          <Popover.Button className="mr-2 flex items-center focus:outline-none">
+          <Popover.Button ref={buttonRef} className="mr-2 flex items-center focus:outline-none">
             <span className="font-semibold mr-1">{currencyState.selectedCurrency}</span>
             <ChevronDown size={14} />
           </Popover.Button>
@@ -33,7 +35,7 @@ const CurrencyPopover = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Popover.Panel className="origin-top-right absolute right-5 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
+            <Popover.Panel className="origin-top-right absolute right-4 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
               <div className="font-semibold text-center mb-3 text-gray-500 max-h-screen overflow-y-auto">Popular currencies</div>
               <div className="w-full flex flex-col items-stretch">
                 {currencyState.currencies.filter(currency => currency.isPopular).map(currency => {
