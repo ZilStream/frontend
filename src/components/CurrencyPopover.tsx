@@ -20,31 +20,26 @@ const CurrencyPopover = () => {
       name: 'United States Dollar',
       code: 'USD',
       symbol: '$',
-      icon: '/images/currency-flags/USD.svg'
     },
     {
       name: 'Euro',
       code: 'EUR',
       symbol: '€',
-      icon: '/images/currency-flags/EUR.svg'
     },
     {
       name: 'Singapore Dollar',
       code: 'SGD',
       symbol: 'S$',
-      icon: '/images/currency-flags/SGD.svg'
     },
     {
       name: 'Pound Sterling',
       code: 'GBP',
       symbol: '£',
-      icon: '/images/currency-flags/GBP.svg'
     },
     {
       name: 'Bitcoin',
       code: 'BTC',
       symbol: '฿',
-      icon: '/images/currency-flags/BTC.svg'
     },
   ]
 
@@ -73,7 +68,7 @@ const CurrencyPopover = () => {
                   return (
                     <div className="flex items-center hover:bg-gray-200 rounded cursor-pointer py-1 px-2">
                       <div className="flex-shrink-0 flex-grow-0 mr-2">
-                        <img src={currency.icon} className="w-5 h-5 bg-gray-200 border border-gray-100 rounded-full" />
+                        <img src={`/images/currency-flags/${currency.code}.svg`} className="w-5 h-5 bg-gray-200 border border-gray-100 rounded-full" />
                       </div>
                       <div className="flex-grow">
                         <div className="font-medium">{currency.name}</div>
