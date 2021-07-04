@@ -2,7 +2,8 @@ import BigNumber from "bignumber.js"
 import Link from "next/link"
 import React from "react"
 import { useSelector } from "react-redux"
-import { RootState, TokenState } from "store/types"
+import { Currency, CurrencyState, RootState, TokenState } from "store/types"
+import { currencyFormat } from "utils/format"
 import useMoneyFormatter, { toBigNumber } from "utils/useMoneyFormatter"
 import EmptyRow from "./EmptyRow"
 import FlashChange from "./FlashChange"
@@ -11,6 +12,8 @@ import TokenIcon from "./TokenIcon"
 function PortfolioBalances() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   let zilRate = tokenState.zilRate
 
@@ -65,7 +68,7 @@ function PortfolioBalances() {
 
               let rate = token.rate
               let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
-              let usdBalance = zilBalance * zilRate
+              let fiatBalance = zilBalance * selectedCurrency.rate
 
               let share = (zilBalance / totalBalance.toNumber()) * 100
               
@@ -83,12 +86,21 @@ function PortfolioBalances() {
                     </Link>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {moneyFormat(rate, {
-                      symbol: 'ZIL',
-                      compression: 0,
-                      maxFractionDigits: 2,
-                      showCurrency: false,
-                    })}
+                    {token.symbol === 'ZIL' ? (
+                      <>
+                        {currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
+                      </>
+                    ) : (
+                      <>
+                        {moneyFormat(rate, {
+                          symbol: 'ZIL',
+                          compression: 0,
+                          maxFractionDigits: 2,
+                          showCurrency: false,
+                        })} <span className="font-medium">ZIL</span>
+                      </>
+                    )}
+                    
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {moneyFormat(token.balance, {
@@ -100,8 +112,9 @@ function PortfolioBalances() {
                   </td>
                   <td className="px-2 py-2 font-normal text-right whitespace-nowrap">
                     <div>
-                      <FlashChange value={usdBalance}>
-                        <span>${moneyFormat(usdBalance, {compression: 0, maxFractionDigits: 2})}</span>
+                      <FlashChange value={fiatBalance}>
+                        <span>{currencyFormat(fiatBalance, selectedCurrency.symbol)}</span>
+
                       </FlashChange>
                     </div>
                     <div className="text-gray-500">
