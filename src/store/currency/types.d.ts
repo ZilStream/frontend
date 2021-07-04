@@ -5,6 +5,9 @@ export type Currency = {
   code: string
   symbol: string
   rate: number = 0
+  isPopular: boolean
+  isFiat: boolean
+  isCrypto: boolean
 }
 
 export interface CurrencyState {
