@@ -1,7 +1,7 @@
 import React from 'react'
 import BigNumber from 'bignumber.js'
 import { useSelector } from 'react-redux'
-import { RootState, StakingState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, StakingState, TokenInfo, TokenState } from 'store/types'
 import { BIG_ZERO } from './strings'
 import { toBigNumber } from './useMoneyFormatter'
 
@@ -14,6 +14,7 @@ export interface TokenReward {
 export default function useBalances() {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
 
   const streamTokens = tokenState.tokens.filter(token => token.isStream)
   const streamToken: TokenInfo|null = streamTokens[0] ?? null
@@ -76,7 +77,7 @@ export default function useBalances() {
   }
 
   const membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
-  const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD)
+  const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD) && streamBalanceUSD.isGreaterThan(0)
 
   var rewards: {[key: string]: TokenReward} = {}
   tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {

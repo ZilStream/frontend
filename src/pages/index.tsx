@@ -9,9 +9,10 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { AlertCircle } from 'react-feather'
 import { useSelector } from 'react-redux'
-import { RootState, TokenInfo, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
+import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
 export const getServerSideProps = async () => {
@@ -27,11 +28,13 @@ export const getServerSideProps = async () => {
 function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = tokenState.tokens
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   
   useEffect(() => {
     if(tokens.length === 0) return
@@ -105,7 +108,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           <div className="flex-grow">
             <h1 className="mb-1">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
-              Zilliqa is currently valued at <span className="font-medium">${Math.round(zilRates.lastRate * 10000) / 10000}, </span>
+              Zilliqa is currently valued at <span className="font-medium">{currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}, </span>
               {zilRates.change >= 0 ? (
                 <div className="inline">
                   up <span className="text-green-600 dark:text-green-500 font-medium">{zilRates.changeRounded}%</span> from yesterday.
@@ -132,7 +135,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               return (
                 <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
                   <a>
-                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={zilRates.lastRate} />
+                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
                   </a>
                 </Link>
               )
@@ -189,7 +192,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <th className="text-left pl-5 pr-2 py-2">#</th>
               <th className="px-2 py-2 text-left">Token</th>
               <th className="px-2 py-2 text-right">ZIL</th>
-              <th className="px-2 py-2 text-right">USD</th>
+              <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>
               <th className="px-2 py-2 text-right">24h %</th>
               <th className="px-2 py-2 text-right">Market Cap</th>
               <th className="px-2 py-2 text-right">Liquidity</th>
@@ -205,7 +208,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   token={token} 
                   rank={index+1} 
                   rates={rates.filter(rate => rate.token_id == token.id)} 
-                  zilRate={zilRates.lastRate} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
                 />
               )

@@ -4,7 +4,8 @@ import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 import FlashChange from './FlashChange'
-import { TokenInfo } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo } from 'store/types'
+import { useSelector } from 'react-redux'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -14,15 +15,17 @@ const Chart = dynamic(
 interface Props {
   token: TokenInfo,
   rates: Rate[],
-  zilRate: number,
 }
 
 const RatesBlock = (props: Props) => {
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+
   const sortedRates = props.rates.sort((a,b) => (a.time < b.time) ? 1 : -1)
   const lastRate = sortedRates.length > 0 ? sortedRates[0].value : 0
   const firstRate = sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
   const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
-  const usdRate = lastRate * props.zilRate
+  const fiatRate = lastRate * selectedCurrency.rate
 
   const change = ((lastRate - firstRate) / firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100
@@ -40,7 +43,7 @@ const RatesBlock = (props: Props) => {
           </div>
         </div>
         <div>
-          <span className="text-gray-400">{currencyFormat(usdRate, '')} USD</span>
+          <span className="text-gray-400">{currencyFormat(fiatRate, '')} {selectedCurrency.code}</span>
         </div>
       </div>
       <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
