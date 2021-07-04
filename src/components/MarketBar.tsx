@@ -5,6 +5,7 @@ import { Moon } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import { currencyFormat } from 'utils/format'
+import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 import CurrencyPopover from './CurrencyPopover'
 
@@ -14,6 +15,7 @@ const MarketBar = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+  const { membership } = useBalances()
 
   const marketCap = tokenState.tokens.reduce((sum, current) => {
     const rate = current.rate ?? 0
@@ -59,7 +61,9 @@ const MarketBar = () => {
           </div>
         </div>
         <div className="items-center flex flex-shrink-0 ml-3">
-          <CurrencyPopover />
+          {membership.isMember &&
+            <CurrencyPopover />
+          }
           <button  
             onClick={() => setTheme(resolvedTheme == 'dark' ? 'light' : 'dark')}
             className="rounded-full focus:outline-none">
