@@ -4,12 +4,12 @@ export type Currency = {
   name: string
   code: string
   symbol: string
-  rate?: number = 0
+  rate: number = 0
 }
 
 export interface CurrencyState {
   currencies: Currency[]
-  selectedCurrency: Currency
+  selectedCurrency: string
 }
 
 export interface CurrencyUpdateProps extends Partial<Currency> {
@@ -17,5 +17,5 @@ export interface CurrencyUpdateProps extends Partial<Currency> {
 }
 
 export interface CurrencySelectProps {
-  currency: Currency
+  currency: string
 }

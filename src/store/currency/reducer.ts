@@ -9,33 +9,34 @@ const initialState: CurrencyState = {
       name: 'United States Dollar',
       code: 'USD',
       symbol: '$',
+      rate: 0
     },
     {
       name: 'Euro',
       code: 'EUR',
       symbol: '€',
+      rate: 0
     },
     {
       name: 'Singapore Dollar',
       code: 'SGD',
       symbol: 'S$',
+      rate: 0
     },
     {
       name: 'Pound Sterling',
       code: 'GBP',
       symbol: '£',
+      rate: 0
     },
     {
       name: 'Bitcoin',
       code: 'BTC',
       symbol: '฿',
+      rate: 0
     },
   ],
-  selectedCurrency: {
-    name: 'United States Dollar',
-    code: 'USD',
-    symbol: '$',
-  }
+  selectedCurrency: 'USD'
 }
 
 const reducer = (state: CurrencyState = initialState, action: AnyAction) => {
