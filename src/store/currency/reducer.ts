@@ -113,6 +113,24 @@ const initialState: CurrencyState = {
       isFiat: true,
       isCrypto: false
     },
+    {
+      name: 'Russian Ruble',
+      code: 'RUB',
+      symbol: '₽',
+      rate: 0,
+      isPopular: false,
+      isFiat: true,
+      isCrypto: false
+    },
+    {
+      name: 'Japanese Yen',
+      code: 'JPY',
+      symbol: '¥',
+      rate: 0,
+      isPopular: false,
+      isFiat: true,
+      isCrypto: false
+    },
   ],
   selectedCurrency: 'USD'
 }
