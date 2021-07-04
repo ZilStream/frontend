@@ -135,7 +135,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               return (
                 <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
                   <a>
-                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)}  zilRate={zilRates.lastRate} />
+                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
                   </a>
                 </Link>
               )
