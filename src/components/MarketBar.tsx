@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState, TokenState } from 'store/types'
 import { currencyFormat } from 'utils/format'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
+import CurrencyPopover from './CurrencyPopover'
 
 const MarketBar = () => {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
@@ -57,6 +58,7 @@ const MarketBar = () => {
           </div>
         </div>
         <div className="items-center flex flex-shrink-0 ml-3">
+          <CurrencyPopover />
           <button  
             onClick={() => setTheme(resolvedTheme == 'dark' ? 'light' : 'dark')}
             className="rounded-full text-gray-400 hover:text-black dark:hover:text-white focus:outline-none">
