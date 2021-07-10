@@ -20,6 +20,7 @@ export default function useBalances() {
   const streamToken: TokenInfo|null = streamTokens[0] ?? null
   var streamBalance = new BigNumber(0)
   var streamBalanceUSD = new BigNumber(0)
+  var streamBalanceZIL = new BigNumber(0)
 
   if(streamToken) {
     streamBalance = streamToken.balance ?? new BigNumber(0)
@@ -33,6 +34,7 @@ export default function useBalances() {
     }
 
     streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
+    streamBalanceZIL = streamBalance.times(streamToken.rate)
   }
 
   var totalBalance = new BigNumber(0)
@@ -119,6 +121,7 @@ export default function useBalances() {
     membership: {
       streamBalance,
       streamBalanceUSD,
+      streamBalanceZIL,
       membershipUSD,
       isMember: isMember
     },
