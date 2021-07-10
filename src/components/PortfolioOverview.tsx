@@ -2,7 +2,8 @@ import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, StakingState, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, StakingState, TokenState } from 'store/types'
+import { currencyFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import BalanceDonut from './BalanceDonut'
@@ -13,6 +14,8 @@ function PortfolioOverview() {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useBalances()
 
   let zilRate = tokenState.zilRate
@@ -40,8 +43,8 @@ function PortfolioOverview() {
       <div className="text-gray-600 dark:text-gray-400 text-sm">Current balance</div>
       <div className="flex-grow flex flex-col items-start mb-6">
         <div className="font-semibold text-2xl">
-          <FlashChange value={totalBalance.times(zilRate).toNumber()}>
-            ${moneyFormat(totalBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+          <FlashChange value={totalBalance.times(selectedCurrency.rate).toNumber()}>
+            {currencyFormat(totalBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </FlashChange>
         </div>
         <div className="text-gray-600 dark:text-gray-400 text-lg">{moneyFormat(totalBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
@@ -53,7 +56,7 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(holdingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            {currencyFormat(holdingBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(holdingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
@@ -63,7 +66,7 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(liquidityBalance.times(zilRate), {compression: 12, maxFractionDigits: 2})}
+            {currencyFormat(liquidityBalance.shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(liquidityBalance, {compression: 12, maxFractionDigits: 2})} ZIL</div>
         </div>
@@ -74,7 +77,7 @@ function PortfolioOverview() {
         <>
           <div className="flex-grow flex items-center">
             <div className="font-medium text-xl">
-              ${moneyFormat(totalRewardZil.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+              {currencyFormat(totalRewardZil.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
             </div>
             <div className="text-gray-500 text-md ml-2">{moneyFormat(totalRewardZil, {compression: 0, maxFractionDigits: 2})} ZIL</div>
           </div>
@@ -99,7 +102,7 @@ function PortfolioOverview() {
       {membership.isMember ? (
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(estimatedFees.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            {currencyFormat(estimatedFees.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(estimatedFees, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
@@ -111,7 +114,7 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            ${moneyFormat(stakingBalance.times(zilRate), {compression: 0, maxFractionDigits: 2})}
+            {currencyFormat(stakingBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>

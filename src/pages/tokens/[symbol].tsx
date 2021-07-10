@@ -13,7 +13,7 @@ import { Reward } from 'types/token.interface'
 import { ResolutionString } from 'charting_library/charting_library'
 import { useTheme } from 'next-themes'
 import { useSelector } from 'react-redux'
-import { RootState, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
@@ -49,6 +49,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const {theme, setTheme, resolvedTheme} = useTheme()
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   const {
     apr
@@ -110,7 +112,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="text-center md:text-right font-medium flex flex-col md:flex-row items-center md:block mb-2 md:mb-0">
           <div className="flex-grow font-bold text-2xl">{cryptoFormat(token.rate)} ZIL</div>
           <div className="text-gray-500 flex items-center justify-end">
-            {currencyFormat(token.rate_usd)}
+            {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}
             <div className="bg-gray-300 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
               <div className={`font-medium ${token.market_data.change_24h >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
                 {numberFormat(token.market_data.change_percentage_24h)}%
@@ -189,21 +191,21 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       <div className="py-2 -mx-4 mb-6 grid grid-cols-2 md:grid-cols-4">
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Market Cap</div>
-          <div className="font-medium">{currencyFormat(token.market_data.market_cap)}</div>
+          <div className="font-medium">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
           
           <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Fully Diluted Market Cap</div>
-          <div className="font-medium">{currencyFormat(token.market_data.fully_diluted_valuation)}</div>
+          <div className="font-medium">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
         </div>
         <div className="px-4 py-2 border-r-0 md:border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Volume (24h)</div>
-          <div className="font-medium">{currencyFormat(token.market_data.daily_volume)}</div>
+          <div className="font-medium">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
 
           <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">All Time High</div>
           <div className="font-medium">{currencyFormat(token.market_data.ath, '')} ZIL</div>
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Liquidity</div>
-          <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity)}</div>
+          <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{numberFormat(token.market_data.liquidity_providers, 0)}</span> liquidity providers</div>
 

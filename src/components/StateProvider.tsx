@@ -1,14 +1,16 @@
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
 import BigNumber from 'bignumber.js'
+import getZilRates from 'lib/coingecko/getZilRates'
 import getLatestRates from 'lib/zilstream/getLatestRates'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 import { AccountActionTypes } from 'store/account/actions'
+import { CurrencyActionTypes } from 'store/currency/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, Operator, RootState, StakingState, TokenState } from 'store/types'
+import { AccountState, CurrencyState, Operator, RootState, StakingState, TokenState } from 'store/types'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
@@ -22,6 +24,7 @@ const StateProvider = (props: Props) => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
@@ -44,6 +47,18 @@ const StateProvider = (props: Props) => {
       })
       dispatch({type: TokenActionTypes.TOKEN_INITIALIZED})
     })
+  }
+
+  async function loadZilRates() {
+    const zilRates = await getZilRates()
+    Object.entries(zilRates.zilliqa).map(([key, value]: [string, any]) => {
+      dispatch({type: CurrencyActionTypes.CURRENCY_UPDATE, payload: {
+        code: key.toUpperCase(),
+        rate: value as number
+      }})
+    })
+    
+    dispatch({type: CurrencyActionTypes.CURRENCY_SELECT, payload: {currency: localStorage.getItem('selectedCurrency') ?? 'USD'}})
   }
 
   async function loadWalletState() {
@@ -203,10 +218,12 @@ const StateProvider = (props: Props) => {
   useInterval(async () => {
     loadRates()
     loadWalletState()
+    loadZilRates()
   }, 30000)
 
   useEffect(() => {
     loadTokens()
+    loadZilRates()
   }, [])
 
   useEffect(() => {
