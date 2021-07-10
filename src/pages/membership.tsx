@@ -184,6 +184,10 @@ function Membership() {
             <div className="text-gray-700 dark:text-gray-200">Live now</div>
           </div>
           <div className="bg-primary px-2 py-8 rounded text-center">
+            <div className="font-semibold">Estimated LP fees</div>
+            <div className="text-gray-700 dark:text-gray-200">Live now</div>
+          </div>
+          <div className="bg-primary px-2 py-8 rounded text-center">
             <div className="font-semibold">Currency Switching</div>
             <div className="text-gray-700 dark:text-gray-200">Live now</div>
           </div>
