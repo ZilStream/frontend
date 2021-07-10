@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import Link from 'next/link'
 import React, { Fragment } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState, TokenState } from 'store/types'
@@ -54,6 +55,12 @@ const StreamPopover = () => {
                   </div>
                   <div>${moneyFormat(membership.membershipUSD, {maxFractionDigits: 2})}</div>
                 </div>
+              </div>
+
+              <div className="mt-4 text-sm flex justify-center">
+                <Link href="/membership">
+                  <a className="hover:underline">Learn more about membership</a>
+                </Link>
               </div>
             </Popover.Panel>
           </Transition>
