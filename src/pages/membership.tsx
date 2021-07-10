@@ -24,7 +24,7 @@ function Membership() {
         {/* <meta name="description" content="ZilStream does not recommend that any cryptocurrency should be bought, sold, or held by you. Do conduct your research and consult your financial advisor before making any investment decisions." />
         <meta property="og:description" content="ZilStream does not recommend that any cryptocurrency should be bought, sold, or held by you. Do conduct your research and consult your financial advisor before making any investment decisions." /> */}
       </Head>
-      <div className="py-36 max-w-2xl">
+      <div className="py-24 sm:py-36 max-w-2xl">
         <div className="font-bold text-4xl leading-normal">Manage your <span className="text-primary">Zilliqa</span> assets in one simple dashboard.</div>
         <div className="text-gray-500 dark:text-gray-400 text-xl mt-1 mb-4">Track your wallet, pools and staking.</div>
       </div>
@@ -32,7 +32,7 @@ function Membership() {
         <div className="border-t border-gray-300 dark:border-gray-800 py-16">
           <div className="text-primary font-semibold mb-4">Your membership</div>
           <div className="font-semibold text-2xl max-w-sm mb-4">Thank you for becoming a ZilStream member</div>
-          <div className="grid grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
               <div>It's great having you as a member.</div>
               <div className="mt-3">In addition to getting yourself wonderful additional features becoming a ZilStream member also means you're supporting an independent developer with interests aligned with yours.</div>
@@ -66,7 +66,7 @@ function Membership() {
         <div className="border-t border-gray-300 dark:border-gray-800 py-16">
           <div className="text-primary font-semibold mb-4">Membership</div>
           <div className="font-semibold text-2xl max-w-sm mb-4">Become a ZilStream member</div>
-          <div className="grid grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
             <div>Become a ZilStream member and enjoy deeper insight into the ZRC-2 market and your position within it. Track rewards from providing liquidity, staking and farms. Filter and export through your entire transaction history, change to your native currency and never miss an opportunity with price alerts.</div>
             {totalBalance.isGreaterThan(0) &&
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
@@ -94,12 +94,12 @@ function Membership() {
       <div className="border-t border-gray-300 dark:border-gray-800 py-16">
         <div className="text-primary font-semibold mb-4">Rewards tracking</div>
         <div className="font-semibold text-2xl max-w-sm mb-4">Track liquidity and staking rewards for tokens</div>
-        <div className="grid grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
           <div>Track liquidity rewards provided by tokens and the ZilSwap liquidity mining program. View your weekly rewards by each token and in total. Properly adjusted for those projects that exclude their admin wallets.</div>
           <div>ZilStream supports not just ZWAP rewards but rewards from every token providing you an overview of all rewards you stand to gain.</div>
         </div>
-        <div className="flex items-start mt-6">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-72 mr-6">
+        <div className="flex flex-col sm:flex-row items-start mt-6">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-72 mr-0 sm:mr-6 mb-6 sm:mb-0">
             <div className="text-sm text-gray-700 dark:text-gray-400 mb-2">Estimated weekly rewards</div>
             <div className="flex-grow flex items-center mb-1">
               <div className="font-medium text-xl">
@@ -147,7 +147,7 @@ function Membership() {
       </div>
       <div className="border-t border-gray-300 dark:border-gray-800 py-16">
         <div className="text-primary font-semibold mb-4">Currency switching</div>
-        <div className="grid grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
           <div>
             <div className="font-semibold text-2xl max-w-sm mb-4">Change the native currency across ZilStream</div>
             <div>Track prices, market caps, volume, liquidity and your portfolio in your (crypto) currency of choice. Select a new currency will instantly change all the values across the site.</div>
@@ -178,7 +178,7 @@ function Membership() {
       <div className="border-t border-gray-300 dark:border-gray-800 py-16">
         <div className="text-primary font-semibold mb-4">Roadmap</div>
         <div className="font-semibold text-2xl max-w-sm mb-6">What's next for members</div>
-        <div className="grid grid-cols-5 gap-6 leading-relaxed">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 sm:gap-6 leading-relaxed">
           <div className="bg-primary px-2 py-8 rounded text-center">
             <div className="font-semibold">Rewards Tracking</div>
             <div className="text-gray-700 dark:text-gray-200">Live now</div>
