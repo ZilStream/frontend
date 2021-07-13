@@ -208,7 +208,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{numberFormat(token.market_data.liquidity_providers, 0)}</span> liquidity providers</div>
 
-          {token.rewards.length > 0 ? (
+          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
+          <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
+
+          {token.rewards.length > 0 &&
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity Rewards</div>
               <div className="text-sm">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
@@ -225,18 +228,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 })}
               </div>
             </>
-          ) : (
-            <>
-              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
-              <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
-            </>
-          )}
+          }         
         </div>
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
-          
-          
         </div>
       </div>
       
