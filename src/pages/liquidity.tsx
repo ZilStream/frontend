@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import TokenIcon from 'components/TokenIcon'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
@@ -76,9 +77,9 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               }
 
               const score = Math.min(
-                5, 
-                Math.ceil(Math.sqrt(token.liquidity_ema30_zil) / 1000000),
-                Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
+                5,
+                Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 50000)),
+                Math.ceil((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
               )
 
               return (
