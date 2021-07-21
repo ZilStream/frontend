@@ -79,7 +79,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               const score = Math.min(
                 5,
                 Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 50000)),
-                Math.ceil((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
+                Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
               )
 
               return (
