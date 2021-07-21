@@ -82,6 +82,8 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                 Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
               )
 
+              console.log(token.symbol + ': ' + Math.sqrt(token.liquidity_ema30_zil / 50000) + ', ' + (token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.03)
+
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
