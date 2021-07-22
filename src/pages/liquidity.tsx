@@ -78,11 +78,11 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
 
               const score = Math.min(
                 5,
-                Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 50000)),
+                Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 3000000)),
                 Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
               )
 
-              console.log(token.symbol + ': ' + Math.sqrt(token.liquidity_ema30_zil / 50000) + ', ' + (token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
+              console.log(token.symbol + ': ' + Math.sqrt(token.liquidity_ema30_zil / 3000000) + ', ' + (token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
 
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
