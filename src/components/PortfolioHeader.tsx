@@ -30,7 +30,7 @@ const PortfolioHeader = () => {
           </div>
         </div>
         <div>
-          <a href={`https://viewblock.io/zilliqa/address/${accountState.address}`} target="_blank" className="block bg-gray-300 dark:bg-gray-700 rounded w-10 h-10 p-1">
+          <a href={`https://viewblock.io/zilliqa/address/${accountState.address}`} target="_blank" className="block bg-gray-300 dark:bg-gray-700 rounded-lg w-10 h-10 p-1">
             {resolvedTheme === 'dark' ? (
               <img src="https://cdn.viewblock.io/viewblock-dark.png" />
             ) : (
