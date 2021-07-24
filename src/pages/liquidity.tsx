@@ -49,7 +49,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
+            {/* <col style={{width: '140px', minWidth: 'auto'}} /> */}
             <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
@@ -59,7 +59,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">Volume (EMA30)</th>
               <th className="px-2 py-2 text-right">Liquidity (EMA30)</th>
-              <th className="px-2 py-2 text-right">Score</th>
+              {/* <th className="px-2 py-2 text-right">Score</th> */}
               <th className="pl-2 pr-3 py-2 text-right">Rewards Tier</th>
             </tr>
           </thead>
@@ -111,9 +111,9 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                   <td className={`px-2 py-2 font-normal text-right`}>
                     {numberFormat(token.liquidity_ema30_zil, 0)} <span className="font-medium">ZIL</span>
                   </td>
-                  <td className={`px-2 py-2 font-normal text-right`}>
+                  {/* <td className={`px-2 py-2 font-normal text-right`}>
                     {score}
-                  </td>
+                  </td> */}
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
                     {tier}
                   </td>
