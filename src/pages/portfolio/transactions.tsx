@@ -11,7 +11,7 @@ import { Transaction } from 'types/transaction.interface'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 import { groupBy } from 'underscore'
-import TransactionsGroup from 'components/Transactions'
+import TransactionsGroup from 'components/TransactionsGroup'
 
 const Transactions = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
@@ -48,7 +48,7 @@ const Transactions = () => {
           <meta property="og:title" content={`Transactions | ZilStream`} />
         </Head>
         <PortfolioHeader />
-        <div className="bg-white rounded-lg p-5">
+        <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-5">
           You need <Link href="/membership"><a>Premium Membership</a></Link> to access your transaction history.
         </div>
       </>
@@ -63,7 +63,7 @@ const Transactions = () => {
           <meta property="og:title" content={`Transactions | ZilStream`} />
         </Head>
         <PortfolioHeader />
-        <div className="bg-white rounded-lg">
+        <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg">
           <LoadingTransactions />
         </div>
       </>
@@ -86,7 +86,7 @@ const Transactions = () => {
           return (
             <>
               <div className="text-lg font-semibold mt-6 mb-2">{day.format('MMMM D, YYYY')}</div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg">
+              <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg">
                 <TransactionsGroup transactions={groups[date]} />
               </div>
             </>
