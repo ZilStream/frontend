@@ -15,6 +15,11 @@ const TokenIcon = (props: Props) => {
   if(!mounted) return null
 
   if(props.address) {
+    if(props.address === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') {
+      return (
+        <img src={`https://meta.viewblock.io/ZIL/logo${(resolvedTheme == 'dark' ? '?t=dark' : '')}`} loading="lazy" />
+      )
+    }
     return (
       <img src={`https://meta.viewblock.io/ZIL.${props.address}/logo${(resolvedTheme == 'dark' ? '?t=dark' : '')}`} loading="lazy" />
     )

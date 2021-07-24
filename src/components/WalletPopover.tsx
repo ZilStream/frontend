@@ -4,6 +4,7 @@ import React, { Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
 import { AccountActionTypes } from 'store/account/actions'
+import { shortenAddress } from 'utils/addressShortener'
 
 const WalletPopover = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
@@ -21,7 +22,7 @@ const WalletPopover = () => {
         <>
           <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Open account menu</span>
-            {accountState.address.substr(0, 5) + '...' + accountState.address.substr(accountState.address.length-4,4)}
+            {shortenAddress(accountState.address)}
           </Popover.Button>
           <Transition
             show={open}

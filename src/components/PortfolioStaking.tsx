@@ -27,7 +27,7 @@ function PortfolioStaking() {
 
   return (
     <>
-      <div className="font-bold text-2xl mt-8">Staking</div>
+      <div className="font-semibold text-xl mt-8">Staking</div>
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>

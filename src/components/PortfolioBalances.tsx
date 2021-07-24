@@ -43,7 +43,7 @@ function PortfolioBalances() {
 
   return (
     <>
-      <div className="font-bold text-2xl">Balances</div>
+      <div className="font-semibold text-xl">Balances</div>
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
