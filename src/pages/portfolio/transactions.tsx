@@ -23,7 +23,7 @@ const Transactions = () => {
 
   async function setTxns() {
     const txns = await getTransactions(accountState.address)
-    setTransactions(txns)
+    setTransactions(txns.data)
     setIsLoading(false)
   }
 
