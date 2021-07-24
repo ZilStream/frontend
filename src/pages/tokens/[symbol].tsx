@@ -125,37 +125,36 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="flex items-center justify-center mt-2 sm:mt-0">
           <Score value={token.viewblock_score} />
         </div>
-        <div className="flex-grow flex items-center justify-center sm:justify-start text-xs sm:text-sm mt-2 sm:mt-0">
+        <div className="flex-grow gap-2 flex items-center justify-center sm:justify-start text-xs sm:text-sm mt-2 sm:mt-0">
           {token.website &&
-            <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
+            <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
               <Link size={12} className="mr-1" />
               Website 
-              <ExternalLink size={10} className="ml-1 text-gray-600" />
             </a>
           }
           
           {token.whitepaper &&
-            <a href={token.whitepaper} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
+            <a href={token.whitepaper} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
               <FileText size={12} className="mr-1" />
-              <span className="hidden sm:inline">Whitepaper</span>
-              <span className="inline sm:hidden">WP</span>
-              <ExternalLink size={10} className="ml-1 text-gray-600" />
+              <span>Whitepaper</span>
             </a>
           }
 
           {token.telegram &&
-            <a href={token.telegram} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
+            <a href={token.telegram} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
               <MessageCircle size={12} className="mr-1" />
-              <span className="hidden sm:inline">Telegram</span>
-              <span className="inline sm:hidden">TG</span>
-              <ExternalLink size={10} className="ml-1 text-gray-600" />
+              <span>Telegram</span>
             </a>
           }
           
-          <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded mr-2">
+          <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
             <Box size={12} className="mr-1" />
             ViewBlock 
-            <ExternalLink size={10} className="ml-1 text-gray-600" />
+          </a>
+
+          <a href={`https://zilswap.io/swap?tokenIn=zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz&tokenOut=${token.address_bech32}`} target="_blank" className="flex items-center justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2">
+            <span className="w-3 h-3 mr-1"><TokenIcon address="zil1p5suryq6q647usxczale29cu3336hhp376c627" /></span>
+            Swap 
           </a>
         </div>
 
@@ -209,7 +208,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{numberFormat(token.market_data.liquidity_providers, 0)}</span> liquidity providers</div>
 
-          {token.rewards.length > 0 ? (
+          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
+          <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
+
+          {token.rewards.length > 0 &&
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity Rewards</div>
               <div className="text-sm">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
@@ -226,18 +228,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 })}
               </div>
             </>
-          ) : (
-            <>
-              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
-              <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
-            </>
-          )}
+          }         
         </div>
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
-          
-          
         </div>
       </div>
       
