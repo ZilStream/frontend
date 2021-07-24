@@ -181,7 +181,6 @@ function Membership() {
         <div className="font-semibold text-2xl max-w-sm mb-4">All of your transactions, displayed clearly</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
           <div>The full transaction history for your wallet. With extra attention to your swaps, liquidity and other dApp interactions making them as clear as possible.</div>
-          <div>ZilStream supports not just ZWAP rewards but rewards from every token providing you an overview of all rewards you stand to gain.</div>
         </div>
         <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg flex flex-col items-stretch text-sm mt-10">
           <div className="px-4 py-3 border-b dark:border-gray-700 last:border-b-0 flex flex-col md:flex-row md:items-center text-sm md:text-base">
