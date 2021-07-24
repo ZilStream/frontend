@@ -1,19 +1,16 @@
 import LoadingTransactions from 'components/LoadingTransactions'
 import PortfolioHeader from 'components/PortfolioHeader'
-import TokenIcon from 'components/TokenIcon'
 import dayjs from 'dayjs'
 import { getTransactions } from 'lib/zilstream/getTransactions'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { ArrowDown, ArrowRight, ArrowUp, ExternalLink } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { Transaction } from 'types/transaction.interface'
-import { shortenAddress } from 'utils/addressShortener'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
-import _, { groupBy } from 'underscore'
+import { groupBy } from 'underscore'
 import TransactionsGroup from 'components/Transactions'
 
 const Transactions = () => {
@@ -73,7 +70,7 @@ const Transactions = () => {
     )
   }
 
-  const groups = _.groupBy(transactions, transaction => {
+  const groups = groupBy(transactions, transaction => {
     return dayjs(transaction.timestamp).startOf('day').format()
   })
 
