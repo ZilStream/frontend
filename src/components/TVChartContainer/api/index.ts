@@ -1,5 +1,5 @@
-import { Bar, LibrarySymbolInfo, ResolutionString } from 'charting_library/datafeed-api';
-import { UdfCompatibleConfiguration } from 'datafeeds/udf/src/udf-compatible-datafeed-base';
+import { Bar, LibrarySymbolInfo, ResolutionString } from '../../../../public/charting_library/datafeed-api';
+import { UdfCompatibleConfiguration } from '../../../../public/datafeeds/udf/src/udf-compatible-datafeed-base';
 
 const supportedResolutions = ["15", "60", "240", "D"]
 
