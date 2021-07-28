@@ -6,7 +6,7 @@ import {
 	IChartingLibraryWidget,
 	ResolutionString,
   IBasicDataFeed,
-} from '../../charting_library';
+} from '../../../public/charting_library';
 import DataFeed from './api'
 
 export interface ChartContainerProps {
