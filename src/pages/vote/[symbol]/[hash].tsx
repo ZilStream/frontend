@@ -98,11 +98,11 @@ function VoteProposal() {
 
         <div className="text-xl font-semibold">{msg.payload.name}</div>
       </div>
-      <div className="flex items-start gap-4">
+      <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4">
         <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg flex-grow">
           <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
         </div>
-        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-80 flex-grow-0 flex-shrink-0">
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg md:w-80 md:flex-grow-0 md:flex-shrink-0">
           <div className="mb-2 pb-2 border-b dark:border-gray-700">
             <div className="font-medium">Total voting power</div>
             <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})}</div>
