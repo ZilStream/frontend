@@ -16,6 +16,7 @@ import { Vote } from 'types/vote.interface'
 import BigNumber from 'bignumber.js'
 import LoadingTransactions from 'components/LoadingTransactions'
 import Link from 'next/link'
+import { BIG_ZERO } from 'utils/strings'
 
 function VoteProposal() {
   const router = useRouter()
@@ -47,7 +48,7 @@ function VoteProposal() {
     })
     setTotalBalance(tBalance)
 
-    const votesRes = await getGovernanceVotes(hash as string)
+    const votesRes = await getGovernanceVotes(symbol as string, hash as string)
     setVotes(votesRes)
 
     var balance = new BigNumber(0)
@@ -80,12 +81,12 @@ function VoteProposal() {
   return (
     <div>
       <div className="flex items-center gap-3 pt-8 pb-4">
-        <div className="w-16 h-16 rounded-lg"><TokenIcon address={space?.token} /></div>
+        <div className="w-16 h-16 rounded-lg"><TokenIcon address={token?.address_bech32} /></div>
         <div className="flex flex-col">
           <Link href={`/vote/${space?.symbol.toLowerCase()}`}>
             <a className="font-normal">
-              <div className="font-semibold">{space?.name}</div>
-              <div>{space?.symbol}</div>
+              <div className="font-semibold">{token?.name}</div>
+              <div>{token?.symbol}</div>
             </a>
           </Link>
         </div>
