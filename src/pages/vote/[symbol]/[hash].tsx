@@ -115,7 +115,9 @@ function VoteProposal() {
 
           {msg.payload.choices.map((choice, index) => {
             var choiceBalance = new BigNumber(0)
-            Object.values(votes).filter(vote => vote.msg.payload.choice === index+1).forEach(vote => {
+
+            const choiceVotes = Object.values(votes).filter(vote => vote.msg.payload.choice === index+1)
+            choiceVotes.forEach(vote => {
               const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
               choiceBalance = choiceBalance.plus(b)
             })
@@ -125,8 +127,12 @@ function VoteProposal() {
             return (
               <div key={choice} className="mb-3 last:mb-0 text-sm">
                 <div className="flex items-center">
-                  <div className="flex-grow font-semibold mb-1">{choice} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</span></div>
+                  <div className="flex-grow font-semibold">{choice}</div>
                   <div className="font-medium">{share.toFixed(2)}%</div>
+                </div>
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  <div className="flex-grow">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</div>
+                  <div>{choiceVotes.length} votes</div>
                 </div>
                 <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
                   <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
