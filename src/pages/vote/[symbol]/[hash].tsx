@@ -105,12 +105,12 @@ function VoteProposal() {
         <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg md:w-80 md:flex-grow-0 md:flex-shrink-0">
           <div className="mb-2 pb-2 border-b dark:border-gray-700">
             <div className="font-medium">Total voting power</div>
-            <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})}</div>
+            <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
           </div>
 
           <div className="mb-4 pb-2 border-b dark:border-gray-700">
             <div className="font-medium">Voted power</div>
-            <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})}</div>
+            <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.keys(votes).length, {maxFractionDigits: 0})} voters</span></div>
           </div>
 
           {msg.payload.choices.map((choice, index) => {
