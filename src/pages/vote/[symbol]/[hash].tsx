@@ -102,13 +102,13 @@ function VoteProposal() {
         <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg flex-grow">
           <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
         </div>
-        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-128">
-          <div className="mb-2 pb-2 border-b">
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg w-80 flex-grow-0 flex-shrink-0">
+          <div className="mb-2 pb-2 border-b dark:border-gray-700">
             <div className="font-medium">Total voting power</div>
             <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})}</div>
           </div>
 
-          <div className="mb-4 pb-2 border-b">
+          <div className="mb-4 pb-2 border-b dark:border-gray-700">
             <div className="font-medium">Voted power</div>
             <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})}</div>
           </div>
@@ -128,7 +128,7 @@ function VoteProposal() {
                   <div className="flex-grow font-semibold mb-1">{choice}</div>
                   <div className="font-medium">{share.toFixed(2)}%</div>
                 </div>
-                <div className="bg-gray-200 rounded-full h-2 w-full relative">
+                <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
                   <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
                 </div>
               </div>
