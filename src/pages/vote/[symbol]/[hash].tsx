@@ -124,9 +124,9 @@ function VoteProposal() {
             var share = choiceBalance.dividedBy(votedBalance).times(100)
 
             return (
-              <div key={choice} className="mb-3 last:mb-0">
+              <div key={choice} className="mb-3 last:mb-0 text-sm">
                 <div className="flex items-center">
-                  <div className="flex-grow font-semibold mb-1">{choice}</div>
+                  <div className="flex-grow font-semibold mb-1">{choice} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</span></div>
                   <div className="font-medium">{share.toFixed(2)}%</div>
                 </div>
                 <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">

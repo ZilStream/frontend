@@ -21,7 +21,7 @@ function Vote() {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-8">
       {spaces.map(space => {
         return (
-          <Link href={`/vote/${space.symbol.toLowerCase()}`}>
+          <Link key={space.token} href={`/vote/${space.symbol.toLowerCase()}`}>
             <a className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg flex flex-col px-4 py-10 items-center">
               <div className="w-16 h-16"><TokenIcon address={space.token} /></div>
               <div className="mt-4 font-semibold">{space.name}</div>
