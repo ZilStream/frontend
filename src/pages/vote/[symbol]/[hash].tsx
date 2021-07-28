@@ -16,7 +16,6 @@ import { Vote } from 'types/vote.interface'
 import BigNumber from 'bignumber.js'
 import LoadingTransactions from 'components/LoadingTransactions'
 import Link from 'next/link'
-import { BIG_ZERO } from 'utils/strings'
 
 function VoteProposal() {
   const router = useRouter()
@@ -60,19 +59,19 @@ function VoteProposal() {
   }
 
   async function findToken() {
-    const tokens = tokenState.tokens.filter(token => token.symbol.toLowerCase() === symbol as string)
+    const tokens = tokenState.tokens.filter(t => t.symbol.toLowerCase() === symbol as string)
     if(tokens.length > 0) {
       setToken(tokens[0])
     }
   }
 
   useEffect(() => {
-    if(symbol === undefined || hash === undefined) return
+    if(symbol === undefined || hash === undefined || !tokenState.initialized) return
 
     findToken()
     getSpace()
     getSnapshot()
-  }, [symbol, hash])
+  }, [symbol, hash, tokenState])
 
   if(!snapshot || !votes) return <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg"><LoadingTransactions /></div>
 
