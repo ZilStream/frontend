@@ -16,6 +16,7 @@
     "bignumber.js": "^9.0.1",
     "dayjs": "^1.10.6",
     "lightweight-charts": "^3.3.0",
+    "marked": "^2.1.3",
     "next": "10.2.3",
     "next-redux-wrapper": "^6.0.2",
     "next-themes": "^0.0.12",
@@ -30,6 +31,7 @@
     "zeeves-auth-sdk-js": "^2.0.12"
   },
   "devDependencies": {
+    "@types/marked": "^2.0.4",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
