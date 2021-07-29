@@ -14,10 +14,10 @@ import getGovernanceVotes from 'lib/zilliqa/getGovernanceVotes'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import { Vote } from 'types/vote.interface'
 import BigNumber from 'bignumber.js'
-import LoadingTransactions from 'components/LoadingTransactions'
 import Link from 'next/link'
 import LoadingSpaceHeader from 'components/LoadingSpaceHeader'
 import LoadingProposal from 'components/LoadingProposal'
+import { shortenAddress } from 'utils/addressShortener'
 
 function VoteProposal() {
   const router = useRouter()
@@ -31,6 +31,7 @@ function VoteProposal() {
   const [totalBalance, setTotalBalance] = useState<BigNumber>(new BigNumber(0))
   const [votedBalance, setVotedBalance] = useState<BigNumber>(new BigNumber(0))
   const moneyFormat = useMoneyFormatter()
+  const [votesExpanded, setVotesExpanded] = useState<boolean>(false)
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -108,8 +109,50 @@ function VoteProposal() {
             <div className="text-xl font-semibold">{msg.payload.name}</div>
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4">
-            <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg flex-grow">
-              <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
+            <div className="flex-grow">
+              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
+                <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
+              </div>
+              <div className="mt-8">
+                <div className="flex items-center">
+                  <div className="font-semibold flex-grow">Votes</div>
+                </div>
+                <div className={`bg-white dark:bg-gray-800 py-1 px-5 rounded-lg mt-2 text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
+                  {Object.keys(votes).sort((a,b) => {
+                    const aBalance = toBigNumber(snapshot.balances[a.toLowerCase()])
+                    const bBalance = toBigNumber(snapshot.balances[b.toLowerCase()])
+                    return aBalance.isGreaterThan(bBalance) ? -1 : 1
+                  }).map(address => {
+                    let vote = votes[address]
+                    const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
+                    const bechAddress = toBech32Address(address)
+                    return (
+                      <div className="flex items-center py-2 border-b dark:border-gray-700 last:border-b-0">
+                        <div className="flex-grow">
+                          <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
+                            <span className="hidden sm:inline">{bechAddress}</span>
+                            <span className="inline sm:hidden">{shortenAddress(bechAddress)}</span>
+                          </a>
+                        </div>
+                        <div className="font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                        <div className="font-medium w-32 sm:w-48 text-right">{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</div>
+                      </div>
+                    )
+                  })}
+                  {!votesExpanded &&
+                    <div className="absolute bottom-0 left-0 w-full p-4 h-24 text-center bg-gradient-to-t from-white dark:from-gray-700 flex flex-col">
+                      <div className="flex-grow"></div>
+                      <button onClick={() => setVotesExpanded(true)} className="font-medium focus:outline-none">Expand to see all votes</button>
+                    </div>
+                  }
+                </div>
+
+                {votesExpanded &&
+                  <div className="text-center mt-4">
+                    <button onClick={() => setVotesExpanded(false)} className="font-medium text-gray-500 focus:outline-none">Collapse to see less votes</button>
+                  </div>
+                }
+              </div>
             </div>
             <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg md:w-80 md:flex-grow-0 md:flex-shrink-0">
               <div className="mb-2 pb-2 border-b dark:border-gray-700">
