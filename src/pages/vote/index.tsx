@@ -3,6 +3,7 @@ import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
 import { Space } from 'types/space.interface'
 import TokenIcon from 'components/TokenIcon'
 import Link from 'next/link'
+import LoadingSpaces from 'components/LoadingSpaces'
 
 function Vote() {
   const [spaces, setSpaces] = useState<Space[]>([])
@@ -16,6 +17,10 @@ function Vote() {
   useEffect(() => {
     getSpaces()
   }, [])
+
+  if(spaces.length === 0) {
+    return <LoadingSpaces />
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-8">
