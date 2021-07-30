@@ -46,7 +46,8 @@ function Calendar() {
       symbol: 'CRL',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/coral.png',
       tags: ['Community'],
-      website: 'https://www.mycoralapp.tech'
+      website: 'https://www.mycoralapp.tech',
+      telegram: 'https://t.me/coraltribe'
     },
     {
       name: 'Okimoto',
