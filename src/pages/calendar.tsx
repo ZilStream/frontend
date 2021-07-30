@@ -62,11 +62,6 @@ function Calendar() {
       tags: ['Game'],
       website: 'https://zilliqaroyale.com/'
     },
-    {
-      name: 'Creators Fund',
-      symbol: 'NFTZ',
-      tags: ['NFT'],
-    },
   ]
 
   return (
