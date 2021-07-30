@@ -59,11 +59,11 @@ const Header = () => {
                 </Link>
 
                 <Link href="/portfolio">
-                  <a className={router.pathname === '/portfolio' ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
+                  <a className={router.pathname.includes('/portfolio') ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
 
                 <Link href="/vote">
-                  <a className={router.pathname === '/vote' ? 'menu-item-active' : 'menu-item'}>Vote</a>
+                  <a className={router.pathname.includes('/vote') ? 'menu-item-active' : 'menu-item'}>Vote</a>
                 </Link>
 
                 <Link href="/calendar">
@@ -98,11 +98,15 @@ const Header = () => {
             </Link>
 
             <Link href="/portfolio">
-              <a className={router.pathname === '/portfolio' ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Portfolio</a>
+              <a className={router.pathname.includes('/portfolio') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Portfolio</a>
             </Link>
 
-            <Link href="/updates">
-              <a className={router.pathname === '/updates' ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Updates</a>
+            <Link href="/vote">
+              <a className={router.pathname.includes('/vote') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Vote</a>
+            </Link>
+
+            <Link href="/calendar">
+              <a className={router.pathname.includes('/calendar') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Calendar</a>
             </Link>
 
             <button  
