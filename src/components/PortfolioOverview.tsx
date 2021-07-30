@@ -40,7 +40,7 @@ function PortfolioOverview() {
 
   return (
     <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
-      <div className="text-gray-600 dark:text-gray-400 text-sm">Current balance</div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm">Current Balance</div>
       <div className="flex-grow flex flex-col items-start mb-6">
         <div className="font-semibold text-2xl">
           <FlashChange value={totalBalance.times(selectedCurrency.rate).toNumber()}>
@@ -52,7 +52,7 @@ function PortfolioOverview() {
 
       <BalanceDonut tokens={tokenState.tokens} operators={stakingState.operators} />
 
-      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Holding balance</div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">Holding Balance</div>
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
