@@ -42,10 +42,29 @@ function Calendar() {
       telegram: 'https://t.me/GodZilliqaDeFi'
     },
     {
+      name: 'Coral',
+      symbol: 'CRL',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/coral.png',
+      tags: ['Community'],
+      website: 'https://www.mycoralapp.tech'
+    },
+    {
+      name: 'Okimoto',
+      symbol: '?',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
+      tags: ['NFT'],
+      website: 'https://okimoto.io/'
+    },
+    {
       name: 'ZilliqaRoyale',
       symbol: 'BLOX',
       tags: ['Game'],
       website: 'https://zilliqaroyale.com/'
+    },
+    {
+      name: 'Creators Fund',
+      symbol: 'NFTZ',
+      tags: ['NFT'],
     },
   ]
 
@@ -81,7 +100,7 @@ function Calendar() {
           <tbody>
             {launches.map((launch, index) => {
               return (
-                <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                <tr key={launch.symbol} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-3 ${index === 0 ? 'rounded-tl-lg' : ''} ${index === launches.length-1 ? 'rounded-bl-lg' : ''}`}>
                     <div className="flex items-center">
                       <div className="w-10 h-10 p-1 flex-grow-0 flex-shrink-0 overflow-hidden mr-3 rounded-lg flex items-center justify-center">
@@ -103,7 +122,7 @@ function Calendar() {
                         {launch.tags.length > 0 &&
                           <div className="flex gap-2 text-xs font-medium mt-1">
                             {launch.tags.map(tag => (
-                              <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full" style={{padding: '1px 7px'}}>{tag}</span>
+                              <span key={tag} className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full" style={{padding: '1px 7px'}}>{tag}</span>
                             ))}
                           </div>
                         }
