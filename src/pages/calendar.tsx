@@ -14,7 +14,7 @@ function Calendar() {
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
       sale_type: 'Public Sale',
       sale_date: new Date('2021-08-18T14:00:00'),
-      goal: new BigNumber(2700000),
+      goal: new BigNumber(2160000),
       tags: ['Media'],
       website: 'https://aosports.tv',
       twitter: 'https://twitter.com/AOSportsTV',
