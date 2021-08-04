@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js'
+import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import { currencyFormat } from 'utils/format'
 import { BIG_ZERO } from 'utils/strings'
+import useBalances from 'utils/useBalances'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import EmptyRow from './EmptyRow'
 import TokenIcon from './TokenIcon'
@@ -13,6 +15,7 @@ function PortfolioPools() {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+  const { membership } = useBalances()
 
   let filteredTokens = tokenState.tokens.filter(token => {
     return token.pool && token.pool.userContribution && !token.pool.userContribution.isZero()
@@ -34,7 +37,7 @@ function PortfolioPools() {
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
@@ -92,31 +95,38 @@ function PortfolioPools() {
                     {currencyFormat(zilAmount.times(2).shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                      {token.rewards.map(reward => {
-                        let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
-                          pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
-                          pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-                        let contributionShare = contributionPercentage.shiftedBy(-2)
-                        let newReward = toBigNumber(reward.amount).times(contributionShare)
-                  
-                        if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
-                          newReward = toBigNumber(reward.max_individual_amount)
-                        }
+                    {membership.isMember ? (
+                      <>
+                        {token.rewards.map(reward => {
+                          let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
+                            pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
+                            pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+                          let contributionShare = contributionPercentage.shiftedBy(-2)
+                          let newReward = toBigNumber(reward.amount).times(contributionShare)
+                    
+                          if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
+                            newReward = toBigNumber(reward.max_individual_amount)
+                          }
 
-                        return (
-                          <div className="flex items-center justify-end">
-                            <span className="w-4 h-4 mr-2"><TokenIcon address={reward.reward_token_address} /></span>
-                            <span className="mr-1">{moneyFormat(newReward, {compression: 0, maxFractionDigits: 2})}</span>
-                            <span className="font-medium">{reward.reward_token_symbol}</span>
-                          </div>
-                        )
-                      })}
+                          return (
+                            <div className="flex items-center justify-end">
+                              <span className="w-4 h-4 mr-2"><TokenIcon address={reward.reward_token_address} /></span>
+                              <span className="mr-1">{moneyFormat(newReward, {compression: 0, maxFractionDigits: 2})}</span>
+                              <span className="font-medium">{reward.reward_token_symbol}</span>
+                            </div>
+                          )
+                        })}
+                      </>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-sm"><Link href="/membership">Membership</Link></span>
+                    )}
+                      
                   </td>
                   <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-br-lg' : ''}`}>
                     {moneyFormat(contributionPercentage, {
                       symbol: '0',
                       compression: 0,
-                      maxFractionDigits: 5,
+                      maxFractionDigits: 3,
                       showCurrency: false,
                     })}%
                   </td>
