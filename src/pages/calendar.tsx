@@ -21,6 +21,13 @@ function Calendar() {
       telegram: 'https://t.me/AthleteToken'
     },
     {
+      name: 'Zilliqa Royale',
+      symbol: 'BLOX',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blox.png',
+      tags: ['Game'],
+      website: 'https://zilliqaroyale.com/'
+    },
+    {
       name: 'DeMons',
       symbol: 'DMZ',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
@@ -63,12 +70,6 @@ function Calendar() {
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
       tags: ['NFT'],
       website: 'https://okimoto.io/'
-    },
-    {
-      name: 'ZilliqaRoyale',
-      symbol: 'BLOX',
-      tags: ['Game'],
-      website: 'https://zilliqaroyale.com/'
     },
   ]
 
