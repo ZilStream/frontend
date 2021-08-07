@@ -1,8 +1,36 @@
+import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
 import React from 'react'
 import { TokenLaunch } from 'types/tokenLaunch.interface'
+import useMoneyFormatter from 'utils/useMoneyFormatter'
 
 function Calendar() {
+  const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
+
   const launches: TokenLaunch[] = [
+    {
+      name: 'Zilliqa Royale',
+      symbol: 'BLOX',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blox.png',
+      sale_type: 'ZILO',
+      sale_date: new Date('2021-08-12T00:00:00'),
+      goal: new BigNumber(550000),
+      tags: ['Game'],
+      website: 'https://zilliqaroyale.com/',
+      telegram: 'https://t.me/zilliqaroyale'
+    },
+    {
+      name: 'AO Sports',
+      symbol: 'ATHLETE',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
+      sale_type: 'Public Sale',
+      sale_date: new Date('2021-08-18T14:00:00'),
+      goal: new BigNumber(2160000),
+      tags: ['Media'],
+      website: 'https://aosports.tv',
+      twitter: 'https://twitter.com/AOSportsTV',
+      telegram: 'https://t.me/AthleteToken'
+    },
     {
       name: 'DeMons',
       symbol: 'DMZ',
@@ -26,15 +54,6 @@ function Calendar() {
       website: 'https://pele.network/',
     },
     {
-      name: 'AO Sports',
-      symbol: 'ATHLETE',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
-      tags: ['Media'],
-      website: 'https://aosports.tv',
-      twitter: 'https://twitter.com/AOSportsTV',
-      telegram: 'https://t.me/AthleteToken'
-    },
-    {
       name: 'GodZilliqa DeFi',
       symbol: 'GDFI',
       icon: 'https://meta.viewblock.io/zilliqa.zil1gtx89hjfagnhuhhfmr947p2g865r4dq0fmaxkt/logo',
@@ -50,22 +69,18 @@ function Calendar() {
       telegram: 'https://t.me/coraltribe'
     },
     {
+      name: 'News',
+      symbol: 'NEWS',
+      tags: ['Media'],
+      website: 'https://reviewcapital.org',
+      telegram: 'https://t.me/RECAPCommunity'
+    },
+    {
       name: 'Okimoto',
       symbol: '?',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
       tags: ['NFT'],
       website: 'https://okimoto.io/'
-    },
-    {
-      name: 'ZilliqaRoyale',
-      symbol: 'BLOX',
-      tags: ['Game'],
-      website: 'https://zilliqaroyale.com/'
-    },
-    {
-      name: 'Creators Fund',
-      symbol: 'NFTZ',
-      tags: ['NFT'],
     },
   ]
 
@@ -100,6 +115,7 @@ function Calendar() {
           </thead>
           <tbody>
             {launches.map((launch, index) => {
+              console.log(launch.sale_date)
               return (
                 <tr key={launch.symbol} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-3 ${index === 0 ? 'rounded-tl-lg' : ''} ${index === launches.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -131,13 +147,25 @@ function Calendar() {
                     </div>
                   </td>
                   <td className="px-2 py-3 text-right">
-                    <span className="text-gray-500 dark:text-gray-400">--</span>
+                    {launch.sale_type ? (
+                      <span>{launch.sale_type}</span>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400">--</span>
+                    )}
                   </td>
                   <td className="px-2 py-3 text-right">
-                    <span className="text-gray-500 dark:text-gray-400">--</span>
+                    {launch.sale_date ? (
+                      <span>{dayjs(launch.sale_date).format('MMM D, YYYY')}</span>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400">--</span>
+                    )}
                   </td>
                   <td className="px-2 py-3 text-right">
-                    <span className="text-gray-500 dark:text-gray-400">--</span>
+                    {launch.goal ? (
+                      <span>${moneyFormat(launch.goal, { decPlaces: 0})}</span>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400">--</span>
+                    )}
                   </td>
                   <td className={`pl-2 pr-4 py-3 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === launches.length-1 ? 'rounded-br-lg' : ''}`}>
                     <div className="flex justify-end gap-2">
