@@ -4,12 +4,12 @@ import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
 import { useRouter } from 'next/dist/client/router'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ProposalMessage } from 'types/proposal.interface'
 import { Snapshot } from 'types/snapshot.interface'
 import { Space } from 'types/space.interface'
 import marked from 'marked'
-import { toBech32Address } from '@zilliqa-js/zilliqa'
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/zilliqa'
 import getGovernanceVotes from 'lib/zilliqa/getGovernanceVotes'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import { Vote } from 'types/vote.interface'
@@ -25,6 +25,8 @@ function VoteProposal() {
   const { symbol, hash } = router.query
 
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
+
   const [space, setSpace] = useState<Space>()
   const [snapshot, setSnapshot] = useState<Snapshot>()
   const [votes, setVotes] = useState<{[id: string]: Vote}>()
@@ -81,6 +83,12 @@ function VoteProposal() {
   if(snapshot) {
     msg = JSON.parse(snapshot.msg)
   }
+
+  var vote: Vote|null = null
+
+  if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
+    vote = Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0]
+  }
   
   return (
     <div>
@@ -118,28 +126,46 @@ function VoteProposal() {
                 <div className="flex items-center">
                   <div className="font-semibold flex-grow">Votes</div>
                 </div>
-                <div className={`bg-white dark:bg-gray-800 py-1 px-5 rounded-lg mt-2 text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
-                  {Object.keys(votes).sort((a,b) => {
-                    const aBalance = toBigNumber(snapshot.balances[a.toLowerCase()])
-                    const bBalance = toBigNumber(snapshot.balances[b.toLowerCase()])
-                    return aBalance.isGreaterThan(bBalance) ? -1 : 1
-                  }).map(address => {
-                    let vote = votes[address]
-                    const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
-                    const bechAddress = toBech32Address(address)
-                    return (
-                      <div key={address} className="flex items-center py-2 border-b dark:border-gray-700 last:border-b-0">
-                        <div className="flex-grow">
-                          <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
-                            <span className="hidden sm:inline">{bechAddress}</span>
-                            <span className="inline sm:hidden">{shortenAddress(bechAddress)}</span>
-                          </a>
-                        </div>
-                        <div className="font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
-                        <div className="font-medium w-32 sm:w-48 text-right">{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</div>
-                      </div>
-                    )
-                  })}
+
+                <div className={`scrollable-table-container max-w-full overflow-x-scroll text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
+                  <table className="zilstream-table table-fixed border-collapse">
+                    <colgroup>
+                      <col style={{width: '140px', minWidth: 'auto'}} />
+                      <col style={{width: '140px', minWidth: 'auto'}} />
+                      <col style={{width: '100px', minWidth: 'auto'}} />
+                    </colgroup>
+                    <thead className="text-gray-500 dark:text-gray-400 text-xs">
+                      <tr>
+                        <th className="pl-4 pr-2 py-2 text-left">Address</th>
+                        <th className="px-2 py-2 text-left">Choice</th>
+                        <th className="px-2 py-2 text-right">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(votes).sort((a,b) => {
+                        const aBalance = toBigNumber(snapshot.balances[a.toLowerCase()])
+                        const bBalance = toBigNumber(snapshot.balances[b.toLowerCase()])
+                        return aBalance.isGreaterThan(bBalance) ? -1 : 1
+                      }).map((address, index) => {
+                        let vote = votes[address]
+                        const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
+                        const bechAddress = toBech32Address(address)
+                        return (
+                          <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                            <td className={`pl-4 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-bl-lg' : ''}`}>
+                              <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
+                                <span className="hidden sm:inline truncate">{bechAddress}</span>
+                                <span className="inline sm:hidden">{shortenAddress(bechAddress)}</span>
+                              </a>
+                            </td>
+                            <td className="px-2 py-2 text-left font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</td>
+                            <td className={`px-2 py-2 font-medium text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                  
                   {!votesExpanded &&
                     <div className="absolute bottom-0 left-0 w-full p-4 h-24 text-center bg-gradient-to-t from-white dark:from-gray-700 flex flex-col">
                       <div className="flex-grow"></div>
@@ -196,7 +222,15 @@ function VoteProposal() {
                 })}
               </div>
 
-              <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} />
+              {vote ? (
+                <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                  <div>You've already voted:</div>
+                  <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                </div>
+              ) : (
+                <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} />
+              )}
+              
             </div>
           </div>
         </>
