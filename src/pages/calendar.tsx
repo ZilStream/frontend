@@ -69,6 +69,13 @@ function Calendar() {
       telegram: 'https://t.me/coraltribe'
     },
     {
+      name: 'News',
+      symbol: 'NEWS',
+      tags: ['Media'],
+      website: 'https://reviewcapital.org',
+      telegram: 'https://t.me/RECAPCommunity'
+    },
+    {
       name: 'Okimoto',
       symbol: '?',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
