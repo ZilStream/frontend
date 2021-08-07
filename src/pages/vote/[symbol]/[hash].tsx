@@ -35,6 +35,8 @@ function VoteProposal() {
   const [votedBalance, setVotedBalance] = useState<BigNumber>(new BigNumber(0))
   const moneyFormat = useMoneyFormatter()
   const [votesExpanded, setVotesExpanded] = useState<boolean>(false)
+  const [vote, setVote] = useState<Vote|null>(null)
+  const [balance, setBalance] = useState<BigNumber|null>(null)
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -84,17 +86,18 @@ function VoteProposal() {
     msg = JSON.parse(snapshot.msg)
   }
 
-  var vote: Vote|null = null
-  var balance: BigNumber|null = null
+  useEffect(() => {
+    if(accountState.address === '') return
 
-  if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
-    vote = Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0]
-  }
-
-  if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
-    balance = toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()])
-  }
+    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
+      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0])
+    }
   
+    if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
+      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()]))
+    }
+  }, [votes, snapshot, accountState.address])
+
   return (
     <div>
       {token ? (
