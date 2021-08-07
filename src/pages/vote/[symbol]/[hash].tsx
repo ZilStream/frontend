@@ -18,6 +18,7 @@ import Link from 'next/link'
 import LoadingSpaceHeader from 'components/LoadingSpaceHeader'
 import LoadingProposal from 'components/LoadingProposal'
 import { shortenAddress } from 'utils/addressShortener'
+import CastVote from 'components/CastVote'
 
 function VoteProposal() {
   const router = useRouter()
@@ -99,7 +100,7 @@ function VoteProposal() {
         <LoadingSpaceHeader />
       )}
       
-      {votes && snapshot && msg ? (
+      {space && votes && snapshot && msg ? (
         <>
           <div className="mb-2 flex items-center">
             {space?.members.includes(toBech32Address(snapshot.address)) &&
@@ -127,7 +128,7 @@ function VoteProposal() {
                     const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
                     const bechAddress = toBech32Address(address)
                     return (
-                      <div className="flex items-center py-2 border-b dark:border-gray-700 last:border-b-0">
+                      <div key={address} className="flex items-center py-2 border-b dark:border-gray-700 last:border-b-0">
                         <div className="flex-grow">
                           <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
                             <span className="hidden sm:inline">{bechAddress}</span>
@@ -154,44 +155,48 @@ function VoteProposal() {
                 }
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg md:w-80 md:flex-grow-0 md:flex-shrink-0">
-              <div className="mb-2 pb-2 border-b dark:border-gray-700">
-                <div className="font-medium">Total voting power</div>
-                <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
+            <div className="md:w-80 md:flex-grow-0 md:flex-shrink-0">
+              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Total voting power</div>
+                  <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
+                </div>
+
+                <div className="mb-4 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Voted power</div>
+                  <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.keys(votes).length, {maxFractionDigits: 0})} voters</span></div>
+                </div>
+
+                {msg.payload.choices.map((choice, index) => {
+                  var choiceBalance = new BigNumber(0)
+
+                  const choiceVotes = Object.values(votes).filter(vote => vote.msg.payload.choice === index+1)
+                  choiceVotes.forEach(vote => {
+                    const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
+                    choiceBalance = choiceBalance.plus(b)
+                  })
+
+                  var share = choiceBalance.dividedBy(votedBalance).times(100)
+
+                  return (
+                    <div key={choice} className="mb-3 last:mb-0 text-sm">
+                      <div className="flex items-center">
+                        <div className="flex-grow font-semibold">{choice}</div>
+                        <div className="font-medium">{share.toFixed(2)}%</div>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <div className="flex-grow">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</div>
+                        <div>{choiceVotes.length} votes</div>
+                      </div>
+                      <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
+                        <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
+                      </div>
+                    </div>
+                  )            
+                })}
               </div>
 
-              <div className="mb-4 pb-2 border-b dark:border-gray-700">
-                <div className="font-medium">Voted power</div>
-                <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.keys(votes).length, {maxFractionDigits: 0})} voters</span></div>
-              </div>
-
-              {msg.payload.choices.map((choice, index) => {
-                var choiceBalance = new BigNumber(0)
-
-                const choiceVotes = Object.values(votes).filter(vote => vote.msg.payload.choice === index+1)
-                choiceVotes.forEach(vote => {
-                  const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
-                  choiceBalance = choiceBalance.plus(b)
-                })
-
-                var share = choiceBalance.dividedBy(votedBalance).times(100)
-
-                return (
-                  <div key={choice} className="mb-3 last:mb-0 text-sm">
-                    <div className="flex items-center">
-                      <div className="flex-grow font-semibold">{choice}</div>
-                      <div className="font-medium">{share.toFixed(2)}%</div>
-                    </div>
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      <div className="flex-grow">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</div>
-                      <div>{choiceVotes.length} votes</div>
-                    </div>
-                    <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
-                      <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
-                    </div>
-                  </div>
-                )            
-              })}
+              <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} />
             </div>
           </div>
         </>
