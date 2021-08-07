@@ -85,9 +85,14 @@ function VoteProposal() {
   }
 
   var vote: Vote|null = null
+  var balance: BigNumber|null = null
 
   if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
     vote = Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0]
+  }
+
+  if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
+    balance = toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()])
   }
   
   return (
@@ -222,15 +227,22 @@ function VoteProposal() {
                 })}
               </div>
 
-              {vote ? (
+              {vote &&
                 <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
                   <div>You've already voted:</div>
                   <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
                 </div>
-              ) : (
-                <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} />
-              )}
-              
+              }
+
+              {!vote && balance && balance.isGreaterThan(0) && token &&
+                <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} balance={balance} tokenInfo={token} />
+              }
+
+              {!balance || (balance && balance.isZero()) &&
+                <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+                  <div>You didn't have any {token?.symbol} at the time of the snapshot.</div>
+                </div>
+              }
             </div>
           </div>
         </>
