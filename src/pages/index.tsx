@@ -189,7 +189,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr className="py-2">
-              <th className="text-left pl-5 pr-2 py-2">#</th>
+              <th className="text-left pl-4 sm:pl-5 pr-1 sm:pr-2 py-2">#</th>
               <th className="px-2 py-2 text-left">Token</th>
               <th className="px-2 py-2 text-right">ZIL</th>
               <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>

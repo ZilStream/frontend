@@ -40,11 +40,11 @@ const TokenRow = (props: Props) => {
 
   return (
     <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
-      <td className={`pl-5 pr-2 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
+      <td className={`pl-4 sm:pl-5 pr-1 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
       <td className="px-2 py-2 font-medium">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
-            <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
+            <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
               <TokenIcon url={props.token.icon} />
             </div>
             <span className="hidden lg:inline">{props.token.name}</span>
