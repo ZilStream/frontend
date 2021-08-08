@@ -193,7 +193,7 @@ function VoteProposal() {
                               </a>
                             </td>
                             <td className="px-2 py-2 text-left font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</td>
-                            <td className={`px-2 py-2 font-medium text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
+                            <td className={`px-2 py-2 font-medium text-right whitespace-nowrap ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
                           </tr>
                         )
                       })}
