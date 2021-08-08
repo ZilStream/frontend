@@ -151,7 +151,7 @@ function VoteProposal() {
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4">
             <div className="flex-grow">
-              <div className="bg-white dark:bg-gray-800 py-6 px-7 rounded-lg">
+              <div className="bg-white dark:bg-gray-800 py-4 md:py-6 px-5 md:px-7 rounded-lg">
                 <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body, { breaks: true })}}></div>
               </div>
               <div className="mt-8">
