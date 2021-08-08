@@ -47,14 +47,18 @@ const TokenRow = (props: Props) => {
             <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
               <TokenIcon url={props.token.icon} />
             </div>
-            <span className="hidden lg:inline">{props.token.name}</span>
-            <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center">
+              <div className="flex items-center">
+                <span className="hidden lg:inline">{props.token.name}</span>
+                <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+              </div>
 
-            {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
-              <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
-                <a className="hidden sm:block text-xs bg-primary rounded-full px-2 ml-1 sm:ml-2 font-medium" style={{paddingTop: 2, paddingBottom: 2}}>Vote</a>
-              </Link>
-            }
+              {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
+                <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
+                  <a className="text-xs bg-primary rounded-full px-2 ml-2 font-medium" style={{paddingTop: 1, paddingBottom: 1}}>Vote</a>
+                </Link>
+              }
+            </div>
           </a>
         </Link>
       </td>
