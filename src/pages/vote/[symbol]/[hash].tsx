@@ -221,15 +221,15 @@ function VoteProposal() {
                   <div className="font-medium">Status</div>
                   <div>
                     {status === 'upcoming' &&
-                      <span className="inline-block text-sm">Upcoming</span>
+                      <span className="block text-sm">Upcoming</span>
                     }
 
                     {status === 'active' &&
-                      <span className="inline-block text-primary text-sm font-semibold">Active</span>
+                      <span className="block text-primary text-sm font-semibold">Active</span>
                     }
 
                     {status === 'closed' &&
-                      <span className="inline-block text-sm">Closed</span>
+                      <span className="block text-sm">Closed</span>
                     }
                   </div>
                 </div>
