@@ -170,15 +170,15 @@ function Calendar() {
                   <td className={`pl-2 pr-4 py-3 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === launches.length-1 ? 'rounded-br-lg' : ''}`}>
                     <div className="flex justify-end gap-2">
                       {launch.website &&
-                        <a href={launch.website} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Website</a>
+                        <a href={launch.website} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Website</a>
                       }
                       
                       {launch.twitter &&
-                        <a href={launch.twitter} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Twitter</a>
+                        <a href={launch.twitter} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Twitter</a>
                       }
 
                       {launch.telegram &&
-                        <a href={launch.telegram} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Telegram</a>
+                        <a href={launch.telegram} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Telegram</a>
                       }
                     </div>
                   </td>
