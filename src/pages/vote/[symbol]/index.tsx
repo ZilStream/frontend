@@ -40,7 +40,7 @@ function VoteTokenDetail() {
   }, [symbol])
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       {space ? (
         <div className="flex items-center gap-3 pt-8 pb-4">
           <div className="w-16 h-16 bg-gray-300 dark:bg-gray-800 p-2 rounded-lg"><TokenIcon address={space?.token} /></div>
@@ -62,7 +62,11 @@ function VoteTokenDetail() {
                 <div className="flex items-center gap-2">
                   <div className="text-gray-500 dark:text-gray-400">Starts {dayjs.unix(proposal.msg.payload.start).format("MM-DD-YYYY")}, ends {dayjs.unix(proposal.msg.payload.end).format("MM-DD-YYYY")}</div>
                   {space?.members.includes(toBech32Address(proposal.address)) &&
-                    <div className="text-sm bg-primary dark:bg-primaryDark px-2 rounded-full">Core</div>
+                    <div className="text-sm bg-gray-200 dark:bg-gray-600 px-2 rounded-full">Core</div>
+                  }
+
+                  {dayjs.unix(proposal.msg.payload.start).isBefore(dayjs()) && dayjs.unix(proposal.msg.payload.end).isAfter(dayjs()) &&
+                    <div className="text-sm bg-primary dark:bg-primaryDark px-2 rounded-full">Active</div>
                   }
                 </div>
               </div>

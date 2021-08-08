@@ -15,6 +15,7 @@ interface Props {
   choices: string[]
   balance: BigNumber
   tokenInfo: TokenInfo
+  onVoted: (() => void)
 }
 
 const CastVote = (props: Props) => {
@@ -48,6 +49,8 @@ const CastVote = (props: Props) => {
     msg.sig = await zilPay.wallet.sign(msg.msg)
 
     await sendGovernanceMessage(msg)
+
+    props.onVoted()
   }
 
   return (

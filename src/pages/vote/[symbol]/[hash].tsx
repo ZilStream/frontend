@@ -2,7 +2,7 @@ import TokenIcon from 'components/TokenIcon'
 import getGovernanceSnapshot from 'lib/zilliqa/getGovernanceSnapshot'
 import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
 import { useRouter } from 'next/dist/client/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ProposalMessage } from 'types/proposal.interface'
@@ -19,6 +19,7 @@ import LoadingSpaceHeader from 'components/LoadingSpaceHeader'
 import LoadingProposal from 'components/LoadingProposal'
 import { shortenAddress } from 'utils/addressShortener'
 import CastVote from 'components/CastVote'
+import dayjs from 'dayjs'
 
 function VoteProposal() {
   const router = useRouter()
@@ -37,6 +38,8 @@ function VoteProposal() {
   const [votesExpanded, setVotesExpanded] = useState<boolean>(false)
   const [vote, setVote] = useState<Vote|null>(null)
   const [balance, setBalance] = useState<BigNumber|null>(null)
+  const [msg, setMsg] = useState<ProposalMessage|null>(null)
+  const [status, setStatus] = useState<'upcoming'|'active'|'closed'>('upcoming')
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -55,12 +58,18 @@ function VoteProposal() {
     })
     setTotalBalance(tBalance)
 
+    await getVotes()
+  }
+
+  async function getVotes() {
+    if(!snapshot) return 
+
     const votesRes = await getGovernanceVotes(symbol as string, hash as string)
     setVotes(votesRes)
 
     var balance = new BigNumber(0)
     Object.values(votesRes).forEach(vote => {
-      const b = toBigNumber(snapshotRes.balances[vote.address.toLowerCase()])
+      const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
       balance = balance.plus(b)
     })
     setVotedBalance(balance)
@@ -80,14 +89,31 @@ function VoteProposal() {
     getSpace()
     getSnapshot()
   }, [symbol, hash, tokenState])
+  
 
-  var msg: ProposalMessage|null = null
-  if(snapshot) {
-    msg = JSON.parse(snapshot.msg)
-  }
+  useMemo(() => {
+    if(snapshot) {
+      const newMsg = JSON.parse(snapshot.msg)
+      setMsg(newMsg)
+      
+      if(newMsg) {
+        if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
+          setStatus('upcoming')
+        } else if(dayjs.unix(newMsg.payload.start).isBefore(dayjs()) && dayjs.unix(newMsg.payload.end).isAfter(dayjs())) {
+          setStatus('active')
+        } else {
+          setStatus('closed')
+        }
+      }
+    }
+  }, [snapshot])
 
   useEffect(() => {
-    if(accountState.address === '') return
+    if(accountState.address === '') {
+      setVote(null)
+      setBalance(null)
+      return
+    }
 
     if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
       setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0])
@@ -99,7 +125,7 @@ function VoteProposal() {
   }, [votes, snapshot, accountState.address])
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       {token ? (
         <div className="flex items-center gap-3 pt-8 pb-4">
           <div className="w-16 h-16 rounded-lg"><TokenIcon address={token?.address_bech32} /></div>
@@ -127,8 +153,8 @@ function VoteProposal() {
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4">
             <div className="flex-grow">
-              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
-                <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
+              <div className="bg-white dark:bg-gray-800 py-6 px-7 rounded-lg">
+                <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body, { breaks: true })}}></div>
               </div>
               <div className="mt-8">
                 <div className="flex items-center">
@@ -138,8 +164,8 @@ function VoteProposal() {
                 <div className={`scrollable-table-container max-w-full overflow-x-scroll text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
                   <table className="zilstream-table table-fixed border-collapse">
                     <colgroup>
-                      <col style={{width: '140px', minWidth: 'auto'}} />
-                      <col style={{width: '140px', minWidth: 'auto'}} />
+                      <col style={{width: '120px', minWidth: 'auto'}} />
+                      <col style={{width: '120px', minWidth: 'auto'}} />
                       <col style={{width: '100px', minWidth: 'auto'}} />
                     </colgroup>
                     <thead className="text-gray-500 dark:text-gray-400 text-xs">
@@ -192,6 +218,35 @@ function VoteProposal() {
             <div className="md:w-80 md:flex-grow-0 md:flex-shrink-0">
               <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
                 <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Status</div>
+                  <div>
+                    {status === 'upcoming' &&
+                      <span className="inline-block text-sm">Upcoming</span>
+                    }
+
+                    {status === 'active' &&
+                      <span className="inline-block text-primary text-sm font-semibold">Active</span>
+                    }
+
+                    {status === 'closed' &&
+                      <span className="inline-block text-sm">Closed</span>
+                    }
+                  </div>
+                </div>
+
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Voting starts</div>
+                  <div className="text-sm">{dayjs.unix(msg.payload.start).format("MMM D, YYYY - HH:mm")}</div>
+                </div>
+
+                <div className="">
+                  <div className="font-medium">Voting ends</div>
+                  <div className="text-sm">{dayjs.unix(msg.payload.end).format("MMM D, YYYY - HH:mm")}</div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
                   <div className="font-medium">Total voting power</div>
                   <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
                 </div>
@@ -230,22 +285,41 @@ function VoteProposal() {
                 })}
               </div>
 
-              {vote &&
-                <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
-                  <div>You've already voted:</div>
-                  <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
-                </div>
-              }
+              {status === 'active' ? (
+                <>
+                  {accountState.address === '' &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+                      <div>Connect your wallet before you can vote.</div>
+                    </div>
+                  }
 
-              {!vote && balance && balance.isGreaterThan(0) && token &&
-                <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} balance={balance} tokenInfo={token} />
-              }
+                  {vote &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                      <div>You've already voted:</div>
+                      <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                    </div>
+                  }
 
-              {!balance || (balance && balance.isZero()) &&
-                <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
-                  <div>You didn't have any {token?.symbol} at the time of the snapshot.</div>
-                </div>
-              }
+                  {!vote && balance && balance.isGreaterThan(0) && token &&
+                    <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} balance={balance} tokenInfo={token} onVoted={() => getVotes()} />
+                  }
+
+                  {!balance || (balance && balance.isZero()) &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+                      <div>You didn't have any {token?.symbol} at the time of the snapshot.</div>
+                    </div>
+                  }
+                </>
+              ) : (
+                <>
+                  {vote &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                      <div>You've already voted:</div>
+                      <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                    </div>
+                  }
+                </>
+              )}
             </div>
           </div>
         </>
