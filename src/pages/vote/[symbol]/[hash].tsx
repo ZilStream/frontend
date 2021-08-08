@@ -193,7 +193,7 @@ function VoteProposal() {
                               </a>
                             </td>
                             <td className="px-2 py-2 text-left font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</td>
-                            <td className={`px-2 py-2 font-medium text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
+                            <td className={`px-2 py-2 font-medium text-right whitespace-nowrap ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
                           </tr>
                         )
                       })}
@@ -221,15 +221,15 @@ function VoteProposal() {
                   <div className="font-medium">Status</div>
                   <div>
                     {status === 'upcoming' &&
-                      <span className="inline-block text-sm">Upcoming</span>
+                      <span className="block text-sm">Upcoming</span>
                     }
 
                     {status === 'active' &&
-                      <span className="inline-block text-primary text-sm font-semibold">Active</span>
+                      <span className="block text-primary text-sm font-semibold">Active</span>
                     }
 
                     {status === 'closed' &&
-                      <span className="inline-block text-sm">Closed</span>
+                      <span className="block text-sm">Closed</span>
                     }
                   </div>
                 </div>
