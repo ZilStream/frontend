@@ -29,6 +29,9 @@ export interface TokenDetail {
   telegram: string
   listed: string
   viewblock_score: number
+  last_vote_start: string
+  last_vote_end: string
+  last_vote_hash: string
   supply_skip_addresses: string
   rate: number
   rate_usd: number

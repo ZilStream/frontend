@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link, FileText, Box, ExternalLink, AlertCircle, MessageCircle } from 'react-feather'
+import { Link as WebLink, FileText, Box, ExternalLink, AlertCircle, MessageCircle } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -17,6 +17,8 @@ import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
+import dayjs from 'dayjs'
+import Link from 'next/link'
 
 
 const TVChartContainer = dynamic(
@@ -128,7 +130,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="flex-grow gap-2 flex items-center justify-center sm:justify-start text-xs sm:text-sm mt-2 sm:mt-0">
           {token.website &&
             <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
-              <Link size={12} className="mr-1" />
+              <WebLink size={12} className="mr-1" />
               Website 
             </a>
           }
@@ -233,6 +235,17 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
+
+          {dayjs(token.last_vote_start).isBefore(dayjs()) && dayjs(token.last_vote_end).isAfter(dayjs()) &&
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Governance</div>
+              <Link href={`/vote/${token.symbol.toLowerCase()}/${token.last_vote_hash}`}>
+                <a>
+                  <div className="font-semibold text-primary">Vote now</div>
+                </a>
+              </Link>
+            </>
+          }
         </div>
       </div>
       
