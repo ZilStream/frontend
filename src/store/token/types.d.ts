@@ -16,6 +16,9 @@ export type TokenInfo = {
   website: string
   whitepaper: string
   viewblock_score: number
+  last_vote_start: string
+  last_vote_end: string
+  last_vote_hash: string
   supply_skip_addresses: string
   unvetted: boolean
   isZil: boolean

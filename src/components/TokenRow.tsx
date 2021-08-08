@@ -8,6 +8,7 @@ import FlashChange from './FlashChange'
 import Link from 'next/link'
 import { Currency, CurrencyState, RootState, TokenInfo } from 'store/types'
 import { useSelector } from 'react-redux'
+import dayjs from 'dayjs'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -48,6 +49,12 @@ const TokenRow = (props: Props) => {
             </div>
             <span className="hidden lg:inline">{props.token.name}</span>
             <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+
+            {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
+              <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
+                <a className="text-sm bg-primary rounded-full px-2 ml-2 font-medium">Vote</a>
+              </Link>
+            }
           </a>
         </Link>
       </td>
