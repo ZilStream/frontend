@@ -40,7 +40,7 @@ const TokenRow = (props: Props) => {
 
   return (
     <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
-      <td className={`pl-4 sm:pl-5 pr-1 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
+      <td className={`pl-4 sm:pl-5 pr-1 sm:pr-2 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
       <td className="px-2 py-2 font-medium">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
@@ -52,7 +52,7 @@ const TokenRow = (props: Props) => {
 
             {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
               <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
-                <a className="text-xs sm:text-sm bg-primary rounded-full px-1 sm:px-2 ml-1 sm:ml-2 font-medium">Vote</a>
+                <a className="text-xs bg-primary rounded-full px-2 ml-1 sm:ml-2 font-medium" style={{paddingTop: 2, paddingBottom: 2}}>Vote</a>
               </Link>
             }
           </a>
