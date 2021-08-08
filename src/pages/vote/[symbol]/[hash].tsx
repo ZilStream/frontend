@@ -2,14 +2,14 @@ import TokenIcon from 'components/TokenIcon'
 import getGovernanceSnapshot from 'lib/zilliqa/getGovernanceSnapshot'
 import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
 import { useRouter } from 'next/dist/client/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ProposalMessage } from 'types/proposal.interface'
 import { Snapshot } from 'types/snapshot.interface'
 import { Space } from 'types/space.interface'
 import marked from 'marked'
-import { toBech32Address } from '@zilliqa-js/zilliqa'
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/zilliqa'
 import getGovernanceVotes from 'lib/zilliqa/getGovernanceVotes'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import { Vote } from 'types/vote.interface'
@@ -18,12 +18,16 @@ import Link from 'next/link'
 import LoadingSpaceHeader from 'components/LoadingSpaceHeader'
 import LoadingProposal from 'components/LoadingProposal'
 import { shortenAddress } from 'utils/addressShortener'
+import CastVote from 'components/CastVote'
+import dayjs from 'dayjs'
 
 function VoteProposal() {
   const router = useRouter()
   const { symbol, hash } = router.query
 
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
+
   const [space, setSpace] = useState<Space>()
   const [snapshot, setSnapshot] = useState<Snapshot>()
   const [votes, setVotes] = useState<{[id: string]: Vote}>()
@@ -32,6 +36,10 @@ function VoteProposal() {
   const [votedBalance, setVotedBalance] = useState<BigNumber>(new BigNumber(0))
   const moneyFormat = useMoneyFormatter()
   const [votesExpanded, setVotesExpanded] = useState<boolean>(false)
+  const [vote, setVote] = useState<Vote|null>(null)
+  const [balance, setBalance] = useState<BigNumber|null>(null)
+  const [msg, setMsg] = useState<ProposalMessage|null>(null)
+  const [status, setStatus] = useState<'upcoming'|'active'|'closed'>('upcoming')
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -50,12 +58,18 @@ function VoteProposal() {
     })
     setTotalBalance(tBalance)
 
+    await getVotes()
+  }
+
+  async function getVotes() {
+    if(!snapshot) return 
+
     const votesRes = await getGovernanceVotes(symbol as string, hash as string)
     setVotes(votesRes)
 
     var balance = new BigNumber(0)
     Object.values(votesRes).forEach(vote => {
-      const b = toBigNumber(snapshotRes.balances[vote.address.toLowerCase()])
+      const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
       balance = balance.plus(b)
     })
     setVotedBalance(balance)
@@ -75,14 +89,43 @@ function VoteProposal() {
     getSpace()
     getSnapshot()
   }, [symbol, hash, tokenState])
-
-  var msg: ProposalMessage|null = null
-  if(snapshot) {
-    msg = JSON.parse(snapshot.msg)
-  }
   
+
+  useMemo(() => {
+    if(snapshot) {
+      const newMsg = JSON.parse(snapshot.msg)
+      setMsg(newMsg)
+      
+      if(newMsg) {
+        if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
+          setStatus('upcoming')
+        } else if(dayjs.unix(newMsg.payload.start).isBefore(dayjs()) && dayjs.unix(newMsg.payload.end).isAfter(dayjs())) {
+          setStatus('active')
+        } else {
+          setStatus('closed')
+        }
+      }
+    }
+  }, [snapshot])
+
+  useEffect(() => {
+    if(accountState.address === '') {
+      setVote(null)
+      setBalance(null)
+      return
+    }
+
+    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
+      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0])
+    }
+  
+    if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
+      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()]))
+    }
+  }, [votes, snapshot, accountState.address])
+
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       {token ? (
         <div className="flex items-center gap-3 pt-8 pb-4">
           <div className="w-16 h-16 rounded-lg"><TokenIcon address={token?.address_bech32} /></div>
@@ -99,7 +142,7 @@ function VoteProposal() {
         <LoadingSpaceHeader />
       )}
       
-      {votes && snapshot && msg ? (
+      {space && votes && snapshot && msg ? (
         <>
           <div className="mb-2 flex items-center">
             {space?.members.includes(toBech32Address(snapshot.address)) &&
@@ -110,35 +153,53 @@ function VoteProposal() {
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4">
             <div className="flex-grow">
-              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
-                <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body)}}></div>
+              <div className="bg-white dark:bg-gray-800 py-6 px-7 rounded-lg">
+                <div className="proposal" dangerouslySetInnerHTML={{__html: marked(msg.payload.body, { breaks: true })}}></div>
               </div>
               <div className="mt-8">
                 <div className="flex items-center">
                   <div className="font-semibold flex-grow">Votes</div>
                 </div>
-                <div className={`bg-white dark:bg-gray-800 py-1 px-5 rounded-lg mt-2 text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
-                  {Object.keys(votes).sort((a,b) => {
-                    const aBalance = toBigNumber(snapshot.balances[a.toLowerCase()])
-                    const bBalance = toBigNumber(snapshot.balances[b.toLowerCase()])
-                    return aBalance.isGreaterThan(bBalance) ? -1 : 1
-                  }).map(address => {
-                    let vote = votes[address]
-                    const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
-                    const bechAddress = toBech32Address(address)
-                    return (
-                      <div className="flex items-center py-2 border-b dark:border-gray-700 last:border-b-0">
-                        <div className="flex-grow">
-                          <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
-                            <span className="hidden sm:inline">{bechAddress}</span>
-                            <span className="inline sm:hidden">{shortenAddress(bechAddress)}</span>
-                          </a>
-                        </div>
-                        <div className="font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
-                        <div className="font-medium w-32 sm:w-48 text-right">{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</div>
-                      </div>
-                    )
-                  })}
+
+                <div className={`scrollable-table-container max-w-full overflow-x-scroll text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
+                  <table className="zilstream-table table-fixed border-collapse">
+                    <colgroup>
+                      <col style={{width: '120px', minWidth: 'auto'}} />
+                      <col style={{width: '120px', minWidth: 'auto'}} />
+                      <col style={{width: '100px', minWidth: 'auto'}} />
+                    </colgroup>
+                    <thead className="text-gray-500 dark:text-gray-400 text-xs">
+                      <tr>
+                        <th className="pl-4 pr-2 py-2 text-left">Address</th>
+                        <th className="px-2 py-2 text-left">Choice</th>
+                        <th className="px-2 py-2 text-right">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(votes).sort((a,b) => {
+                        const aBalance = toBigNumber(snapshot.balances[a.toLowerCase()])
+                        const bBalance = toBigNumber(snapshot.balances[b.toLowerCase()])
+                        return aBalance.isGreaterThan(bBalance) ? -1 : 1
+                      }).map((address, index) => {
+                        let vote = votes[address]
+                        const amount = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
+                        const bechAddress = toBech32Address(address)
+                        return (
+                          <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                            <td className={`pl-4 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-bl-lg' : ''}`}>
+                              <a href={`https://viewblock.io/zilliqa/address/${bechAddress}`} target="_blank" className="font-normal">
+                                <span className="hidden sm:inline truncate">{bechAddress}</span>
+                                <span className="inline sm:hidden">{shortenAddress(bechAddress)}</span>
+                              </a>
+                            </td>
+                            <td className="px-2 py-2 text-left font-medium">{msg?.payload.choices[vote.msg.payload.choice-1]}</td>
+                            <td className={`px-2 py-2 font-medium text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === Object.keys(votes).length-1 ? 'rounded-br-lg' : ''}`}>{moneyFormat(amount, {compression: token?.decimals})} {space?.symbol}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                  
                   {!votesExpanded &&
                     <div className="absolute bottom-0 left-0 w-full p-4 h-24 text-center bg-gradient-to-t from-white dark:from-gray-700 flex flex-col">
                       <div className="flex-grow"></div>
@@ -154,44 +215,111 @@ function VoteProposal() {
                 }
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg md:w-80 md:flex-grow-0 md:flex-shrink-0">
-              <div className="mb-2 pb-2 border-b dark:border-gray-700">
-                <div className="font-medium">Total voting power</div>
-                <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
-              </div>
+            <div className="md:w-80 md:flex-grow-0 md:flex-shrink-0">
+              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Status</div>
+                  <div>
+                    {status === 'upcoming' &&
+                      <span className="inline-block text-sm">Upcoming</span>
+                    }
 
-              <div className="mb-4 pb-2 border-b dark:border-gray-700">
-                <div className="font-medium">Voted power</div>
-                <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.keys(votes).length, {maxFractionDigits: 0})} voters</span></div>
-              </div>
+                    {status === 'active' &&
+                      <span className="inline-block text-primary text-sm font-semibold">Active</span>
+                    }
 
-              {msg.payload.choices.map((choice, index) => {
-                var choiceBalance = new BigNumber(0)
-
-                const choiceVotes = Object.values(votes).filter(vote => vote.msg.payload.choice === index+1)
-                choiceVotes.forEach(vote => {
-                  const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
-                  choiceBalance = choiceBalance.plus(b)
-                })
-
-                var share = choiceBalance.dividedBy(votedBalance).times(100)
-
-                return (
-                  <div key={choice} className="mb-3 last:mb-0 text-sm">
-                    <div className="flex items-center">
-                      <div className="flex-grow font-semibold">{choice}</div>
-                      <div className="font-medium">{share.toFixed(2)}%</div>
-                    </div>
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      <div className="flex-grow">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</div>
-                      <div>{choiceVotes.length} votes</div>
-                    </div>
-                    <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
-                      <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
-                    </div>
+                    {status === 'closed' &&
+                      <span className="inline-block text-sm">Closed</span>
+                    }
                   </div>
-                )            
-              })}
+                </div>
+
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Voting starts</div>
+                  <div className="text-sm">{dayjs.unix(msg.payload.start).format("MMM D, YYYY - HH:mm")}</div>
+                </div>
+
+                <div className="">
+                  <div className="font-medium">Voting ends</div>
+                  <div className="text-sm">{dayjs.unix(msg.payload.end).format("MMM D, YYYY - HH:mm")}</div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                <div className="mb-2 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Total voting power</div>
+                  <div>{moneyFormat(totalBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.values(snapshot.balances).filter(b => toBigNumber(b).isGreaterThan(0)).length, {maxFractionDigits: 0})} holders</span></div>
+                </div>
+
+                <div className="mb-4 pb-2 border-b dark:border-gray-700">
+                  <div className="font-medium">Voted power</div>
+                  <div>{moneyFormat(votedBalance, {compression: token?.decimals, maxFractionDigits: 2})} <span className="text-gray-500 dark:text-gray-400">{moneyFormat(Object.keys(votes).length, {maxFractionDigits: 0})} voters</span></div>
+                </div>
+
+                {msg.payload.choices.map((choice, index) => {
+                  var choiceBalance = new BigNumber(0)
+
+                  const choiceVotes = Object.values(votes).filter(vote => vote.msg.payload.choice === index+1)
+                  choiceVotes.forEach(vote => {
+                    const b = toBigNumber(snapshot.balances[vote.address.toLowerCase()])
+                    choiceBalance = choiceBalance.plus(b)
+                  })
+
+                  var share = choiceBalance.dividedBy(votedBalance).times(100)
+
+                  return (
+                    <div key={choice} className="mb-3 last:mb-0 text-sm">
+                      <div className="flex items-center">
+                        <div className="flex-grow font-semibold">{choice}</div>
+                        <div className="font-medium">{share.toFixed(2)}%</div>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <div className="flex-grow">{moneyFormat(choiceBalance, {compression: token?.decimals})} {space?.symbol}</div>
+                        <div>{choiceVotes.length} votes</div>
+                      </div>
+                      <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 w-full relative">
+                        <div className="absolute left-0 top-0 h-full bg-primary rounded-full" style={{width: `${share}%`}}></div>
+                      </div>
+                    </div>
+                  )            
+                })}
+              </div>
+
+              {status === 'active' ? (
+                <>
+                  {accountState.address === '' &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+                      <div>Connect your wallet before you can vote.</div>
+                    </div>
+                  }
+
+                  {vote &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                      <div>You've already voted:</div>
+                      <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                    </div>
+                  }
+
+                  {!vote && balance && balance.isGreaterThan(0) && token &&
+                    <CastVote token={space.token} proposal={hash! as string} choices={msg.payload.choices} balance={balance} tokenInfo={token} onVoted={() => getVotes()} />
+                  }
+
+                  {!balance || (balance && balance.isZero()) &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+                      <div>You didn't have any {token?.symbol} at the time of the snapshot.</div>
+                    </div>
+                  }
+                </>
+              ) : (
+                <>
+                  {vote &&
+                    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4">
+                      <div>You've already voted:</div>
+                      <div className="font-semibold">{msg?.payload.choices[vote.msg.payload.choice-1]}</div>
+                    </div>
+                  }
+                </>
+              )}
             </div>
           </div>
         </>
