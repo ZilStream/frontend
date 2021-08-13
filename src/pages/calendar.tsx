@@ -83,6 +83,13 @@ function Calendar() {
       tags: ['NFT'],
       website: 'https://okimoto.io/'
     },
+    {
+      name: 'FIAT',
+      symbol: 'HOL',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/hol.png',
+      tags: ['Game'],
+      twitter: 'https://twitter.com/HLowhelm'
+    },
   ]
 
   return (
