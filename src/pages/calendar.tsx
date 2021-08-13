@@ -70,6 +70,7 @@ function Calendar() {
       symbol: 'HOL',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/hol.png',
       tags: ['Game'],
+      website: 'https://heroesoflowhelm.com',
       twitter: 'https://twitter.com/HLowhelm'
     },
   ]
