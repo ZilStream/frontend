@@ -9,17 +9,6 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'Zilliqa Royale',
-      symbol: 'BLOX',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blox.png',
-      sale_type: 'ZILO',
-      sale_date: new Date('2021-08-12T00:00:00'),
-      goal: new BigNumber(550000),
-      tags: ['Game'],
-      website: 'https://zilliqaroyale.com/',
-      telegram: 'https://t.me/zilliqaroyale'
-    },
-    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
@@ -39,13 +28,6 @@ function Calendar() {
       website: 'https://demons.world/',
       twitter: 'https://twitter.com/de_monsters'
     },
-    // {
-    //   name: 'Blackhole',
-    //   symbol: 'BLK',
-    //   icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blackhole.png',
-    //   tags: ['Privacy'],
-    //   website: 'https://blackhole-docs.carbontoken.info/',
-    // },
     {
       name: 'Pele',
       symbol: 'PELE',
