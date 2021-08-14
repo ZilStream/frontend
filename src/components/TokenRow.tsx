@@ -6,9 +6,10 @@ import { currencyFormat } from 'utils/format'
 import TokenIcon from './TokenIcon'
 import FlashChange from './FlashChange'
 import Link from 'next/link'
-import { Currency, CurrencyState, RootState, TokenInfo } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { useSelector } from 'react-redux'
 import dayjs from 'dayjs'
+import { getTokenAPR } from 'utils/apr'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -19,7 +20,8 @@ interface Props {
   token: TokenInfo,
   rates: Rate[],
   rank: number,
-  isLast: boolean
+  isLast: boolean,
+  showAPR: boolean
 }
 
 const TokenRow = (props: Props) => {
@@ -69,7 +71,19 @@ const TokenRow = (props: Props) => {
       </td>
       <td className="px-2 py-2 font-normal text-right">{currencyFormat(marketCap, selectedCurrency.symbol)}</td>
       <td className="px-2 py-2 font-normal text-right">{currencyFormat(currentLiquidity, selectedCurrency.symbol)}</td>
-      <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
+      {props.showAPR &&
+        <td className="px-2 py-2 font-normal text-right">
+          {props.token.apr?.isZero() ? (
+            <span className="text-gray-500 dark:text-gray-400">-</span>
+          ) : (
+            <>{props.token.apr?.toNumber()}%</>
+          )}
+          
+        </td>
+      }
+      {!props.showAPR &&
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
+      }
       <td className={`px-2 py-2 flex justify-end ${props.rank == 1 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="inline-block w-28" style={{height: '52px'}}>

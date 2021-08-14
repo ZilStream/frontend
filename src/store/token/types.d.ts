@@ -27,6 +27,7 @@ export type TokenInfo = {
   rewards: Reward[]
   balance?: BigNumber = 0
   pool?: TokenPool
+  apr?: BigNumber
 }
 
 export interface Reward {

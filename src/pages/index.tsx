@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
+import { getTokenAPR } from 'utils/apr'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
@@ -67,6 +68,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
+  const sortTokensByAPR = (a: TokenInfo, b: TokenInfo) => {
+    if(!a.apr || !b.apr) return -1
+    return a.apr.isLessThan(b.apr) ? 1 : -1
+  }
+
   const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
 
   useEffect(() => {
@@ -87,6 +93,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         vettedTokens.sort((a,b) => {
           return (a.current_liquidity < b.current_liquidity) ? 1 : -1
         })
+      } else if(currentList == ListType.APR) {
+        vettedTokens.sort(sortTokensByAPR)
       } else {
         vettedTokens.sort(sortTokensByMarketCap)
       }
@@ -159,6 +167,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Highest liquidity</button>
             <button 
+              onClick={() => setCurrentList(ListType.APR)}
+              className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Highest APR</button>
+            <button 
               onClick={() => setCurrentList(ListType.Unvetted)}
               className={`${currentList == ListType.Unvetted ? 'list-btn-selected' : 'list-btn-disabled'}`}
             >Unvetted</button>
@@ -196,7 +208,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <th className="px-2 py-2 text-right">24h %</th>
               <th className="px-2 py-2 text-right">Market Cap</th>
               <th className="px-2 py-2 text-right">Liquidity</th>
-              <th className="px-2 py-2 text-right">Volume (24h)</th>
+              {currentList === ListType.APR &&
+                <th className="px-2 py-2 text-right">APR</th>
+              }
+              {currentList !== ListType.APR &&
+                <th className="px-2 py-2 text-right">Volume (24h)</th>
+              }
               <th className="px-2 py-2 text-right">Last 24 hours</th>
             </tr>
           </thead>
@@ -209,6 +226,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   rank={index+1} 
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
+                  showAPR={currentList === ListType.APR}
                 />
               )
             })}
