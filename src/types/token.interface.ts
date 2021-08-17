@@ -69,4 +69,6 @@ export interface Reward {
   frequency: number
   frequency_type: string
   excluded_addresses: string
+  adjusted_total_contributed: string
+  adjusted_total_contributed_share: string
 }
