@@ -126,10 +126,10 @@ function VoteProposal() {
   return (
     <>
       <Head>
-        <title>{msg?.payload.name} | ZilStream</title>
-        <meta property="og:title" content={`${msg?.payload.name} | ZilStream`} />
-        <meta name="description" content={`${token?.symbol} governance proposal: ${msg?.payload.name}`} />
-        <meta property="og:description" content={`${token?.symbol} governance proposal: ${msg?.payload.name}`} />
+        <title>{msg?.payload.name ?? 'Proposal'} | ZilStream</title>
+        <meta property="og:title" content={`${msg?.payload.name ?? 'Proposal'} | ZilStream`} />
+        <meta name="description" content={`${token?.symbol ?? 'Token'} governance proposal: ${msg?.payload.name}`} />
+        <meta property="og:description" content={`${token?.symbol ?? 'Token'} governance proposal: ${msg?.payload.name}`} />
       </Head>
       <div className="max-w-5xl mx-auto">
         {token ? (

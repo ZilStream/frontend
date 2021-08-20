@@ -43,10 +43,10 @@ function VoteTokenDetail() {
   return (
     <>
       <Head>
-        <title>{space?.symbol.toUpperCase()} proposals | ZilStream</title>
-        <meta property="og:title" content={`${space?.symbol.toUpperCase()} proposals | ZilStream`} />
-        <meta name="description" content={`${space?.symbol.toUpperCase()} governance proposals`} />
-        <meta property="og:description" content={`${space?.symbol.toUpperCase()} governance proposals`} />
+        <title>{space?.symbol.toUpperCase() ?? ''} proposals | ZilStream</title>
+        <meta property="og:title" content={`${space?.symbol.toUpperCase() ?? ''} proposals | ZilStream`} />
+        <meta name="description" content={`${space?.symbol.toUpperCase() ?? ''} governance proposals`} />
+        <meta property="og:description" content={`${space?.symbol.toUpperCase() ?? ''} governance proposals`} />
       </Head>
       <div className="max-w-5xl mx-auto">
         {space ? (
