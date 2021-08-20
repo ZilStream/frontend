@@ -6,9 +6,10 @@ import { currencyFormat } from 'utils/format'
 import TokenIcon from './TokenIcon'
 import FlashChange from './FlashChange'
 import Link from 'next/link'
-import { Currency, CurrencyState, RootState, TokenInfo } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { useSelector } from 'react-redux'
 import dayjs from 'dayjs'
+import { getTokenAPR } from 'utils/apr'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -19,7 +20,8 @@ interface Props {
   token: TokenInfo,
   rates: Rate[],
   rank: number,
-  isLast: boolean
+  isLast: boolean,
+  showAPR: boolean
 }
 
 const TokenRow = (props: Props) => {
@@ -40,21 +42,25 @@ const TokenRow = (props: Props) => {
 
   return (
     <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
-      <td className={`pl-5 pr-2 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
+      <td className={`pl-4 sm:pl-5 pr-1 sm:pr-2 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
       <td className="px-2 py-2 font-medium">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
-            <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
+            <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
               <TokenIcon url={props.token.icon} />
             </div>
-            <span className="hidden lg:inline">{props.token.name}</span>
-            <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center">
+              <div className="flex items-center">
+                <span className="hidden lg:inline">{props.token.name}</span>
+                <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+              </div>
 
-            {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
-              <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
-                <a className="text-sm bg-primary rounded-full px-2 ml-2 font-medium">Vote</a>
-              </Link>
-            }
+              {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
+                <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
+                  <a className="text-xs bg-primary rounded-full px-2 ml-2 font-medium" style={{paddingTop: 1, paddingBottom: 1}}>Vote</a>
+                </Link>
+              }
+            </div>
           </a>
         </Link>
       </td>
@@ -65,7 +71,19 @@ const TokenRow = (props: Props) => {
       </td>
       <td className="px-2 py-2 font-normal text-right">{currencyFormat(marketCap, selectedCurrency.symbol)}</td>
       <td className="px-2 py-2 font-normal text-right">{currencyFormat(currentLiquidity, selectedCurrency.symbol)}</td>
-      <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
+      {props.showAPR &&
+        <td className="px-2 py-2 font-normal text-right">
+          {props.token.apr?.isZero() ? (
+            <span className="text-gray-500 dark:text-gray-400">-</span>
+          ) : (
+            <>{props.token.apr?.toNumber()}%</>
+          )}
+          
+        </td>
+      }
+      {!props.showAPR &&
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
+      }
       <td className={`px-2 py-2 flex justify-end ${props.rank == 1 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="inline-block w-28" style={{height: '52px'}}>

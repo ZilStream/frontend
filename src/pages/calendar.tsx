@@ -9,17 +9,6 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'Zilliqa Royale',
-      symbol: 'BLOX',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blox.png',
-      sale_type: 'ZILO',
-      sale_date: new Date('2021-08-12T00:00:00'),
-      goal: new BigNumber(550000),
-      tags: ['Game'],
-      website: 'https://zilliqaroyale.com/',
-      telegram: 'https://t.me/zilliqaroyale'
-    },
-    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
@@ -39,13 +28,6 @@ function Calendar() {
       website: 'https://demons.world/',
       twitter: 'https://twitter.com/de_monsters'
     },
-    // {
-    //   name: 'Blackhole',
-    //   symbol: 'BLK',
-    //   icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/blackhole.png',
-    //   tags: ['Privacy'],
-    //   website: 'https://blackhole-docs.carbontoken.info/',
-    // },
     {
       name: 'Pele',
       symbol: 'PELE',
@@ -71,6 +53,7 @@ function Calendar() {
     {
       name: 'News',
       symbol: 'NEWS',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/news.png',
       tags: ['Media'],
       website: 'https://reviewcapital.org',
       telegram: 'https://t.me/RECAPCommunity'
@@ -81,6 +64,14 @@ function Calendar() {
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
       tags: ['NFT'],
       website: 'https://okimoto.io/'
+    },
+    {
+      name: 'FIAT',
+      symbol: 'HOL',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/hol.png',
+      tags: ['Game'],
+      website: 'https://heroesoflowhelm.com',
+      twitter: 'https://twitter.com/HLowhelm'
     },
   ]
 
@@ -170,15 +161,15 @@ function Calendar() {
                   <td className={`pl-2 pr-4 py-3 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === launches.length-1 ? 'rounded-br-lg' : ''}`}>
                     <div className="flex justify-end gap-2">
                       {launch.website &&
-                        <a href={launch.website} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Website</a>
+                        <a href={launch.website} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Website</a>
                       }
                       
                       {launch.twitter &&
-                        <a href={launch.twitter} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Twitter</a>
+                        <a href={launch.twitter} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Twitter</a>
                       }
 
                       {launch.telegram &&
-                        <a href={launch.telegram} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded">Telegram</a>
+                        <a href={launch.telegram} className="bg-gray-200 dark:bg-gray-900 font-normal py-1 px-2 rounded" target="_blank">Telegram</a>
                       }
                     </div>
                   </td>

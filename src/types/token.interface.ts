@@ -29,6 +29,9 @@ export interface TokenDetail {
   telegram: string
   listed: string
   viewblock_score: number
+  last_vote_start: string
+  last_vote_end: string
+  last_vote_hash: string
   supply_skip_addresses: string
   rate: number
   rate_usd: number
@@ -66,4 +69,6 @@ export interface Reward {
   frequency: number
   frequency_type: string
   excluded_addresses: string
+  adjusted_total_contributed: string
+  adjusted_total_contributed_share: string
 }

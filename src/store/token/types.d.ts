@@ -27,6 +27,7 @@ export type TokenInfo = {
   rewards: Reward[]
   balance?: BigNumber = 0
   pool?: TokenPool
+  apr?: BigNumber
 }
 
 export interface Reward {
@@ -39,6 +40,7 @@ export interface Reward {
   frequency_type: string
   excluded_addresses: string
   adjusted_total_contributed: string
+  adjusted_total_contributed_share: string
 }
 
 export type TokenPool = {

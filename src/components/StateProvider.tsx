@@ -11,6 +11,7 @@ import { CurrencyActionTypes } from 'store/currency/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, CurrencyState, Operator, RootState, StakingState, TokenState } from 'store/types'
+import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
@@ -24,14 +25,13 @@ const StateProvider = (props: Props) => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
-  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
   async function loadTokens() {
     const tokens = await getTokens()
     dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
-    loadRates()
+    await loadRates()
   }
 
   async function loadRates() {
@@ -46,6 +46,16 @@ const StateProvider = (props: Props) => {
         }})
       })
       dispatch({type: TokenActionTypes.TOKEN_INITIALIZED})
+    })
+  }
+
+  async function setTokenAPRs() {
+    tokenState.tokens.forEach(token => {
+      const apr = getTokenAPR(token, tokenState)
+      dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+        address_bech32: token.address_bech32,
+        apr: apr
+      }})
     })
   }
 
@@ -225,6 +235,10 @@ const StateProvider = (props: Props) => {
     loadTokens()
     loadZilRates()
   }, [])
+
+  useEffect(() => {
+    setTokenAPRs()
+  }, [tokenState.initialized])
 
   useEffect(() => {
     loadWalletState()

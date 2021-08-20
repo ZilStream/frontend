@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link, FileText, Box, ExternalLink, AlertCircle, MessageCircle } from 'react-feather'
+import { Link as WebLink, FileText, Box, ExternalLink, AlertCircle, MessageCircle } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -17,6 +17,8 @@ import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
+import dayjs from 'dayjs'
+import Link from 'next/link'
 
 
 const TVChartContainer = dynamic(
@@ -57,22 +59,21 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   } = React.useMemo(() => {
     const rewards: Reward[] = token.rewards
 
-    var totalRewardsValue = new BigNumber(0)
+    var totalAPR = new BigNumber(0)
     rewards.forEach(reward => {
       const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
       if(rewardTokens.length > 0) {
         const rewardToken = rewardTokens[0]
         const rewardsValue = toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate)
-        totalRewardsValue = totalRewardsValue.plus(rewardsValue)
+        const liquidity = toBigNumber(reward.adjusted_total_contributed_share).times(token.market_data.current_liquidity)
+        const roiPerEpoch = rewardsValue.dividedBy(liquidity)
+        const apr = bnOrZero(roiPerEpoch.times(52).shiftedBy(2).decimalPlaces(1))
+        totalAPR = totalAPR.plus(apr)
       }
-      
     })
 
-    const roiPerEpoch = totalRewardsValue.dividedBy(token.market_data.current_liquidity)
-    const apr = bnOrZero(roiPerEpoch.times(52).shiftedBy(2).decimalPlaces(1))
-
     return {
-      apr
+      apr: totalAPR
     }
   }, [token, tokenState.tokens])
 
@@ -128,7 +129,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="flex-grow gap-2 flex items-center justify-center sm:justify-start text-xs sm:text-sm mt-2 sm:mt-0">
           {token.website &&
             <a href={token.website} target="_blank" className="flex items-center bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
-              <Link size={12} className="mr-1" />
+              <WebLink size={12} className="mr-1" />
               Website 
             </a>
           }
@@ -233,6 +234,17 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
+
+          {dayjs(token.last_vote_start).isBefore(dayjs()) && dayjs(token.last_vote_end).isAfter(dayjs()) &&
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Governance</div>
+              <Link href={`/vote/${token.symbol.toLowerCase()}/${token.last_vote_hash}`}>
+                <a>
+                  <div className="font-semibold text-primary">Vote now</div>
+                </a>
+              </Link>
+            </>
+          }
         </div>
       </div>
       
