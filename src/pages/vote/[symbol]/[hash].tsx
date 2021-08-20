@@ -159,7 +159,7 @@ function VoteProposal() {
                   <div className="font-semibold flex-grow">Votes</div>
                 </div>
 
-                {votes &&
+                {votes && Object.keys(votes).length > 0 &&
                   <div className={`scrollable-table-container max-w-full overflow-x-scroll text-sm relative overflow-hidden ${votesExpanded ? '' : 'h-96'}`}>
                     <table className="zilstream-table table-fixed border-collapse">
                       <colgroup>
@@ -212,6 +212,11 @@ function VoteProposal() {
                   <div className="text-center mt-4">
                     <button onClick={() => setVotesExpanded(false)} className="font-medium text-gray-500 focus:outline-none">Collapse to see less votes</button>
                   </div>
+                }
+
+
+                {votes && Object.keys(votes).length === 0 &&
+                  <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg text-gray-500 dark:text-gray-400 italic">No votes have been casted yet.</div>
                 }
               </div>
             </div>
@@ -268,6 +273,9 @@ function VoteProposal() {
                       })
 
                       var share = choiceBalance.dividedBy(votedBalance).times(100)
+                      if(share.isNaN()) {
+                        share = new BigNumber(0)
+                      }
 
                       return (
                         <div key={choice} className="mb-3 last:mb-0 text-sm">
