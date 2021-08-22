@@ -7,7 +7,7 @@ import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertCircle } from 'react-feather'
+import { AlertCircle, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
@@ -32,8 +32,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
-  const [currentSort, setCurrentSort] = useState<SortType>(SortType.MarketCap)
-  const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Descending)
+  const [currentSort, setCurrentSort] = useState<SortType>(SortType.Default)
+  const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Ascending)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = useMemo(() => {
@@ -88,7 +88,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       }
     } else {
       setCurrentSort(sort)
-      setCurrentSortDirection(SortDirection.Descending)
+
+      if(sort === SortType.Default || sort === SortType.Token) {
+        setCurrentSortDirection(SortDirection.Ascending)
+      } else {
+        setCurrentSortDirection(SortDirection.Descending)
+      }
     }
   }
 
@@ -107,12 +112,22 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       }
     }
 
-    if(currentSort === SortType.Token) {
+    if(currentSort === SortType.Default) {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
+        const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
+    
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorMarketCap < nextMarketCap) ? 1 : -1
+        }
+        return (priorMarketCap > nextMarketCap) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Token) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
           return (a.name > b.name) ? 1 : -1
         }
-        return (a.name > b.name) ? 1 : -1
+        return (a.name < b.name) ? 1 : -1
       })
     } else if(currentSort === SortType.Price || currentSort === SortType.PriceFiat) {
       tokensToDisplay.sort((a,b) => {
@@ -270,38 +285,82 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <col style={{width: '160px', minWidth: 'auto'}} />
             <col style={{width: '160px', minWidth: 'auto'}} />
           </colgroup>
-          <thead className="text-gray-500 dark:text-gray-400 text-xs">
+          <thead className="text-gray-500 dark:text-gray-400 text-xs" style={{height: 33}}>
             <tr className="py-2">
               <th className="text-left pl-4 sm:pl-5 sm:pr-2 py-2"></th>
               <th className="text-left pl-2 sm:pl-3 pr-1 sm:pr-2 py-2">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Default)}>#</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Default)}>
+                  #
+                  {currentSort === SortType.Default &&
+                    <Triangle className={`ml-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                </button>
               </th>
               <th className="px-2 py-2 text-left">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Token)}>Token</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Token)}>
+                  Token
+                  {currentSort === SortType.Token &&
+                    <Triangle className={`ml-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                </button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Price)}>ZIL</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
+                  {currentSort === SortType.Price &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  ZIL
+                </button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.PriceFiat)}>{selectedCurrency.code}</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.PriceFiat)}>
+                  {currentSort === SortType.PriceFiat &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  {selectedCurrency.code}
+                </button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Change)}>24h %</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change)}>
+                  {currentSort === SortType.Change &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  24h %
+                </button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.MarketCap)}>Market Cap</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.MarketCap)}>
+                  {currentSort === SortType.MarketCap &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  Market Cap</button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Liquidity)}>Liquidity</button>
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Liquidity)}>
+                  {currentSort === SortType.Liquidity &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  Liquidity
+                </button>
               </th>
               {currentList === ListType.APR &&
                 <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.APR)}>APR</button>
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.APR)}>
+                    {currentSort === SortType.APR &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    APR
+                  </button>
                 </th>
               }
               {currentList !== ListType.APR &&
                 <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Volume)}>Volume (24h)</button>
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Volume)}>
+                    {currentSort === SortType.Volume &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Volume (24h)
+                  </button>
                 </th>
               }
               <th className="px-2 py-2 text-right">Last 24 hours</th>
@@ -313,7 +372,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 <TokenRow 
                   key={token.id} 
                   token={token}
-                  rank={index+1}
+                  rank={tokens.indexOf(token)+1}
                   index={index}
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
