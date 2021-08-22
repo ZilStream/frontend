@@ -104,12 +104,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
     if(currentList == ListType.Unvetted) {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
+    } else if(currentList == ListType.Favorites) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
     } else {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
-      
-      if(currentList == ListType.Favorites) {
-        tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
-      }
     }
 
     if(currentList === ListType.APR) {
