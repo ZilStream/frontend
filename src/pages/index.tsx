@@ -6,13 +6,12 @@ import getRates from 'lib/zilstream/getRates'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AlertCircle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { Rate } from 'types/rate.interface'
-import { getTokenAPR } from 'utils/apr'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
@@ -34,7 +33,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
-  const tokens = tokenState.tokens
+  const tokens = useMemo(() => {
+    if(!tokenState.initialized) return []
+    return tokenState.tokens.sort(sortTokensByMarketCap)
+  }, [tokenState])
+
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   
   useEffect(() => {
@@ -73,7 +76,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return a.apr.isLessThan(b.apr) ? 1 : -1
   }
 
-  const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
+  const topTokens = useMemo(() => {
+    if(!tokenState.initialized) return []
+    return tokens.sort(sortTokensByMarketCap).slice(0, 3)
+  }, [tokenState])
 
   useEffect(() => {
     if(!tokenState.initialized) return
@@ -83,9 +89,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       unvettedTokens.sort(sortTokensByMarketCap)
       setDisplayedTokens(unvettedTokens)
     } else {
-      let vettedTokens = tokens.filter(token => token.unvetted === false)
+      var vettedTokens = tokens.filter(token => token.unvetted === false)
       
-      if(currentList == ListType.Volume) {
+      if(currentList == ListType.Favorites) {
+        vettedTokens = tokens.filter(token => token.isFavorited)
+        vettedTokens.sort(sortTokensByMarketCap)
+      } else if(currentList == ListType.Volume) {
         vettedTokens.sort((a,b) => {
           return (a.daily_volume < b.daily_volume) ? 1 : -1
         })
@@ -102,7 +111,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       setDisplayedTokens(vettedTokens)
     }
   }, [currentList, tokenState])
-  
+  console.log('renderindex', tokens)
   return (
     <>
       <Head>
@@ -152,12 +161,16 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         )}
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '600px'}}>
+        <div className="flex items-center" style={{minWidth: '640px'}}>
           <div className="flex-grow flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Ranking)}
               className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Ranking</button>
+            <button 
+              onClick={() => setCurrentList(ListType.Favorites)}
+              className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Favorites</button>
             <button 
               onClick={() => setCurrentList(ListType.Volume)}
               className={`${currentList == ListType.Volume ? 'list-btn-selected' : 'list-btn'} mr-1`}
@@ -189,6 +202,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
+            <col style={{width: '24px', minWidth: 'auto'}} />
             <col style={{width: '54px', minWidth: 'auto'}} />
             <col style={{width: '276px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
@@ -201,6 +215,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr className="py-2">
+              <th className="text-left pl-4 sm:pl-5 sm:pr-2 py-2"></th>
               <th className="text-left pl-4 sm:pl-5 pr-1 sm:pr-2 py-2">#</th>
               <th className="px-2 py-2 text-left">Token</th>
               <th className="px-2 py-2 text-right">ZIL</th>
@@ -222,8 +237,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               return (
                 <TokenRow 
                   key={token.id} 
-                  token={token} 
-                  rank={index+1} 
+                  token={token}
+                  rank={index+1}
+                  index={index}
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
                   showAPR={currentList === ListType.APR}
@@ -236,6 +252,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             }
           </tbody>
       </table>
+
+      {tokenState.initialized && currentList === ListType.Favorites && displayedTokens.length === 0 &&
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 flex items-center justify-center">
+          <span className="text-gray-500 dark:text-gray-400 italic">Star a token and you'll see it here in your favorites.</span>
+        </div>
+      }
     </div>
   </>
   )

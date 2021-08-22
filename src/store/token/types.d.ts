@@ -23,6 +23,7 @@ export type TokenInfo = {
   unvetted: boolean
   isZil: boolean
   isStream: boolean
+  isFavorited: boolean = false
   rate: number
   rewards: Reward[]
   balance?: BigNumber = 0
