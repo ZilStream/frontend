@@ -202,29 +202,31 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {tokenState.initialized === false ? (
-          <>
-            <LoadingChartBlock />
-            <LoadingChartBlock />
-            <LoadingChartBlock />
-          </>
-        ) : (
-          <>
-            {topTokens.map( token => {                
-              return (
-                <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-                  <a>
-                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
-                  </a>
-                </Link>
-              )
-            })}
-          </>
-        )}
+      <div className="scrollable-table-container max-w-full overflow-x-scroll">
+        <div className="grid grid-cols-3 gap-4 mt-2" style={{minWidth: 840}}>
+          {tokenState.initialized === false ? (
+            <>
+              <LoadingChartBlock />
+              <LoadingChartBlock />
+              <LoadingChartBlock />
+            </>
+          ) : (
+            <>
+              {topTokens.map( token => {                
+                return (
+                  <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
+                    <a>
+                      <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+                    </a>
+                  </Link>
+                )
+              })}
+            </>
+          )}
+        </div>
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '640px'}}>
+        <div className="flex items-center" style={{minWidth: '380px'}}>
           <div className="flex-grow flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Ranking)}

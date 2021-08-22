@@ -31,7 +31,7 @@ const RatesBlock = (props: Props) => {
   const changeRounded = Math.round(change * 100) / 100
   
   return (
-    <div className="h-64 rounded-lg overflow-hidden p-2 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+    <div className="h-48 md:h-64 rounded-lg overflow-hidden p-2 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
       <div className="pt-2 px-2">
         <div className="flex items-center text-xl">
           <div className="flex-grow flex items-center">
