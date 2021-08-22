@@ -112,7 +112,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       }
     }
 
-    if(currentSort === SortType.Default) {
+    if(currentList === ListType.APR) {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        if(!a.apr || !b.apr) return -1
+        return a.apr.isLessThan(b.apr) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Default) {
       tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
         const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
         const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
@@ -166,14 +171,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           return (a.current_liquidity < b.current_liquidity) ? 1 : -1
         }
         return (a.current_liquidity < b.current_liquidity) ? 1 : -1
-      })
-    } else if(currentList === ListType.APR) {
-      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
-        if(!a.apr || !b.apr) return -1
-        if(currentSortDirection == SortDirection.Ascending) {
-          return a.apr.isGreaterThan(b.apr) ? 1 : -1
-        }
-        return a.apr.isLessThan(b.apr) ? 1 : -1
       })
     } else {
       tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
@@ -345,12 +342,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               </th>
               {currentList === ListType.APR &&
                 <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.APR)}>
-                    {currentSort === SortType.APR &&
-                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                    }
-                    APR
-                  </button>
+                  APR
                 </th>
               }
               {currentList !== ListType.APR &&
