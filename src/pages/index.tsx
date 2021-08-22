@@ -172,14 +172,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Favorites</button>
             <button 
-              onClick={() => setCurrentList(ListType.Volume)}
-              className={`${currentList == ListType.Volume ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Most volume</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Liquidity)}
-              className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Highest liquidity</button>
-            <button 
               onClick={() => setCurrentList(ListType.APR)}
               className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Highest APR</button>
@@ -203,7 +195,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
             <col style={{width: '24px', minWidth: 'auto'}} />
-            <col style={{width: '54px', minWidth: 'auto'}} />
+            <col style={{width: '42px', minWidth: 'auto'}} />
             <col style={{width: '276px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
@@ -216,7 +208,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr className="py-2">
               <th className="text-left pl-4 sm:pl-5 sm:pr-2 py-2"></th>
-              <th className="text-left pl-4 sm:pl-5 pr-1 sm:pr-2 py-2">#</th>
+              <th className="text-left pl-2 sm:pl-3 pr-1 sm:pr-2 py-2">#</th>
               <th className="px-2 py-2 text-left">Token</th>
               <th className="px-2 py-2 text-right">ZIL</th>
               <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>

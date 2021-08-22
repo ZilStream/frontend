@@ -78,7 +78,7 @@ const TokenRow = (props: Props) => {
           )}
         </button>
       </td>
-      <td className="pl-4 sm:pl-5 pr-1 sm:pr-2 py-2 font-normal text-sm">{props.rank}</td>
+      <td className="pl-2 sm:pl-3 pr-1 sm:pr-2 py-2 font-normal text-sm">{props.rank}</td>
       <td className="px-2 py-2 font-medium">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
