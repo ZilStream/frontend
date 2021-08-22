@@ -11,6 +11,7 @@ import { AlertCircle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
+import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
@@ -31,6 +32,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
+  const [currentSort, setCurrentSort] = useState<SortType>(SortType.MarketCap)
+  const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Descending)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = useMemo(() => {
@@ -71,47 +74,107 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const sortTokensByAPR = (a: TokenInfo, b: TokenInfo) => {
-    if(!a.apr || !b.apr) return -1
-    return a.apr.isLessThan(b.apr) ? 1 : -1
-  }
-
   const topTokens = useMemo(() => {
     if(!tokenState.initialized) return []
     return tokens.sort(sortTokensByMarketCap).slice(0, 3)
   }, [tokenState])
 
+  const handleSort = (sort: SortType) => {
+    if(sort === currentSort) {
+      if(currentSortDirection === SortDirection.Ascending) {
+        setCurrentSortDirection(SortDirection.Descending)
+      } else {
+        setCurrentSortDirection(SortDirection.Ascending)
+      }
+    } else {
+      setCurrentSort(sort)
+      setCurrentSortDirection(SortDirection.Descending)
+    }
+  }
+
   useEffect(() => {
     if(!tokenState.initialized) return
 
+    var tokensToDisplay = tokens
+
     if(currentList == ListType.Unvetted) {
-      let unvettedTokens = tokens.filter(token => token.unvetted === true)
-      unvettedTokens.sort(sortTokensByMarketCap)
-      setDisplayedTokens(unvettedTokens)
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
     } else {
-      var vettedTokens = tokens.filter(token => token.unvetted === false)
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
       
       if(currentList == ListType.Favorites) {
-        vettedTokens = tokens.filter(token => token.isFavorited)
-        vettedTokens.sort(sortTokensByMarketCap)
-      } else if(currentList == ListType.Volume) {
-        vettedTokens.sort((a,b) => {
-          return (a.daily_volume < b.daily_volume) ? 1 : -1
-        })
-      } else if(currentList == ListType.Liquidity) {
-        vettedTokens.sort((a,b) => {
-          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
-        })
-      } else if(currentList == ListType.APR) {
-        vettedTokens.sort(sortTokensByAPR)
-      } else {
-        vettedTokens.sort(sortTokensByMarketCap)
+        tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
       }
-
-      setDisplayedTokens(vettedTokens)
     }
-  }, [currentList, tokenState])
-  console.log('renderindex', tokens)
+
+    if(currentSort === SortType.Token) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.name > b.name) ? 1 : -1
+        }
+        return (a.name > b.name) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Price || currentSort === SortType.PriceFiat) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.rate > b.rate) ? 1 : -1
+        }
+        return (a.rate < b.rate) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change) {
+      tokensToDisplay.sort((a,b) => {
+        const priorRates = rates.filter(rate => rate.token_id == a.id)
+        const priorLastRate = priorRates.length > 0 ? priorRates[0].value : 0
+        const priorFirstRate = priorRates.length > 0 ? priorRates[priorRates.length-1].value : 0
+        const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
+
+        const nextRates = rates.filter(rate => rate.token_id == b.id)
+        const nextLastRate = nextRates.length > 0 ? nextRates[0].value : 0
+        const nextFirstRate = nextRates.length > 0 ? nextRates[nextRates.length-1].value : 0
+        const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
+
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorChange > nextChange) ? 1 : -1
+        }
+        return (priorChange < nextChange) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Volume) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.daily_volume > b.daily_volume) ? 1 : -1
+        }
+        return (a.daily_volume < b.daily_volume) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Liquidity) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+        }
+        return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+      })
+    } else if(currentList === ListType.APR) {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        if(!a.apr || !b.apr) return -1
+        if(currentSortDirection == SortDirection.Ascending) {
+          return a.apr.isGreaterThan(b.apr) ? 1 : -1
+        }
+        return a.apr.isLessThan(b.apr) ? 1 : -1
+      })
+    } else {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
+        const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
+    
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorMarketCap > nextMarketCap) ? 1 : -1
+        }
+        return (priorMarketCap < nextMarketCap) ? 1 : -1
+      })
+    }
+
+    setDisplayedTokens(tokensToDisplay)
+  }, [currentList, tokenState, currentSort, currentSortDirection])
+  
   return (
     <>
       <Head>
@@ -208,18 +271,36 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr className="py-2">
               <th className="text-left pl-4 sm:pl-5 sm:pr-2 py-2"></th>
-              <th className="text-left pl-2 sm:pl-3 pr-1 sm:pr-2 py-2">#</th>
-              <th className="px-2 py-2 text-left">Token</th>
-              <th className="px-2 py-2 text-right">ZIL</th>
-              <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>
-              <th className="px-2 py-2 text-right">24h %</th>
-              <th className="px-2 py-2 text-right">Market Cap</th>
-              <th className="px-2 py-2 text-right">Liquidity</th>
+              <th className="text-left pl-2 sm:pl-3 pr-1 sm:pr-2 py-2">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Default)}>#</button>
+              </th>
+              <th className="px-2 py-2 text-left">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Token)}>Token</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Price)}>ZIL</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.PriceFiat)}>{selectedCurrency.code}</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Change)}>24h %</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.MarketCap)}>Market Cap</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Liquidity)}>Liquidity</button>
+              </th>
               {currentList === ListType.APR &&
-                <th className="px-2 py-2 text-right">APR</th>
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.APR)}>APR</button>
+                </th>
               }
               {currentList !== ListType.APR &&
-                <th className="px-2 py-2 text-right">Volume (24h)</th>
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold" onClick={() => handleSort(SortType.Volume)}>Volume (24h)</button>
+                </th>
               }
               <th className="px-2 py-2 text-right">Last 24 hours</th>
             </tr>
