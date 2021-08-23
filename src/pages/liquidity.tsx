@@ -19,11 +19,35 @@ export const getServerSideProps = async () => {
 }
 
 const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const tokens = stats.tokens.filter((token: any) => token.liquidity > 0)
+  const tokens: any[] = stats.tokens.filter((token: any) => token.liquidity > 0)
+
+  tokens.forEach(token => {
+    if(token.symbol === 'ZWAP') {
+      token.aps = 40
+      return
+    }
+
+    if(token.liquidity_ema30_zil < 500000) {
+      token.aps = 0
+      return
+    }
+
+    const aps = Math.min(
+      5,
+      Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 3000000)),
+      Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
+    )
+
+    token.aps = aps
+  })
 
   tokens.sort((a: any, b: any) => {
     return (a.liquidity_ema30_zil < b.liquidity_ema30_zil) ? 1 : -1
   })
+
+  const totalAPs = tokens.reduce((sum, token) => {
+    return sum + token.aps
+  }, 0)
   
   return (
     <>  
@@ -49,7 +73,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
-            {/* <col style={{width: '140px', minWidth: 'auto'}} /> */}
+            <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
@@ -59,8 +83,8 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">Volume (EMA30)</th>
               <th className="px-2 py-2 text-right">Liquidity (EMA30)</th>
-              {/* <th className="px-2 py-2 text-right">Score</th> */}
-              <th className="pl-2 pr-3 py-2 text-right">Rewards Tier</th>
+              <th className="px-2 py-2 text-right">APs</th>
+              <th className="pl-2 pr-3 py-2 text-right">Rewards</th>
             </tr>
           </thead>
           <tbody>
@@ -75,14 +99,6 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
               } else if(token.liquidity_ema30_zil > 500000) {
                 tier = <span className="bg-blue-400 py-1 px-2 rounded font-medium">Tier 3</span>
               }
-
-              const score = Math.min(
-                5,
-                Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 3000000)),
-                Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
-              )
-
-              console.log(token.symbol + ': ' + Math.sqrt(token.liquidity_ema30_zil / 3000000) + ', ' + (token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
 
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
@@ -111,11 +127,21 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                   <td className={`px-2 py-2 font-normal text-right`}>
                     {numberFormat(token.liquidity_ema30_zil, 0)} <span className="font-medium">ZIL</span>
                   </td>
-                  {/* <td className={`px-2 py-2 font-normal text-right`}>
-                    {score}
-                  </td> */}
+                  <td className={`px-2 py-2 font-normal text-right`}>
+
+                    {token.liquidity_ema30_zil >= 500000 ? (
+                      <>{token.aps}</>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400">-</span>
+                    )}
+                    
+                  </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {tier}
+                    {token.liquidity_ema30_zil >= 500000 ? (
+                      <>{numberFormat(token.aps / totalAPs * 5312.5, 2)} ZWAP</>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400">-</span>
+                    )}
                   </td>
                 </tr>
               )
