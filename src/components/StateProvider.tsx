@@ -31,6 +31,16 @@ const StateProvider = (props: Props) => {
   async function loadTokens() {
     const tokens = await getTokens()
     dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+
+    const favoritesString = localStorage.getItem('favorites') ?? ''
+    var favorites = favoritesString.split(',')
+    favorites.forEach(address => {
+      dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+        address_bech32: address,
+        isFavorited: true
+      }})
+    })
+
     await loadRates()
   }
 

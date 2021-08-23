@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'types/token.interface'
@@ -7,9 +7,12 @@ import TokenIcon from './TokenIcon'
 import FlashChange from './FlashChange'
 import Link from 'next/link'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { getTokenAPR } from 'utils/apr'
+import { Star } from 'react-feather'
+import { TokenActionTypes } from 'store/token/actions'
+import { useTheme } from 'next-themes'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -20,6 +23,7 @@ interface Props {
   token: TokenInfo,
   rates: Rate[],
   rank: number,
+  index: number
   isLast: boolean,
   showAPR: boolean
 }
@@ -32,6 +36,9 @@ const TokenRow = (props: Props) => {
   const firstRate = sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
   const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
   const fiatRate = lastRate * selectedCurrency.rate
+  const [isFavorited, setIsFavorited] = useState<boolean>(props.token.isFavorited)
+  const dispatch = useDispatch()
+  const {theme, setTheme, resolvedTheme} = useTheme()
 
   const change = ((lastRate - firstRate) / firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100
@@ -40,9 +47,38 @@ const TokenRow = (props: Props) => {
   const usdVolume = props.token.daily_volume * selectedCurrency.rate
   const currentLiquidity = props.token.current_liquidity * selectedCurrency.rate
 
+  const onFavorited = () => {
+    const favoritesString = localStorage.getItem('favorites') ?? ''
+    var favorites = favoritesString.split(',')
+
+    if (isFavorited) {
+      favorites = favorites.filter(address => address != props.token.address_bech32)
+    } else {
+      favorites.push(props.token.address_bech32)
+    }
+
+    localStorage.setItem('favorites', favorites.join(','))
+    
+    dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+      address_bech32: props.token.address_bech32,
+      isFavorited: !isFavorited
+    }})
+
+    setIsFavorited(!isFavorited)
+  }
+
   return (
     <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
-      <td className={`pl-4 sm:pl-5 pr-1 sm:pr-2 py-2 font-normal text-sm ${props.rank == 1 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>{props.rank}</td>
+      <td className={`pl-4 sm:pl-5 sm:pr-2 py-2 font-normal text-sm ${props.index == 0 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>
+        <button onClick={() => onFavorited()} className="flex items-center justify-center focus:outline-none">
+          {resolvedTheme === 'dark' ? (
+            <Star size={13} className="text-gray-500 dark:text-gray-400" fill={isFavorited ? 'rgba(156, 163, 175, 1)' : 'rgba(0,0,0,0)'} />
+          ) : (
+            <Star size={13} className="text-gray-500 dark:text-gray-400" fill={isFavorited ? 'rgba(107, 114, 128, 1)' : 'rgba(0,0,0,0)'} />
+          )}
+        </button>
+      </td>
+      <td className="pl-2 sm:pl-3 pr-1 sm:pr-2 py-2 font-normal text-sm">{props.rank}</td>
       <td className="px-2 py-2 font-medium">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
@@ -84,7 +120,7 @@ const TokenRow = (props: Props) => {
       {!props.showAPR &&
         <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
       }
-      <td className={`px-2 py-2 flex justify-end ${props.rank == 1 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
+      <td className={`px-2 py-2 flex justify-end ${props.index == 0 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="inline-block w-28" style={{height: '52px'}}>
             <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />

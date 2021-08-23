@@ -12,13 +12,22 @@ function Calendar() {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
-      sale_type: 'Public Sale',
-      sale_date: new Date('2021-08-18T14:00:00'),
+      sale_type: 'Private Sale',
       goal: new BigNumber(2160000),
       tags: ['Media'],
       website: 'https://aosports.tv',
       twitter: 'https://twitter.com/AOSportsTV',
       telegram: 'https://t.me/AthleteToken'
+    },
+    {
+      name: 'Consult Coin',
+      symbol: 'CONSULT',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/consult.png',
+      sale_type: 'Private Sale',
+      goal: new BigNumber(2160000),
+      tags: ['Business'],
+      website: 'https://www.consultcrypto.net',
+      telegram: 'https://t.me/stokenlaunch'
     },
     {
       name: 'DeMons',

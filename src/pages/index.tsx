@@ -6,13 +6,13 @@ import getRates from 'lib/zilstream/getRates'
 import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { AlertCircle } from 'react-feather'
+import { useEffect, useMemo, useState } from 'react'
+import { AlertCircle, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
+import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
-import { getTokenAPR } from 'utils/apr'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 
@@ -32,9 +32,15 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
+  const [currentSort, setCurrentSort] = useState<SortType>(SortType.Default)
+  const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Ascending)
   const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
-  const tokens = tokenState.tokens
+  const tokens = useMemo(() => {
+    if(!tokenState.initialized) return []
+    return tokenState.tokens.sort(sortTokensByMarketCap)
+  }, [tokenState])
+
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   
   useEffect(() => {
@@ -68,40 +74,116 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const sortTokensByAPR = (a: TokenInfo, b: TokenInfo) => {
-    if(!a.apr || !b.apr) return -1
-    return a.apr.isLessThan(b.apr) ? 1 : -1
-  }
+  const topTokens = useMemo(() => {
+    if(!tokenState.initialized) return []
+    return tokens.sort(sortTokensByMarketCap).slice(0, 3)
+  }, [tokenState])
 
-  const topTokens = tokens.sort(sortTokensByMarketCap).slice(0, 3)
+  const handleSort = (sort: SortType) => {
+    if(sort === currentSort) {
+      if(currentSortDirection === SortDirection.Ascending) {
+        setCurrentSortDirection(SortDirection.Descending)
+      } else {
+        setCurrentSortDirection(SortDirection.Ascending)
+      }
+    } else {
+      setCurrentSort(sort)
+
+      if(sort === SortType.Default || sort === SortType.Token) {
+        setCurrentSortDirection(SortDirection.Ascending)
+      } else {
+        setCurrentSortDirection(SortDirection.Descending)
+      }
+    }
+  }
 
   useEffect(() => {
     if(!tokenState.initialized) return
 
-    if(currentList == ListType.Unvetted) {
-      let unvettedTokens = tokens.filter(token => token.unvetted === true)
-      unvettedTokens.sort(sortTokensByMarketCap)
-      setDisplayedTokens(unvettedTokens)
-    } else {
-      let vettedTokens = tokens.filter(token => token.unvetted === false)
-      
-      if(currentList == ListType.Volume) {
-        vettedTokens.sort((a,b) => {
-          return (a.daily_volume < b.daily_volume) ? 1 : -1
-        })
-      } else if(currentList == ListType.Liquidity) {
-        vettedTokens.sort((a,b) => {
-          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
-        })
-      } else if(currentList == ListType.APR) {
-        vettedTokens.sort(sortTokensByAPR)
-      } else {
-        vettedTokens.sort(sortTokensByMarketCap)
-      }
+    var tokensToDisplay = tokens
 
-      setDisplayedTokens(vettedTokens)
+    if(currentList == ListType.Unvetted) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
+    } else if(currentList == ListType.Favorites) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
+    } else {
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     }
-  }, [currentList, tokenState])
+
+    if(currentList === ListType.APR) {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        if(!a.apr || !b.apr) return -1
+        return a.apr.isLessThan(b.apr) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Default) {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
+        const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
+    
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorMarketCap < nextMarketCap) ? 1 : -1
+        }
+        return (priorMarketCap > nextMarketCap) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Token) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.name > b.name) ? 1 : -1
+        }
+        return (a.name < b.name) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Price || currentSort === SortType.PriceFiat) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.rate > b.rate) ? 1 : -1
+        }
+        return (a.rate < b.rate) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change) {
+      tokensToDisplay.sort((a,b) => {
+        const priorRates = rates.filter(rate => rate.token_id == a.id)
+        const priorLastRate = priorRates.length > 0 ? priorRates[0].value : 0
+        const priorFirstRate = priorRates.length > 0 ? priorRates[priorRates.length-1].value : 0
+        const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
+
+        const nextRates = rates.filter(rate => rate.token_id == b.id)
+        const nextLastRate = nextRates.length > 0 ? nextRates[0].value : 0
+        const nextFirstRate = nextRates.length > 0 ? nextRates[nextRates.length-1].value : 0
+        const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
+
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorChange > nextChange) ? 1 : -1
+        }
+        return (priorChange < nextChange) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Volume) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.daily_volume > b.daily_volume) ? 1 : -1
+        }
+        return (a.daily_volume < b.daily_volume) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Liquidity) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+        }
+        return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+      })
+    } else {
+      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+        const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
+        const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
+    
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (priorMarketCap > nextMarketCap) ? 1 : -1
+        }
+        return (priorMarketCap < nextMarketCap) ? 1 : -1
+      })
+    }
+
+    setDisplayedTokens(tokensToDisplay)
+  }, [currentList, tokenState, currentSort, currentSortDirection])
   
   return (
     <>
@@ -130,42 +212,40 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {tokenState.initialized === false ? (
-          <>
-            <LoadingChartBlock />
-            <LoadingChartBlock />
-            <LoadingChartBlock />
-          </>
-        ) : (
-          <>
-            {topTokens.map( token => {                
-              return (
-                <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-                  <a>
-                    <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
-                  </a>
-                </Link>
-              )
-            })}
-          </>
-        )}
+      <div className="scrollable-table-container max-w-full overflow-x-scroll">
+        <div className="grid grid-cols-3 gap-4 mt-2" style={{minWidth: 840}}>
+          {tokenState.initialized === false ? (
+            <>
+              <LoadingChartBlock />
+              <LoadingChartBlock />
+              <LoadingChartBlock />
+            </>
+          ) : (
+            <>
+              {topTokens.map( token => {                
+                return (
+                  <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
+                    <a>
+                      <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+                    </a>
+                  </Link>
+                )
+              })}
+            </>
+          )}
+        </div>
       </div>
       <div className="token-order-list">
-        <div className="flex items-center" style={{minWidth: '600px'}}>
+        <div className="flex items-center" style={{minWidth: '380px'}}>
           <div className="flex-grow flex items-center">
             <button 
               onClick={() => setCurrentList(ListType.Ranking)}
               className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Ranking</button>
             <button 
-              onClick={() => setCurrentList(ListType.Volume)}
-              className={`${currentList == ListType.Volume ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Most volume</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Liquidity)}
-              className={`${currentList == ListType.Liquidity ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Highest liquidity</button>
+              onClick={() => setCurrentList(ListType.Favorites)}
+              className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Favorites</button>
             <button 
               onClick={() => setCurrentList(ListType.APR)}
               className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1`}
@@ -189,7 +269,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
-            <col style={{width: '54px', minWidth: 'auto'}} />
+            <col style={{width: '24px', minWidth: 'auto'}} />
+            <col style={{width: '42px', minWidth: 'auto'}} />
             <col style={{width: '276px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
@@ -199,20 +280,78 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <col style={{width: '160px', minWidth: 'auto'}} />
             <col style={{width: '160px', minWidth: 'auto'}} />
           </colgroup>
-          <thead className="text-gray-500 dark:text-gray-400 text-xs">
+          <thead className="text-gray-500 dark:text-gray-400 text-xs" style={{height: 33}}>
             <tr className="py-2">
-              <th className="text-left pl-4 sm:pl-5 pr-1 sm:pr-2 py-2">#</th>
-              <th className="px-2 py-2 text-left">Token</th>
-              <th className="px-2 py-2 text-right">ZIL</th>
-              <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>
-              <th className="px-2 py-2 text-right">24h %</th>
-              <th className="px-2 py-2 text-right">Market Cap</th>
-              <th className="px-2 py-2 text-right">Liquidity</th>
+              <th className="text-left pl-4 sm:pl-5 sm:pr-2 py-2"></th>
+              <th className="text-left pl-2 sm:pl-3 pr-1 sm:pr-2 py-2">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Default)}>
+                  #
+                  {currentSort === SortType.Default &&
+                    <Triangle className={`ml-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                </button>
+              </th>
+              <th className="px-2 py-2 text-left">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Token)}>
+                  Token
+                  {currentSort === SortType.Token &&
+                    <Triangle className={`ml-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                </button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
+                  {currentSort === SortType.Price &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  ZIL
+                </button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.PriceFiat)}>
+                  {currentSort === SortType.PriceFiat &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  {selectedCurrency.code}
+                </button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change)}>
+                  {currentSort === SortType.Change &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  24h %
+                </button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.MarketCap)}>
+                  {currentSort === SortType.MarketCap &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  Market Cap</button>
+              </th>
+              <th className="px-2 py-2 text-right">
+                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Liquidity)}>
+                  {currentSort === SortType.Liquidity &&
+                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                  }
+                  Liquidity
+                </button>
+              </th>
               {currentList === ListType.APR &&
-                <th className="px-2 py-2 text-right">APR</th>
+                <th className="px-2 py-2 text-right">
+                  APR
+                </th>
               }
               {currentList !== ListType.APR &&
-                <th className="px-2 py-2 text-right">Volume (24h)</th>
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Volume)}>
+                    {currentSort === SortType.Volume &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Volume (24h)
+                  </button>
+                </th>
               }
               <th className="px-2 py-2 text-right">Last 24 hours</th>
             </tr>
@@ -222,8 +361,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               return (
                 <TokenRow 
                   key={token.id} 
-                  token={token} 
-                  rank={index+1} 
+                  token={token}
+                  rank={tokens.indexOf(token)+1}
+                  index={index}
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
                   showAPR={currentList === ListType.APR}
@@ -236,6 +376,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             }
           </tbody>
       </table>
+
+      {tokenState.initialized && currentList === ListType.Favorites && displayedTokens.length === 0 &&
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 flex items-center justify-center">
+          <span className="text-gray-500 dark:text-gray-400 italic">Star a token and you'll see it here in your favorites.</span>
+        </div>
+      }
     </div>
   </>
   )

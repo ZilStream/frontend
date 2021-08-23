@@ -15,6 +15,9 @@ const LoadingTokenRows = () => {
         <td className="px-2 py-3 font-normal text-right">
           <Shimmer className="h-6 w-full" />
         </td>
+        <td className="px-2 py-3 font-normal text-right">
+          <Shimmer className="h-6 w-full" />
+        </td>
         <td className="">
           <Shimmer className="h-6 w-full" />
         </td>
@@ -42,6 +45,9 @@ const LoadingTokenRows = () => {
         <td className="px-2 py-3 font-normal text-right">
           <Shimmer className="h-6 w-full" />
         </td>
+        <td className="px-2 py-3 font-normal text-right">
+          <Shimmer className="h-6 w-full" />
+        </td>
         <td className="">
           <Shimmer className="h-6 w-full" />
         </td>
@@ -61,6 +67,9 @@ const LoadingTokenRows = () => {
       <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
         <td className="pl-5 pr-2 py-3 font-normal text-sm rounded-bl-lg"></td>
         <td className="px-2 py-3 font-medium">
+          <Shimmer className="h-6 w-full" />
+        </td>
+        <td className="px-2 py-3 font-normal text-right">
           <Shimmer className="h-6 w-full" />
         </td>
         <td className="px-2 py-3 font-normal text-right">
