@@ -73,7 +73,7 @@ function VoteTokenDetail() {
                       <div className="text-sm bg-gray-200 dark:bg-gray-600 px-2 rounded-full">Core</div>
                     }
 
-                    {dayjs.unix(proposal.msg.payload.start).isBefore(dayjs()) && dayjs.unix(proposal.msg.payload.end).isAfter(dayjs()) &&
+                    {dayjs.unix(proposal.msg.payload.start).isBefore(dayjs()) && dayjs.unix(proposal.msg.payload.end).isAfter(dayjs()) && proposal.authorIpfsHash !== 'QmdbfEAd4ukcPd4N9yyfosS2asEcgq4ptC5RJH8CbaheeA' &&
                       <div className="text-sm bg-primary dark:bg-primaryDark px-2 rounded-full">Active</div>
                     }
                   </div>

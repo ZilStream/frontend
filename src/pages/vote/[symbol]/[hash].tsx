@@ -40,7 +40,7 @@ function VoteProposal() {
   const [vote, setVote] = useState<Vote|null>(null)
   const [balance, setBalance] = useState<BigNumber|null>(null)
   const [msg, setMsg] = useState<ProposalMessage|null>(null)
-  const [status, setStatus] = useState<'upcoming'|'active'|'closed'>('upcoming')
+  const [status, setStatus] = useState<'upcoming'|'active'|'closed'|'invalid'>('upcoming')
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -96,7 +96,9 @@ function VoteProposal() {
       setMsg(newMsg)
       
       if(newMsg) {
-        if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
+        if(hash === 'QmdbfEAd4ukcPd4N9yyfosS2asEcgq4ptC5RJH8CbaheeA') {
+          setStatus('invalid')
+        } else if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
           setStatus('upcoming')
         } else if(dayjs.unix(newMsg.payload.start).isBefore(dayjs()) && dayjs.unix(newMsg.payload.end).isAfter(dayjs())) {
           setStatus('active')
@@ -243,6 +245,10 @@ function VoteProposal() {
 
                       {status === 'closed' &&
                         <span className="block text-sm">Closed</span>
+                      }
+
+                      {status === 'invalid' &&
+                        <span className="block text-sm">Invalid</span>
                       }
                     </div>
                   </div>
