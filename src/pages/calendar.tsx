@@ -9,6 +9,16 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
+      name: 'DeMons',
+      symbol: 'DMZ',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
+      sale_type: 'ZILO',
+      sale_date: new Date('2021-09-06'),
+      tags: ['NFT'],
+      website: 'https://demons.world/',
+      twitter: 'https://twitter.com/de_monsters'
+    },
+    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
@@ -28,14 +38,6 @@ function Calendar() {
       tags: ['Business'],
       website: 'https://www.consultcrypto.net',
       telegram: 'https://t.me/stokenlaunch'
-    },
-    {
-      name: 'DeMons',
-      symbol: 'DMZ',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
-      tags: ['NFT'],
-      website: 'https://demons.world/',
-      twitter: 'https://twitter.com/de_monsters'
     },
     {
       name: 'Pele',
