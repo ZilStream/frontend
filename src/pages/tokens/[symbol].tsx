@@ -19,6 +19,7 @@ import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import GzilCountdown from 'components/GzilCountdown'
 
 
 const TVChartContainer = dynamic(
@@ -234,6 +235,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
+
+          {token.symbol === 'gZIL' &&
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6 mb-1">Minting stops in</div>
+              <GzilCountdown />
+            </>
+          }
 
           {dayjs(token.last_vote_start).isBefore(dayjs()) && dayjs(token.last_vote_end).isAfter(dayjs()) &&
             <>
