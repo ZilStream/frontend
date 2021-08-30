@@ -194,9 +194,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
-      <Notice title="Zilliqa mainnet upgrade to v8.1">
-        On Monday 30th August Zilliqa will be performing a mainnet upgrade. This is expected to last from <u>03:30 to 10:00 UTC</u>, during this time the network will be down. While ZilStream will still be reachable as usual, your Portfolio may not show your assets until the upgrade is completed. Follow <a href="https://twitter.com/zilliqa/status/1429767638931046410" target="_blank" className="underline">@zilliqa on Twitter</a> for updates.
-      </Notice>
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
