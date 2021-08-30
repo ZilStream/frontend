@@ -30,6 +30,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
   const [minimumLiquidity, setMinimumLiquidity] = useState<number>(2000000)
   const [liquidityFactor, setLiquidityFactor] = useState<number>(3000000)
   const [volumeFactor, setVolumeFactor] = useState<number>(0.01)
+  const [maxAP, setMaxAP] = useState<number>(8)
 
   tokens.forEach(token => {
     if(token.symbol === 'ZWAP') {
@@ -43,7 +44,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
     }
 
     const aps = Math.min(
-      8,
+      maxAP,
       Math.ceil(Math.sqrt(token.liquidity_ema30_zil / liquidityFactor)),
       Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / volumeFactor)
     )
@@ -70,6 +71,10 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
   const onVolumeFactorChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVolumeFactor(+event.target.value);
   }
+
+  const onMaxAPChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMaxAP(+event.target.value);
+  }
   
   return (
     <>  
@@ -91,6 +96,10 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Minimum Liquidity</div>
           <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
+        </div>
+        <div className="text-sm">
+          <div className="text-gray-500 dark:text-gray-400">Max AP</div>
+          <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
         </div>
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Liquidity Factor</div>
