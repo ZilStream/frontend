@@ -14,6 +14,7 @@ function Calendar() {
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
       sale_type: 'ZILO',
       sale_date: new Date('2021-09-06'),
+      goal: new BigNumber(1200000),
       tags: ['NFT'],
       website: 'https://demons.world/',
       twitter: 'https://twitter.com/de_monsters'
