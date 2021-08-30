@@ -5,6 +5,8 @@ import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { RootState, TokenInfo, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 
@@ -20,6 +22,10 @@ export const getServerSideProps = async () => {
 
 const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tokens: any[] = stats.tokens.filter((token: any) => token.liquidity > 0)
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+
+  const zwapTokens = tokenState.tokens.filter(token => token.symbol === 'ZWAP')
+  const zwapToken: TokenInfo|null = zwapTokens[0] ?? null
 
   tokens.forEach(token => {
     if(token.symbol === 'ZWAP') {
@@ -100,6 +106,15 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                 tier = <span className="bg-blue-400 py-1 px-2 rounded font-medium">Tier 3</span>
               }
 
+              const zwapAmount = token.aps / totalAPs * 5312.5
+
+              var apr = 0
+              if(zwapToken) {
+                const rewardsValue = zwapAmount * zwapToken.rate
+                const roiPerEpoch = rewardsValue / token.liquidity_zil
+                apr = roiPerEpoch * 52 * 100
+              }
+
               return (
                 <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -129,7 +144,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                   </td>
                   <td className={`px-2 py-2 font-normal text-right`}>
 
-                    {token.liquidity_ema30_zil >= 500000 ? (
+                    {token.liquidity_ema30_zil >= 2000000 ? (
                       <>{token.aps}</>
                     ) : (
                       <span className="text-gray-500 dark:text-gray-400">-</span>
@@ -137,8 +152,11 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                     
                   </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {token.liquidity_ema30_zil >= 500000 ? (
-                      <>{numberFormat(token.aps / totalAPs * 5312.5, 2)} ZWAP</>
+                    {token.liquidity_ema30_zil >= 2000000 ? (
+                      <div>
+                        <div>{numberFormat(zwapAmount, 2)} ZWAP</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{apr.toFixed(2)}% APR</div>
+                      </div>
                     ) : (
                       <span className="text-gray-500 dark:text-gray-400">-</span>
                     )}
