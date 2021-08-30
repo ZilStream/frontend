@@ -27,13 +27,13 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
       return
     }
 
-    if(token.liquidity_ema30_zil < 500000) {
+    if(token.liquidity_ema30_zil < 2000000) {
       token.aps = 0
       return
     }
 
     const aps = Math.min(
-      5,
+      8,
       Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 3000000)),
       Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
     )
