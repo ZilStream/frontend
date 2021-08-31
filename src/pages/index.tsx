@@ -194,6 +194,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
+      <Notice title="ZilStream is paused awaiting mainnet resumption">
+        Zilliqa is working on restoring mainnet after an issue following the v8.1 upgrade. ZilStream has been paused and restored to block #1394088, awaiting mainnet resumption. <a href="https://blog.zilliqa.com/post-mortem-report-for-mainnet-upgrade-v8-1-0-94d00ce23ff2" className="underline">More information</a>.
+      </Notice>
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
