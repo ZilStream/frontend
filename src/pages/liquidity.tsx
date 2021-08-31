@@ -95,19 +95,19 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
       <div className="flex items-center gap-3 mb-3">
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Minimum Liquidity</div>
-          <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
+          <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
         </div>
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Max AP</div>
-          <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
+          <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
         </div>
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Liquidity Factor</div>
-          <input type="number" onChange={onLiquidityFactorChangeHandler} value={liquidityFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
+          <input type="number" onChange={onLiquidityFactorChangeHandler} value={liquidityFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
         </div>
         <div className="text-sm">
           <div className="text-gray-500 dark:text-gray-400">Volume Factor</div>
-          <input type="number" onChange={onVolumeFactorChangeHandler} value={volumeFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-600" />
+          <input type="number" onChange={onVolumeFactorChangeHandler} value={volumeFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
         </div>
       </div>
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
