@@ -107,7 +107,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <h2 className="text-center sm:text-left">{token.name}</h2>
             <div className="flex flex-col sm:flex-row items-center">
               <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-lg sm:mr-3 mb-1 sm:mb-0 font-medium">${token.symbol}</span>
-              <CopyableAddress address={token.address_bech32} />
+              <CopyableAddress address={token.address_bech32} showCopy={true} />
             </div>
           </div>
         </div>
