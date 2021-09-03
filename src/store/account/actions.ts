@@ -1,7 +1,9 @@
+import { AddWalletProps } from "./types"
+
 export const AccountActionTypes = {
+  INIT_ACCOUNT: "INIT_ACCOUNT",
   NETWORK_UPDATE: "NETWORK_UPDATE",
-  WALLET_UPDATE: "WALLET_UPDATE",
-  BALANCES_UPDATE: "BALANCES_UPDATE"
+  ADD_WALLET: "ADD_WALLET"
 }
 
 export function updateNetwork(payload: string) {
@@ -11,9 +13,9 @@ export function updateNetwork(payload: string) {
   }
 }
 
-export function updateWallet(payload: string) {
+export function addWallet(payload: AddWalletProps) {
   return {
-    type: AccountActionTypes.WALLET_UPDATE,
+    type: AccountActionTypes.ADD_WALLET,
     payload
   }
 }

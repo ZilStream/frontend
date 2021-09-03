@@ -10,7 +10,8 @@ import { AccountActionTypes } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, CurrencyState, Operator, RootState, StakingState, TokenState } from 'store/types'
+import { AccountState, ConnectedWallet, Operator, RootState, StakingState, TokenState } from 'store/types'
+import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
@@ -82,22 +83,28 @@ const StateProvider = (props: Props) => {
   }
 
   async function loadWalletState() {
-    if(accountState.address === '' || tokenState.initialized === false) return
+    if(!accountState.selectedWallet || tokenState.initialized === false) return
 
-    let batchResults = await getPortfolioState(accountState.address, tokenState.tokens, stakingState.operators)
+    let batchResults = await getPortfolioState(accountState.selectedWallet.address, tokenState.tokens, stakingState.operators)
     await processBatchResults(batchResults)
   }
 
   async function fetchStakingState() {
+    if(!accountState.selectedWallet) return
+    const walletAddress = accountState.selectedWallet.address
+    
     const batchRequests: any[] = [];
     stakingState.operators.forEach(operator => {
-      batchRequests.push(stakingDelegatorsBatchRequest(operator, accountState.address))
+      batchRequests.push(stakingDelegatorsBatchRequest(operator, walletAddress))
     })
     let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
     await processBatchResults(batchResults)
   }
 
   async function processBatchResults(batchResults: BatchResponse[]) {
+    if(!accountState.selectedWallet) return
+    const walletAddress = accountState.selectedWallet.address
+
     batch(() => {
       batchResults.forEach(result => {
         let token = result.request.token
@@ -113,7 +120,7 @@ const StateProvider = (props: Props) => {
           }
   
           case BatchRequestType.TokenBalance: {
-            let walletAddr = fromBech32Address(accountState.address).toLowerCase()
+            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
             let balance: BigNumber | undefined;
   
             if(result.result) {
@@ -149,7 +156,7 @@ const StateProvider = (props: Props) => {
   
           case BatchRequestType.PoolBalance: {
             let tokenAddress = fromBech32Address(token!.address_bech32).toLowerCase()
-            let walletAddr = fromBech32Address(accountState.address).toLowerCase()
+            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
   
             if(result.result === null) {
               let userContribution = new BigNumber(0)
@@ -205,7 +212,7 @@ const StateProvider = (props: Props) => {
               let ssnDelegators: any[] = result.result.ssn_deleg_amt
               Object.keys(ssnDelegators).forEach(ssnAddress => {
                 let address: any = ssnAddress
-                let amount: any = ssnDelegators[address][fromBech32Address(accountState.address).toLowerCase()]
+                let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
                 let staked = new BigNumber(amount)
                 dispatch({type: StakingActionTypes.STAKING_UPDATE, payload: {
                   address: ssnAddress,
@@ -252,7 +259,7 @@ const StateProvider = (props: Props) => {
 
   useEffect(() => {
     loadWalletState()
-  }, [accountState.address, tokenState.initialized])
+  }, [accountState.selectedWallet, tokenState.initialized])
 
   useEffect(() => {
     if(stakingState.operators.length === 0 || stakingLoaded) return
@@ -261,23 +268,53 @@ const StateProvider = (props: Props) => {
   }, [stakingState])
 
   useEffect(() => {
+    if(!accountState.initialized) return
+    // This makes sure all account changes persist.
+    localStorage.setItem('account', JSON.stringify(accountState))
+  }, [accountState])
+
+  useEffect(() => {
+    const accountString = localStorage.getItem('account')
+    if(accountString) {
+      const account: AccountState = JSON.parse(accountString)
+      account.initialized = true
+      dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: account })
+    } else {
+      dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: {
+        initialized: true,
+        network: "mainnet",
+        wallets: [],
+        selectedWallet: null
+      }})
+    }
+
     const zilPay = (window as any).zilPay
     
     if(typeof zilPay !== "undefined" && localStorage.getItem('zilpay') === 'true') {
       try {
         const walletAddress = zilPay.wallet.defaultAccount.bech32
-        const network = zilPay.wallet.net
+        // const network = zilPay.wallet.net
         
-        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
+        if(accountState.wallets.filter(wallet => wallet.address === walletAddress).length === 0) {
+          let wallet: ConnectedWallet = {
+            address: walletAddress,
+            label: '',
+            isDefault: accountState.wallets.length === 0,
+            isConnected: true,
+            type: AccountType.ZilPay
+          }
+          dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
+          localStorage.removeItem('zilpay')
+        }
 
         zilPay.wallet.observableAccount().subscribe(function(account: any) {
-          dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
+          // dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
+          // TODO: Show popup asking if user wants to add new address
         })
   
-        zilPay.wallet.observableNetwork().subscribe(function(network: any) {
-          dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-        })
+        // zilPay.wallet.observableNetwork().subscribe(function(network: any) {
+        //   dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
+        // })
       } catch (e) {
         console.error(e)
       }
@@ -285,9 +322,21 @@ const StateProvider = (props: Props) => {
       fetch('https://api.carbontoken.info/api/v1/avatar/' + localStorage.getItem('avatar'))
       .then(response => response.json())
       .then(data => {
-        let address = data.address
-        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MainNet });
-        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: toBech32Address(address) });
+
+        const walletAddress = toBech32Address(data.address)
+
+
+        if(accountState.wallets.filter(wallet => wallet.address === walletAddress).length === 0) {
+          let wallet: ConnectedWallet = {
+            address: walletAddress,
+            label: '',
+            isDefault: accountState.wallets.length === 0,
+            isConnected: false,
+            type: AccountType.Avatar
+          }
+          dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
+          localStorage.removeItem('avatar')
+        }
       })
       .catch(error => {
         console.log('Avatar doesn\'t exist')

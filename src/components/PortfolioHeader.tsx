@@ -20,17 +20,17 @@ const PortfolioHeader = () => {
             <div className="w-12 h-12 bg-primary rounded-full"></div>
           </div>
           <div>
-            <div className="text-xl font-bold">{shortenAddress(accountState.address)}</div>
+            <div className="text-xl font-bold">{shortenAddress(accountState.selectedWallet!.address)}</div>
             <div className="flex items-center text-gray-500">
-              <div className="mr-2">{shortenAddress(accountState.address)}</div>
-              <button onClick={() => navigator.clipboard.writeText(accountState.address)} className="focus:outline-none">
+              <div className="mr-2">{shortenAddress(accountState.selectedWallet!.address)}</div>
+              <button onClick={() => navigator.clipboard.writeText(accountState.selectedWallet!.address)} className="focus:outline-none">
                 <Clipboard size={14} />
               </button>
             </div>
           </div>
         </div>
         <div>
-          <a href={`https://viewblock.io/zilliqa/address/${accountState.address}`} target="_blank" className="block bg-gray-300 dark:bg-gray-700 rounded-lg w-10 h-10 p-1">
+          <a href={`https://viewblock.io/zilliqa/address/${accountState.selectedWallet!.address}`} target="_blank" className="block bg-gray-300 dark:bg-gray-700 rounded-lg w-10 h-10 p-1">
             {resolvedTheme === 'dark' ? (
               <img src="https://cdn.viewblock.io/viewblock-dark.png" />
             ) : (
