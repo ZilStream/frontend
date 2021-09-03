@@ -91,7 +91,7 @@ const TokenRow = (props: Props) => {
                   <span className="hidden lg:inline">{props.token.name}</span>
                   <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
                 </div>
-                {props.token.symbol === 'ZILLEX' || props.token.symbol === 'UNIDEX' &&
+                {(props.token.symbol === 'ZILLEX' || props.token.symbol === 'UNIDEX') &&
                   <span className="text-xs font-normal text-gray-500" style={{marginTop: 1}}>Compound token</span>
                 }
               </div>
