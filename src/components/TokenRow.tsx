@@ -86,9 +86,14 @@ const TokenRow = (props: Props) => {
               <TokenIcon url={props.token.icon} />
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center">
-              <div className="flex items-center">
-                <span className="hidden lg:inline">{props.token.name}</span>
-                <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="hidden lg:inline">{props.token.name}</span>
+                  <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+                </div>
+                {props.token.symbol === 'ZILLEX' || props.token.symbol === 'UNIDEX' &&
+                  <span className="text-xs font-normal text-gray-500" style={{marginTop: 1}}>Compound token</span>
+                }
               </div>
 
               {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
