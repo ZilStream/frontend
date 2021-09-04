@@ -31,16 +31,6 @@ function Calendar() {
       telegram: 'https://t.me/AthleteToken'
     },
     {
-      name: 'Consult Coin',
-      symbol: 'CONSULT',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/consult.png',
-      sale_type: 'Private Sale',
-      goal: new BigNumber(2160000),
-      tags: ['Business'],
-      website: 'https://www.consultcrypto.net',
-      telegram: 'https://t.me/stokenlaunch'
-    },
-    {
       name: 'Pele',
       symbol: 'PELE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/pele.png',
