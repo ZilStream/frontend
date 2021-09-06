@@ -31,6 +31,15 @@ function Calendar() {
       telegram: 'https://t.me/AthleteToken'
     },
     {
+      name: 'Unifees',
+      symbol: 'FEES',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/fees.png',
+      tags: ['Education'],
+      website: 'https://unifees.io/',
+      twitter: 'https://twitter.com/UnifeesToken',
+      telegram: 'https://t.me/unifees'
+    },
+    {
       name: 'Pele',
       symbol: 'PELE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/pele.png',
