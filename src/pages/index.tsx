@@ -267,7 +267,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       }
-      <div className="scrollable-table-container max-w-full overflow-x-scroll">
+      <div className="scrollable-table-container max-w-full overflow-x-scroll relative">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
             <col style={{width: '24px', minWidth: 'auto'}} />
@@ -292,7 +292,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   }
                 </button>
               </th>
-              <th className="px-2 py-2 text-left">
+              <th className="px-2 py-2 text-left bg-gray-200 dark:bg-gray-900 sticky left-0 z-10">
                 <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Token)}>
                   Token
                   {currentSort === SortType.Token &&
