@@ -40,13 +40,6 @@ function Calendar() {
       telegram: 'https://t.me/unifees'
     },
     {
-      name: 'Pele',
-      symbol: 'PELE',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/pele.png',
-      tags: ['Media'],
-      website: 'https://pele.network/',
-    },
-    {
       name: 'GodZilliqa DeFi',
       symbol: 'GDFI',
       icon: 'https://meta.viewblock.io/zilliqa.zil1gtx89hjfagnhuhhfmr947p2g865r4dq0fmaxkt/logo',
