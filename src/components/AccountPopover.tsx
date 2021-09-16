@@ -1,8 +1,8 @@
 import { Popover, Transition } from '@headlessui/react'
-import { Copy, Edit2, ExternalLink, LogOut, Plus } from 'react-feather'
+import { ChevronDown, Copy, Edit2, ExternalLink, LogOut, Plus } from 'react-feather'
 import React, { Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccountState, RootState } from 'store/types'
+import { AccountState, ConnectedWallet, RootState } from 'store/types'
 import { AccountActionTypes } from 'store/account/actions'
 import { shortenAddress } from 'utils/addressShortener'
 import { ModalActionTypes } from 'store/modal/actions'
@@ -13,6 +13,10 @@ const AccountPopover = () => {
 
   const handleAddWallet = () => {
     dispatch({ type: ModalActionTypes.OPEN_WALLET, payload: true })
+  }
+
+  const handleSelectWallet = (wallet: ConnectedWallet) => {
+    dispatch({ type: AccountActionTypes.SELECT_WALLET, payload: {wallet} })
   }
 
   const logout = () => {
@@ -28,6 +32,7 @@ const AccountPopover = () => {
           <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Open account menu</span>
             {shortenAddress(accountState.selectedWallet!.address)}
+            <ChevronDown size={14} className="ml-2" />
           </Popover.Button>
           <Transition
             show={open}
@@ -39,13 +44,18 @@ const AccountPopover = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Popover.Panel className="origin-top-right absolute right-0 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-80">
+            <Popover.Panel className="origin-top-right absolute mt-1 right-0 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-80">
               <div className="flex flex-col items-stretch">
                 <div className="font-semibold mb-3 text-gray-500 dark:text-gray-400">Your wallet</div>
 
                 <div className="flex items-center">
                   <div className="flex-grow flex flex-col">
-                    <div className="text-sm">{shortenAddress(accountState.selectedWallet!.address)}</div>
+                    <div className="text-sm flex items-center">
+                      {shortenAddress(accountState.selectedWallet!.address)}
+                      {accountState.selectedWallet?.isMember &&
+                        <div className="bg-primary h-4 px-1 rounded flex items-center justify-center text-xs font-bold ml-2">Premium</div>
+                      }
+                    </div>
                     <div className="text-sm text-gray-500">{shortenAddress(accountState.selectedWallet!.address)}</div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -73,21 +83,31 @@ const AccountPopover = () => {
                     </a>
                   </div>
                 </div>
-                <div className="flex items-center text-xs mt-2">
-                  
-                  
+                <div className="flex flex-col items-stretch text-xs mt-2 -mx-2">
+                  <div className="px-2 text-gray-500">Other wallets</div>
+                  {accountState.wallets.filter(wallet => wallet.address !== accountState.selectedWallet?.address).map(wallet => (
+                    <button className="px-2 mb-1 hover:bg-gray-900 rounded focus:outline-none" onClick={() => handleSelectWallet(wallet)}>
+                      <div className="flex items-center justify-start py-2 border-b dark:border-gray-900 last:border-b-0">
+                        <span className="mr-2">{shortenAddress(wallet.address)}</span>
+                        <span className="text-gray-500">{shortenAddress(wallet.address)}</span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="mt-4 text-sm flex flex-col items-stretch">
-                <button
-                  className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
-                  onClick={() => handleAddWallet()}
-                >
-                  <div className="bg-gray-900 bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
-                    <Plus size={12} />
-                  </div>
-                  Add another wallet
-                </button>
+                {accountState.selectedWallet?.isMember &&
+                  <button
+                    className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
+                    onClick={() => handleAddWallet()}
+                  >
+                    <div className="bg-gray-900 bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
+                      <Plus size={12} />
+                    </div>
+                    Add another wallet
+                  </button>
+                }
+                
                 <button
                   className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
                   onClick={() => logout()}

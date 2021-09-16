@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux';
+import { SelectWalletProps, UpdateWalletProps } from 'store/types';
 import { AccountActionTypes } from './actions';
 import { AccountState, AddWalletProps } from './types';
 
@@ -43,6 +44,24 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
           addProps.wallet
         ],
         selectedWallet: state.wallets.length === 0 ? addProps.wallet : state.selectedWallet
+      }
+
+    case AccountActionTypes.UPDATE_WALLET:
+      const updateProps: UpdateWalletProps = payload
+      return {
+        ...state,
+        tokens: state.wallets.map(wallet => wallet.address === updateProps.address ?
+          {...wallet, ...updateProps} :
+          wallet
+          ),
+        selectedWallet: updateProps.address === state.selectedWallet?.address ? {...state.selectedWallet, ...updateProps} : state.selectedWallet
+      }
+
+    case AccountActionTypes.SELECT_WALLET:
+      const selectProps: SelectWalletProps = payload
+      return {
+        ...state,
+        selectedWallet: selectProps.wallet
       }
 
     default:

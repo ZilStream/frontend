@@ -10,13 +10,14 @@ import { AccountActionTypes } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, ConnectedWallet, Operator, RootState, StakingState, TokenState } from 'store/types'
+import { AccountState, ConnectedWallet, Operator, RootState, StakingState, TokenInfo, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
 import { bnOrZero } from 'utils/strings'
+import useBalances from 'utils/useBalances'
 
 interface Props {
   children: React.ReactNode
@@ -27,6 +28,7 @@ const StateProvider = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const dispatch = useDispatch()
+  const {membership} = useBalances()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
   async function loadTokens() {
@@ -87,6 +89,7 @@ const StateProvider = (props: Props) => {
 
     let batchResults = await getPortfolioState(accountState.selectedWallet.address, tokenState.tokens, stakingState.operators)
     await processBatchResults(batchResults)
+    await loadMemberState()
   }
 
   async function fetchStakingState() {
@@ -242,6 +245,13 @@ const StateProvider = (props: Props) => {
     })
   }
 
+  async function loadMemberState() {
+    dispatch({ type: AccountActionTypes.UPDATE_WALLET, payload: {
+      address: accountState.selectedWallet?.address,
+      isMember: membership.isMember
+    }})
+  }
+
   useInterval(async () => {
     loadRates()
     loadWalletState()
@@ -301,6 +311,7 @@ const StateProvider = (props: Props) => {
             label: '',
             isDefault: accountState.wallets.length === 0,
             isConnected: true,
+            isMember: false,
             type: AccountType.ZilPay
           }
           dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
@@ -332,6 +343,7 @@ const StateProvider = (props: Props) => {
             label: '',
             isDefault: accountState.wallets.length === 0,
             isConnected: false,
+            isMember: false,
             type: AccountType.Avatar
           }
           dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})

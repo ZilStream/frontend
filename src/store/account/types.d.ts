@@ -13,9 +13,18 @@ export interface ConnectedWallet {
   label: string,
   isDefault: boolean,
   isConnected: boolean,
+  isMember: boolean,
   type: AccountType
 }
 
 export interface AddWalletProps {
+  wallet: ConnectedWallet
+}
+
+export interface UpdateWalletProps extends Partial<ConnectedWallet> {
+  address: string
+}
+
+export interface SelectWalletProps {
   wallet: ConnectedWallet
 }
