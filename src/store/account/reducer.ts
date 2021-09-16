@@ -64,6 +64,13 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
         selectedWallet: selectProps.wallet
       }
 
+    case AccountActionTypes.LOGOUT:
+      return {
+        ...state,
+        wallets: [],
+        selectedWallet: null
+      }
+
     default:
       return state
   }

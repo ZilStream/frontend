@@ -6,7 +6,8 @@ export const AccountActionTypes = {
   NETWORK_UPDATE: "NETWORK_UPDATE",
   ADD_WALLET: "ADD_WALLET",
   UPDATE_WALLET: "UPDATE_WALLET",
-  SELECT_WALLET: "SELECT_WALLET"
+  SELECT_WALLET: "SELECT_WALLET",
+  LOGOUT: "LOGOUT"
 }
 
 export function updateNetwork(payload: string) {
@@ -34,5 +35,11 @@ export function selectWallet(payload: SelectWalletProps) {
   return {
     type: AccountActionTypes.SELECT_WALLET,
     payload
+  }
+}
+
+export function logout() {
+  return {
+    type: AccountActionTypes.LOGOUT
   }
 }

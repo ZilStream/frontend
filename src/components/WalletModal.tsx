@@ -1,4 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { fromBech32Address } from '@zilliqa-js/crypto';
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { Send } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +16,7 @@ const WalletModal = () => {
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false)
   const zilPayButtonRef = useRef(null)
+  const [address, setAddress] = useState('')
 
   // Pages
   const [showDetail, setShowDetail] = useState(false)
@@ -61,6 +63,7 @@ const WalletModal = () => {
       type: AccountType.ZilPay
     }
     dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
+    dispatch({ type: AccountActionTypes.SELECT_WALLET, payload: {wallet: wallet}})
     setIsOpen(false)
   }
 
@@ -83,7 +86,35 @@ const WalletModal = () => {
       type: AccountType.Zeeves
     }
     dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
+    dispatch({ type: AccountActionTypes.SELECT_WALLET, payload: {wallet: wallet}})
     setIsOpen(false)
+  }
+
+  const handleAddressChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setAddress(e.currentTarget.value)
+  }
+
+  const handleAddressKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key !== 'Enter') return
+
+    try {
+      fromBech32Address(address)
+    } catch {
+      return
+    }
+    
+    let wallet: ConnectedWallet = {
+      address: address,
+      label: '',
+      isDefault: accountState.wallets.length === 0,
+      isConnected: false,
+      isMember: false,
+      type: AccountType.Address
+    }
+    dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
+    dispatch({ type: AccountActionTypes.SELECT_WALLET, payload: {wallet: wallet}})
+    setIsOpen(false)
+    setAddress('')
   }
 
   return (
@@ -142,7 +173,7 @@ const WalletModal = () => {
 
                   <div className="flex flex-col items-stretch mt-4">
                     <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Or enter an address</div>
-                    <input type="text" placeholder="zil123.." className="bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-700 rounded py-3 px-3 text-sm" />
+                    <input type="text" placeholder="zil123.." autoCapitalize="off" autoCorrect="off" className="bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-700 rounded py-3 px-3 text-sm" value={address} onChange={handleAddressChange} onKeyDown={handleAddressKeyDown} />
                   </div>
                 </>
               )}

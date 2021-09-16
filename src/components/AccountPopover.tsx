@@ -20,9 +20,7 @@ const AccountPopover = () => {
   }
 
   const logout = () => {
-    // dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: '' })
-    localStorage.removeItem('zilpay')
-    localStorage.removeItem('avatar')
+    dispatch({ type: AccountActionTypes.LOGOUT, payload: '' })
   }
 
   return (
@@ -59,13 +57,13 @@ const AccountPopover = () => {
                     <div className="text-sm text-gray-500">{shortenAddress(accountState.selectedWallet!.address)}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button 
+                    {/* <button 
                       onClick={() => {
                         navigator.clipboard.writeText(accountState.selectedWallet!.address)
                       }}
                       className="bg-gray-900 bg-opacity-50 hover:bg-opacity-100 h-8 w-8 flex items-center justify-center rounded-full focus:outline-none font-medium">
                       <Edit2 size={12} className="text-gray-700 dark:text-gray-300" />
-                    </button>
+                    </button> */}
 
                     <button 
                       onClick={() => {
@@ -84,9 +82,11 @@ const AccountPopover = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-stretch text-xs mt-2 -mx-2">
-                  <div className="px-2 text-gray-500">Other wallets</div>
+                  {accountState.wallets.length > 1 &&
+                    <div className="px-2 text-gray-500">Other wallets</div>
+                  }
                   {accountState.wallets.filter(wallet => wallet.address !== accountState.selectedWallet?.address).map(wallet => (
-                    <button className="px-2 mb-1 hover:bg-gray-900 rounded focus:outline-none" onClick={() => handleSelectWallet(wallet)}>
+                    <button key={wallet.address} className="px-2 mb-1 hover:bg-gray-900 rounded focus:outline-none" onClick={() => handleSelectWallet(wallet)}>
                       <div className="flex items-center justify-start py-2 border-b dark:border-gray-900 last:border-b-0">
                         <span className="mr-2">{shortenAddress(wallet.address)}</span>
                         <span className="text-gray-500">{shortenAddress(wallet.address)}</span>
