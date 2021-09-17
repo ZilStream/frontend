@@ -22,16 +22,17 @@ const Transactions = () => {
   const {membership} = useBalances()
 
   async function setTxns() {
-    const txns = await getTransactions(accountState.address, currentPage)
+    if(!accountState.selectedWallet) return
+    const txns = await getTransactions(accountState.selectedWallet.address, currentPage)
     setTransactions(txns.data)
     setTotalPages(txns.pages)
     setIsLoading(false)
   }
 
   useEffect(() => {
-    if(accountState.address === '') return
+    if(accountState.selectedWallet?.address === '') return
     setTxns()
-  }, [accountState.address, currentPage])
+  }, [accountState.selectedWallet, currentPage])
 
   if(!membership.isMember) {
     return (

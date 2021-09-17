@@ -244,7 +244,7 @@ const TransactionsGroup = (props: Props) => {
           )
         } else if(transaction.type === 'payment') {
           var incoming = true
-          if(transaction.from_address === accountState.address) {
+          if(transaction.from_address === accountState.selectedWallet?.address) {
             incoming = false
           }
     

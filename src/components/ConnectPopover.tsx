@@ -38,6 +38,7 @@ const ConnectPopover = () => {
       label: '',
       isDefault: accountState.wallets.length === 0,
       isConnected: true,
+      isMember: false,
       type: AccountType.ZilPay
     }
     dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
@@ -58,6 +59,7 @@ const ConnectPopover = () => {
       label: '',
       isDefault: accountState.wallets.length === 0,
       isConnected: false,
+      isMember: false,
       type: AccountType.Zeeves
     }
     dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
@@ -80,6 +82,7 @@ const ConnectPopover = () => {
           label: '',
           isDefault: accountState.wallets.length === 0,
           isConnected: false,
+          isMember: false,
           type: AccountType.Avatar
         }
         dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})

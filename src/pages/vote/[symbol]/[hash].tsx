@@ -110,20 +110,20 @@ function VoteProposal() {
   }, [snapshot])
 
   useEffect(() => {
-    if(accountState.address === '') {
+    if(!accountState.selectedWallet) {
       setVote(null)
       setBalance(null)
       return
     }
 
-    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
-      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0])
+    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.selectedWallet!.address)).length > 0) {
+      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.selectedWallet!.address))[0])
     }
   
-    if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
-      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()]))
+    if(snapshot?.balances[fromBech32Address(accountState.selectedWallet.address).toLowerCase()] !== undefined) {
+      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.selectedWallet.address).toLowerCase()]))
     }
-  }, [votes, snapshot, accountState.address])
+  }, [votes, snapshot, accountState.selectedWallet])
 
   return (
     <>
@@ -314,7 +314,7 @@ function VoteProposal() {
 
                 {status === 'active' ? (
                   <>
-                    {accountState.address === '' &&
+                    {accountState.selectedWallet?.address === '' &&
                       <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
                         <div>Connect your wallet before you can vote.</div>
                       </div>
