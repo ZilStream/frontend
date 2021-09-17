@@ -1,12 +1,15 @@
 import { Popover, Transition } from '@headlessui/react'
 import { toBech32Address } from '@zilliqa-js/zilliqa'
 import React, { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AccountActionTypes } from 'store/account/actions'
 import { Network } from 'store/account/reducer'
+import { AccountState, ConnectedWallet, RootState } from 'store/types'
+import { AccountType } from 'types/walletType.interface'
 import ConnectWalletButton from './ConnectWalletButton'
 
 const ConnectPopover = () => {
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
   const dispatch = useDispatch()
   const [showAvatarConnect, setShowAvatarConnect] = useState(false);
   const [avatarName, setAvatarName] = useState('');
@@ -30,12 +33,14 @@ const ConnectPopover = () => {
     }
 
     const walletAddress = zilPay.wallet.defaultAccount.bech32
-    const network = zilPay.wallet.net
-
-    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletAddress })
-
-    localStorage.setItem('zilpay', 'true')
+    let wallet: ConnectedWallet = {
+      address: walletAddress,
+      label: '',
+      isDefault: accountState.wallets.length === 0,
+      isConnected: true,
+      type: AccountType.ZilPay
+    }
+    dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
   }
 
   const connectZeeves = async () => {
@@ -47,11 +52,15 @@ const ConnectPopover = () => {
 
     //authentication in Zeeves
     const walletInfo = await zeeves.getSession();
-  
-    dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MAIN_NET });
-    dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: walletInfo.bech32 });
 
-    localStorage.setItem('zilpay', 'false');
+    let wallet: ConnectedWallet = {
+      address: walletInfo.bech32,
+      label: '',
+      isDefault: accountState.wallets.length === 0,
+      isConnected: false,
+      type: AccountType.Zeeves
+    }
+    dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
   }
 
   const connectAvatar = async () => {
@@ -65,12 +74,17 @@ const ConnectPopover = () => {
       .then(response => response.json())
       .then(data => {
         let address = data.address
-        localStorage.setItem('avatar', avatarName);
+
+        let wallet: ConnectedWallet = {
+          address: toBech32Address(address),
+          label: '',
+          isDefault: accountState.wallets.length === 0,
+          isConnected: false,
+          type: AccountType.Avatar
+        }
+        dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
 
         setAvatarIsLoading(false)
-        
-        dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: Network.MAIN_NET });
-        dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: toBech32Address(address) });
       })
       .catch(error => {
         setAvatarErrorMessage('Couldn\'t find your avatar')

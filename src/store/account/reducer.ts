@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js';
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux';
+import { SelectWalletProps, UpdateWalletProps } from 'store/types';
 import { AccountActionTypes } from './actions';
-import { AccountState, BalanceUpdateProps } from './types';
+import { AccountState, AddWalletProps } from './types';
 
 export const Network = {
   MAIN_NET: "mainnet",
@@ -10,13 +11,10 @@ export const Network = {
 }
 
 const initialState: AccountState = {
+  initialized: false,
   network: Network.MAIN_NET,
-  isConnected: false,
-  address: '',
-  totalBalance: new BigNumber(0),
-  holdingBalance: new BigNumber(0),
-  liquidityBalance: new BigNumber(0),
-  stakingBalance: new BigNumber(0)
+  wallets: [],
+  selectedWallet: null
 }
 
 const reducer = (state: AccountState = initialState, action: AnyAction) => {
@@ -26,6 +24,10 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
     case HYDRATE:
       return {...state, ...action.payload.account}
 
+    case AccountActionTypes.INIT_ACCOUNT:
+      const newState: AccountState = payload
+      return newState
+
     case AccountActionTypes.NETWORK_UPDATE:
       const networkString: string = payload
       return {
@@ -33,22 +35,40 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
         network: networkString === Network.MAIN_NET ? Network.MAIN_NET : Network.TEST_NET
       }
     
-    case AccountActionTypes.WALLET_UPDATE:
-      const walletAddress: string = payload
+    case AccountActionTypes.ADD_WALLET:
+      const addProps: AddWalletProps = payload
       return {
         ...state,
-        address: walletAddress,
-        isConnected: walletAddress !== ''
+        wallets: [
+          ...state.wallets,
+          addProps.wallet
+        ],
+        selectedWallet: state.wallets.length === 0 ? addProps.wallet : state.selectedWallet
       }
 
-    case AccountActionTypes.BALANCES_UPDATE:
-      const balanceProps: BalanceUpdateProps = payload
+    case AccountActionTypes.UPDATE_WALLET:
+      const updateProps: UpdateWalletProps = payload
       return {
         ...state,
-        totalBalance: balanceProps.totalBalance,
-        holdingBalance: balanceProps.holdingBalance,
-        liquidityBalance: balanceProps.liquidityBalance,
-        stakingBalance: balanceProps.stakingBalance
+        tokens: state.wallets.map(wallet => wallet.address === updateProps.address ?
+          {...wallet, ...updateProps} :
+          wallet
+          ),
+        selectedWallet: updateProps.address === state.selectedWallet?.address ? {...state.selectedWallet, ...updateProps} : state.selectedWallet
+      }
+
+    case AccountActionTypes.SELECT_WALLET:
+      const selectProps: SelectWalletProps = payload
+      return {
+        ...state,
+        selectedWallet: selectProps.wallet
+      }
+
+    case AccountActionTypes.LOGOUT:
+      return {
+        ...state,
+        wallets: [],
+        selectedWallet: null
       }
 
     default:

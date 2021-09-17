@@ -1,18 +1,30 @@
 import BigNumber from "bignumber.js";
+import { AccountType } from "types/walletType.interface";
 
 export interface AccountState {
+  initialized: boolean,
   network: Network,
-  isConnected: boolean,
-  address: string,
-  totalBalance: BigNumber,
-  holdingBalance: BigNumber,
-  liquidityBalance: BigNumber,
-  stakingBalance: BigNumber
+  wallets: ConnectedWallet[],
+  selectedWallet: ConnectedWallet|null
 }
 
-export interface BalanceUpdateProps {
-  totalBalance: BigNumber,
-  holdingBalance: BigNumber,
-  liquidityBalance: BigNumber,
-  stakingBalance: BigNumber
+export interface ConnectedWallet {
+  address: string,
+  label: string,
+  isDefault: boolean,
+  isConnected: boolean,
+  isMember: boolean,
+  type: AccountType
+}
+
+export interface AddWalletProps {
+  wallet: ConnectedWallet
+}
+
+export interface UpdateWalletProps extends Partial<ConnectedWallet> {
+  address: string
+}
+
+export interface SelectWalletProps {
+  wallet: ConnectedWallet
 }

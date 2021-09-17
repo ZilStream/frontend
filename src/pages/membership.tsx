@@ -1,16 +1,19 @@
 import Head from 'next/head'
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { AccountState, Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import TokenIcon from 'components/TokenIcon'
 import { ArrowDown, ArrowRight, ArrowUp, ExternalLink } from 'react-feather'
+import { ModalActionTypes } from 'store/modal/actions'
 
 function Membership() {
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const accountState = useSelector<RootState, AccountState>(state => state.account)
   const { totalBalance, membership } = useBalances()
+  const dispatch = useDispatch()
 
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
@@ -28,6 +31,8 @@ function Membership() {
       <div className="py-24 sm:py-36 max-w-2xl">
         <div className="font-bold text-4xl leading-normal">Manage your <span className="text-primary">Zilliqa</span> assets in one simple dashboard.</div>
         <div className="text-gray-500 dark:text-gray-400 text-xl mt-1 mb-4">Track your wallet, pools and staking.</div>
+
+        <button className="bg-gray-200 dark:bg-gray-800 rounded px-4 py-2 font-medium focus:outline-none mt-4" onClick={() => dispatch({ type: ModalActionTypes.OPEN_WALLET, payload: true })}>Connect your wallet</button>
       </div>
       {membership.isMember ? (
         <div className="border-t border-gray-300 dark:border-gray-800 py-16">
@@ -69,7 +74,7 @@ function Membership() {
           <div className="font-semibold text-2xl max-w-sm mb-4">Become a ZilStream member</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl leading-relaxed dark:text-gray-200">
             <div>Become a ZilStream member and enjoy deeper insight into the ZRC-2 market and your position within it. Track rewards from providing liquidity, staking and farms. Filter and export through your entire transaction history, change to your native currency and never miss an opportunity with price alerts.</div>
-            {totalBalance.isGreaterThan(0) &&
+            {totalBalance.isGreaterThan(0) && accountState.selectedWallet &&
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                 <div className="text-lg mb-6 text-center text-gray-600 font-medium">ZilStream Membership</div>
                 <div className="flex items-center">

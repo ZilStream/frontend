@@ -34,7 +34,7 @@ const CastVote = (props: Props) => {
     setIsLoading(true)
 
     const msg: any = {
-      address: fromBech32Address(accountState.address),
+      address: fromBech32Address(accountState.selectedWallet!.address),
       msg: JSON.stringify({
         token: props.token,
         type: 'vote',

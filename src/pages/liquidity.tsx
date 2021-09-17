@@ -6,7 +6,9 @@ import { InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/dist/client/router'
 import Head from 'next/head'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState, TokenInfo, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 
@@ -22,9 +24,18 @@ export const getServerSideProps = async () => {
 
 const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter()
-  const { rewards } = router.query
+  const { rewards, edit } = router.query
 
   const tokens: any[] = stats.tokens.filter((token: any) => token.liquidity > 0)
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+
+  const zwapTokens = tokenState.tokens.filter(token => token.symbol === 'ZWAP')
+  const zwapToken: TokenInfo|null = zwapTokens[0] ?? null
+
+  const [minimumLiquidity, setMinimumLiquidity] = useState<number>(500000)
+  const [liquidityFactor, setLiquidityFactor] = useState<number>(3000000)
+  const [volumeFactor, setVolumeFactor] = useState<number>(0.01)
+  const [maxAP, setMaxAP] = useState<number>(5)
 
   tokens.forEach(token => {
     if(token.symbol === 'ZWAP') {
@@ -32,15 +43,20 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
       return
     }
 
-    if(token.liquidity_ema30_zil < 500000) {
+    if(token.symbol === 'BOLT') {
+      token.aps = 0
+      return
+    }
+
+    if(token.liquidity_ema30_zil < minimumLiquidity) {
       token.aps = 0
       return
     }
 
     const aps = Math.min(
-      5,
-      Math.ceil(Math.sqrt(token.liquidity_ema30_zil / 3000000)),
-      Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / 0.01)
+      maxAP,
+      Math.ceil(Math.sqrt(token.liquidity_ema30_zil / liquidityFactor)),
+      Math.floor((token.volume_ema30_zil / token.liquidity_ema30_zil) / volumeFactor)
     )
 
     token.aps = aps
@@ -54,92 +70,20 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
     return sum + token.aps
   }, 0)
 
-  if(rewards === 'true') {
-    return (
-      <>  
-        <Head>
-          <title>ZilSwap Liquidity | ZilStream</title>
-          <meta property="og:title" content={`ZilSwap Liquidity | ZilStream`} />
-        </Head>
-        <div className="pt-8 pb-2 md:pb-8">
-          <div className="flex flex-col lg:flex-row items-start">
-            <div className="flex-grow">
-              <h1 className="mb-1">ZilSwap Liquidity</h1>
-              <div className="flex items-center text-sm">
-                <div className="text-gray-600">Total Value Locked: <span className="font-medium">{currencyFormat(stats.tvl)}</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="scrollable-table-container max-w-full overflow-x-scroll">
-          <table className="zilstream-table table-fixed border-collapse">
-            <colgroup>
-              <col style={{width: '250px', minWidth: 'auto'}} />
-              <col style={{width: '140px', minWidth: 'auto'}} />
-              <col style={{width: '140px', minWidth: 'auto'}} />
-              <col style={{width: '140px', minWidth: 'auto'}} />
-              <col style={{width: '90px', minWidth: 'auto'}} />
-              <col style={{width: '140px', minWidth: 'auto'}} />
-            </colgroup>
-            <thead className="text-gray-500 dark:text-gray-400 text-xs">
-              <tr>
-                <th className="pl-3 pr-2 py-2 text-left">Token</th>
-                <th className="px-2 py-2 text-left">Address</th>
-                <th className="px-2 py-2 text-right">Volume (EMA30)</th>
-                <th className="px-2 py-2 text-right">Liquidity (EMA30)</th>
-                <th className="px-2 py-2 text-right">APs</th>
-                <th className="pl-2 pr-3 py-2 text-right">Rewards</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tokens.filter(token => token.aps > 0).map((token: any, index: number) => {
-  
-                return (
-                  <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
-                    <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === tokens.length-1 ? 'rounded-bl-lg' : ''}`}>
-                     <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
-                        <a className="flex items-center">
-                          <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
-                            <TokenIcon address={token.address} />
-                          </div>
-                          <span className="hidden lg:inline">{token.name}</span>
-                          <span className="lg:font-normal ml-2 lg:text-gray-500">{token.symbol}</span>
-                        </a>
-                      </Link>
-                    </td>
-                    <td className="px-2 py-2 font-normal text-left">
-                      <CopyableAddress address={token.address} showCopy={false} />
-                    </td>
-                    <td className="px-2 py-2 font-normal text-right">
-                      {numberFormat(token.volume_ema30_zil, 0)} <span className="font-medium">ZIL</span>
-                    </td>
-                    <td className={`px-2 py-2 font-normal text-right`}>
-                      {numberFormat(token.liquidity_ema30_zil, 0)} <span className="font-medium">ZIL</span>
-                    </td>
-                    <td className={`px-2 py-2 font-normal text-right`}>
-  
-                      {token.liquidity_ema30_zil >= 500000 ? (
-                        <>{token.aps}</>
-                      ) : (
-                        <span className="text-gray-500 dark:text-gray-400">-</span>
-                      )}
-                      
-                    </td>
-                    <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
-                      {token.liquidity_ema30_zil >= 500000 ? (
-                        <>{numberFormat(token.aps / totalAPs * 5312.5, 2)} ZWAP</>
-                      ) : (
-                        <span className="text-gray-500 dark:text-gray-400">-</span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      </>
-    )
+  const onMinimumLiquidityChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMinimumLiquidity(+event.target.value);
+  }
+
+  const onLiquidityFactorChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLiquidityFactor(+event.target.value);
+  }
+
+  const onVolumeFactorChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVolumeFactor(+event.target.value);
+  }
+
+  const onMaxAPChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMaxAP(+event.target.value);
   }
   
   return (
@@ -158,6 +102,27 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           </div>
         </div>
       </div>
+      {edit === 'true' &&
+        <div className="flex items-center gap-3 mb-3">
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Minimum Liquidity</div>
+            <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Max AP</div>
+            <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Liquidity Factor</div>
+            <input type="number" onChange={onLiquidityFactorChangeHandler} value={liquidityFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Volume Factor</div>
+            <input type="number" onChange={onVolumeFactorChangeHandler} value={volumeFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+        </div>
+      }
+      
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
@@ -182,15 +147,13 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           </thead>
           <tbody>
             {tokens.map((token: any, index: number) => {
-              var tier = <></>
-              if(token.address === 'zil1p5suryq6q647usxczale29cu3336hhp376c627') {
-                tier = <span className="bg-green-400 py-1 px-2 rounded font-medium">ZWAP</span>
-              } else if(token.liquidity_ema30_zil > 50000000) {
-                tier = <span className="bg-purple-400 py-1 px-2 rounded font-medium">Tier 1</span>
-              } else if(token.liquidity_ema30_zil > 5000000) {
-                tier = <span className="bg-indigo-400 py-1 px-2 rounded font-medium">Tier 2</span>
-              } else if(token.liquidity_ema30_zil > 500000) {
-                tier = <span className="bg-blue-400 py-1 px-2 rounded font-medium">Tier 3</span>
+              const zwapAmount = token.aps / totalAPs * 5312.5
+
+              var apr = 0
+              if(zwapToken) {
+                const rewardsValue = zwapAmount * zwapToken.rate
+                const roiPerEpoch = rewardsValue / token.liquidity_zil
+                apr = roiPerEpoch * 52 * 100
               }
 
               return (
@@ -222,7 +185,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                   </td>
                   <td className={`px-2 py-2 font-normal text-right`}>
 
-                    {token.liquidity_ema30_zil >= 500000 ? (
+                    {token.liquidity_ema30_zil >= minimumLiquidity ? (
                       <>{token.aps}</>
                     ) : (
                       <span className="text-gray-500 dark:text-gray-400">-</span>
@@ -230,8 +193,11 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                     
                   </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {token.liquidity_ema30_zil >= 500000 ? (
-                      <>{numberFormat(token.aps / totalAPs * 5312.5, 2)} ZWAP</>
+                    {token.liquidity_ema30_zil >= minimumLiquidity && token.symbol !== 'BOLT' ? (
+                      <div>
+                        <div>{numberFormat(zwapAmount, 2)} ZWAP</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{apr.toFixed(2)}% APR</div>
+                      </div>
                     ) : (
                       <span className="text-gray-500 dark:text-gray-400">-</span>
                     )}

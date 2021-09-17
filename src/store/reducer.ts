@@ -4,10 +4,12 @@ import token from './token/reducer'
 import account from './account/reducer'
 import staking from './staking/reducer'
 import currency from './currency/reducer'
+import modal from './modal/reducer'
 
 export default combineReducers({
   token,
   account,
   staking,
-  currency
+  currency,
+  modal
 })

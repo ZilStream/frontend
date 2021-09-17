@@ -5,6 +5,7 @@ import Footer from './Footer'
 import { useRouter } from 'next/dist/client/router'
 import PageLoading from './PageLoading'
 import MarketBar from './MarketBar'
+import WalletModal from './WalletModal'
 
 interface Props {
   children: React.ReactNode
@@ -69,6 +70,7 @@ export default function Layout(props: Props) {
         <Header />
         <MarketBar />
         <div className="container">
+          <WalletModal />
           <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
         </div>
         <Footer />

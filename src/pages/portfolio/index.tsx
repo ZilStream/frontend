@@ -8,12 +8,13 @@ import PortfolioOverview from 'components/PortfolioOverview';
 import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import PortfolioHeader from 'components/PortfolioHeader';
+import Membership from 'pages/membership';
 
 const Portfolio = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
 
-  if(accountState.address === '') {
-    return <PortfolioOnboard />
+  if(accountState.selectedWallet === null) {
+    return <Membership />
   }
 
   return (

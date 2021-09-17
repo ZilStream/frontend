@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
 import { useRouter } from 'next/dist/client/router'
 import StreamPopover from './StreamPopover'
-import WalletPopover from './WalletPopover'
+import AccountPopover from './AccountPopover'
 import ConnectPopover from './ConnectPopover'
+import { ModalActionTypes } from 'store/modal/actions'
 
 const Header = () => {
   const router = useRouter()
@@ -15,8 +16,13 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const {theme, setTheme, resolvedTheme} = useTheme()
   const accountState = useSelector<RootState, AccountState>(state => state.account)
+  const dispatch = useDispatch()
 
   useEffect(() => setMounted(true), [])
+
+  const handleConnect = () => {
+    dispatch({ type: ModalActionTypes.OPEN_WALLET, payload: true })
+  }
 
   if(!mounted) return null
   
@@ -75,13 +81,17 @@ const Header = () => {
           <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6">
             <div className="ml-3 relative">
               <div className="flex items-center">
-                {accountState.isConnected ? (
+                {accountState.selectedWallet ? (
                   <>
                     <StreamPopover />
-                    <WalletPopover />
+                    <AccountPopover />
                   </>
                 ) : (
-                  <ConnectPopover />
+                  
+                  <button className="menu-item-active focus:outline-none flex items-center" onClick={() => handleConnect()}>
+                    <span className="sr-only">Connect wallet</span>
+                    Connect wallet
+                  </button>
                 )
                 }
               </div>

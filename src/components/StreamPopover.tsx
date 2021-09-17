@@ -32,7 +32,7 @@ const StreamPopover = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Popover.Panel className="origin-top-right absolute right-0 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
+            <Popover.Panel className="origin-top-right absolute mt-1 right-0 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
               <div className="flex flex-col items-center">
                 <div className="font-semibold mb-3">STREAM balance</div>
                 <img className="h-12 w-12" src="/stream.svg" alt="STREAM" />
