@@ -222,7 +222,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <div className="text-sm">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
               <div>
                 {token.rewards.map((reward: Reward) => {
-                  const paymentDayDetail = reward.payment_day ? (
+                  const paymentDayDetail = reward.payment_day !== null ? (
                     <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md text-sm">
                       Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
                     </div>
@@ -233,7 +233,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                       <span className="mr-1">{cryptoFormat(reward.amount)}</span>
                       <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
                       <span>/ week</span>
-                      {reward.payment_day &&
+                      {reward.payment_day !== null &&
                         <Tippy content={paymentDayDetail}>
                           <button className="ml-2 focus:outline-none">
                             <Info size={14} className="text-gray-500" />
