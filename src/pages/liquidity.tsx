@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import TokenIcon from 'components/TokenIcon'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
+import { useRouter } from 'next/dist/client/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -21,20 +22,28 @@ export const getServerSideProps = async () => {
 }
 
 const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter()
+  const { rewards, edit } = router.query
+
   const tokens: any[] = stats.tokens.filter((token: any) => token.liquidity > 0)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
   const zwapTokens = tokenState.tokens.filter(token => token.symbol === 'ZWAP')
   const zwapToken: TokenInfo|null = zwapTokens[0] ?? null
 
-  const [minimumLiquidity, setMinimumLiquidity] = useState<number>(2000000)
+  const [minimumLiquidity, setMinimumLiquidity] = useState<number>(500000)
   const [liquidityFactor, setLiquidityFactor] = useState<number>(3000000)
   const [volumeFactor, setVolumeFactor] = useState<number>(0.01)
-  const [maxAP, setMaxAP] = useState<number>(8)
+  const [maxAP, setMaxAP] = useState<number>(5)
 
   tokens.forEach(token => {
     if(token.symbol === 'ZWAP') {
       token.aps = 40
+      return
+    }
+
+    if(token.symbol === 'BOLT') {
+      token.aps = 0
       return
     }
 
@@ -92,24 +101,27 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-3 mb-3">
-        <div className="text-sm">
-          <div className="text-gray-500 dark:text-gray-400">Minimum Liquidity</div>
-          <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+      {edit === 'true' &&
+        <div className="flex items-center gap-3 mb-3">
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Minimum Liquidity</div>
+            <input type="number" onChange={onMinimumLiquidityChangeHandler} value={minimumLiquidity} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Max AP</div>
+            <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Liquidity Factor</div>
+            <input type="number" onChange={onLiquidityFactorChangeHandler} value={liquidityFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="text-sm">
+            <div className="text-gray-500 dark:text-gray-400">Volume Factor</div>
+            <input type="number" onChange={onVolumeFactorChangeHandler} value={volumeFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
+          </div>
         </div>
-        <div className="text-sm">
-          <div className="text-gray-500 dark:text-gray-400">Max AP</div>
-          <input type="number" onChange={onMaxAPChangeHandler} value={maxAP} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
-        </div>
-        <div className="text-sm">
-          <div className="text-gray-500 dark:text-gray-400">Liquidity Factor</div>
-          <input type="number" onChange={onLiquidityFactorChangeHandler} value={liquidityFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
-        </div>
-        <div className="text-sm">
-          <div className="text-gray-500 dark:text-gray-400">Volume Factor</div>
-          <input type="number" onChange={onVolumeFactorChangeHandler} value={volumeFactor} className="py-1 px-2 rounded-lg focus:outline-none bg-gray-300 dark:bg-gray-600" />
-        </div>
-      </div>
+      }
+      
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
@@ -180,7 +192,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
                     
                   </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === tokens.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {token.liquidity_ema30_zil >= minimumLiquidity ? (
+                    {token.liquidity_ema30_zil >= minimumLiquidity && token.symbol !== 'BOLT' ? (
                       <div>
                         <div>{numberFormat(zwapAmount, 2)} ZWAP</div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">{apr.toFixed(2)}% APR</div>

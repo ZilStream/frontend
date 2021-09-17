@@ -44,8 +44,8 @@ const ConnectLedger = (props: Props) => {
   }
 
   return (
-    <div>
-      {hwIndex}
+    <div className="py-8">
+      <div>Connect your ledger. Make sure you have the Zilliqa app opened on your Ledger.</div>
     </div>
   )
 }

@@ -81,7 +81,7 @@ const WalletModal = () => {
       address: walletInfo.bech32,
       label: '',
       isDefault: accountState.wallets.length === 0,
-      isConnected: false,
+      isConnected: true,
       isMember: false,
       type: AccountType.Zeeves
     }
