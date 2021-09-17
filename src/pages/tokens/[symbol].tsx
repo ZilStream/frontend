@@ -202,6 +202,9 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
           <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">All Time High</div>
           <div className="font-medium">{currencyFormat(token.market_data.ath, '')} ZIL</div>
+
+          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">All Time Low</div>
+          <div className="font-medium">{currencyFormat(token.market_data.atl, '')} ZIL</div>
         </div>
         <div className="px-4 py-2 border-r border-gray-300 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Liquidity</div>
