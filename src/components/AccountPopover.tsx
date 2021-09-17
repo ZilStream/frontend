@@ -69,14 +69,14 @@ const AccountPopover = () => {
                       onClick={() => {
                         navigator.clipboard.writeText(accountState.selectedWallet!.address)
                       }}
-                      className="bg-gray-900 bg-opacity-50 hover:bg-opacity-100 h-8 w-8 flex items-center justify-center rounded-full focus:outline-none font-medium">
+                      className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 hover:bg-opacity-100 h-8 w-8 flex items-center justify-center rounded-full focus:outline-none font-medium">
                       <Copy size={12} className="text-gray-700 dark:text-gray-300" />
                     </button>
 
                     <a 
                       href={`https://viewblock.io/zilliqa/address/${accountState.selectedWallet!.address}`} 
                       target="_blank" 
-                      className="bg-gray-900 bg-opacity-50 hover:bg-opacity-100 h-8 w-8 flex items-center justify-center rounded-full font-medium">
+                      className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 hover:bg-opacity-100 h-8 w-8 flex items-center justify-center rounded-full font-medium">
                       <ExternalLink size={12} className="text-gray-700 dark:text-gray-300" />
                     </a>
                   </div>
@@ -101,7 +101,7 @@ const AccountPopover = () => {
                     className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
                     onClick={() => handleAddWallet()}
                   >
-                    <div className="bg-gray-900 bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
+                    <div className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
                       <Plus size={12} />
                     </div>
                     Add another wallet
@@ -112,7 +112,7 @@ const AccountPopover = () => {
                   className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
                   onClick={() => logout()}
                 >
-                  <div className="bg-gray-900 bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
+                  <div className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
                     <LogOut size={12} />
                   </div>
                   Logout
