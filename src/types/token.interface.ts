@@ -71,4 +71,5 @@ export interface Reward {
   excluded_addresses: string
   adjusted_total_contributed: string
   adjusted_total_contributed_share: string
+  payment_day: number|null
 }
