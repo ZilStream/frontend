@@ -264,10 +264,12 @@ const StateProvider = (props: Props) => {
   }, [])
 
   useEffect(() => {
+    if(!tokenState.initialized) return
     setTokenAPRs()
   }, [tokenState.initialized])
 
   useEffect(() => {
+    if(!tokenState.initialized) return
     loadWalletState()
   }, [accountState.selectedWallet, tokenState.initialized])
 
