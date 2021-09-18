@@ -12,6 +12,7 @@ function Calendar() {
       name: 'Okipad',
       symbol: 'OKI',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
+      goal: new BigNumber(3000000),
       tags: ['Launchpad'],
       website: 'https://okimoto.io/',
       twitter: 'https://twitter.com/Okimoto_Dex'
