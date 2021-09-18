@@ -9,15 +9,12 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'DeMons',
-      symbol: 'DMZ',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
-      sale_type: 'ZILO',
-      sale_date: new Date('2021-09-06'),
-      goal: new BigNumber(1200000),
-      tags: ['NFT'],
-      website: 'https://demons.world/',
-      twitter: 'https://twitter.com/de_monsters'
+      name: 'Okipad',
+      symbol: 'OKI',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
+      tags: ['Launchpad'],
+      website: 'https://okimoto.io/',
+      twitter: 'https://twitter.com/Okimoto_Dex'
     },
     {
       name: 'AO Sports',
@@ -61,13 +58,6 @@ function Calendar() {
       tags: ['Media'],
       website: 'https://reviewcapital.org',
       telegram: 'https://t.me/RECAPCommunity'
-    },
-    {
-      name: 'Okimoto',
-      symbol: '?',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
-      tags: ['NFT'],
-      website: 'https://okimoto.io/'
     },
     {
       name: 'FIAT',
