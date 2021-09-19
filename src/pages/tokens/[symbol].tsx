@@ -19,8 +19,8 @@ import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import GzilCountdown from 'components/GzilCountdown'
 import Tippy from '@tippyjs/react'
-
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -107,7 +107,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <h2 className="text-center sm:text-left">{token.name}</h2>
             <div className="flex flex-col sm:flex-row items-center">
               <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-lg sm:mr-3 mb-1 sm:mb-0 font-medium">${token.symbol}</span>
-              <CopyableAddress address={token.address_bech32} />
+              <CopyableAddress address={token.address_bech32} showCopy={true} />
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <div className="text-sm">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
               <div>
                 {token.rewards.map((reward: Reward) => {
-                  const paymentDayDetail = reward.payment_day ? (
+                  const paymentDayDetail = reward.payment_day !== null ? (
                     <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md text-sm">
                       Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
                     </div>
@@ -233,7 +233,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                       <span className="mr-1">{cryptoFormat(reward.amount)}</span>
                       <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
                       <span>/ week</span>
-                      {reward.payment_day &&
+                      {reward.payment_day !== null &&
                         <Tippy content={paymentDayDetail}>
                           <button className="ml-2 focus:outline-none">
                             <Info size={14} className="text-gray-500" />
@@ -250,6 +250,20 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
+
+          {token.symbol === 'gZIL' &&
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6 mb-1">Minting stops in</div>
+              <GzilCountdown />
+            </>
+          }
+
+          {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX') &&
+            <>
+              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Compound Token</div>
+              <div className="text-sm">Compound tokens consist of other ZRC-2 tokens, more information on the <a href="https://zilall.com/" className="hover:underline">ZILALL website</a>.</div>
+            </>
+          }
 
           {dayjs(token.last_vote_start).isBefore(dayjs()) && dayjs(token.last_vote_end).isAfter(dayjs()) &&
             <>

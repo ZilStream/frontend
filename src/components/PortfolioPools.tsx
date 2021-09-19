@@ -33,9 +33,10 @@ function PortfolioPools() {
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
-            <col style={{width: '250px', minWidth: 'auto'}} />
+            <col style={{width: '200px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '100px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
           </colgroup>
@@ -44,6 +45,7 @@ function PortfolioPools() {
               <th className="pl-4 pr-2 py-2 text-left">Pair</th>
               <th className="px-2 py-2 text-right">Pool</th>
               <th className="px-2 py-2 text-right">{selectedCurrency.code}</th>
+              <th className="px-2 py-2 text-right">Fees (24h)</th>
               <th className="px-2 py-2 text-right">Rewards</th>
               <th className="px-2 py-2 text-right">Share</th>
             </tr>
@@ -93,6 +95,15 @@ function PortfolioPools() {
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {currencyFormat(zilAmount.times(2).shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {membership.isMember ? (
+                      <>
+                        {currencyFormat(toBigNumber(token.daily_volume).times(0.003).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
+                      </>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-sm"><Link href="/membership">Membership</Link></span>
+                    )}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {membership.isMember ? (

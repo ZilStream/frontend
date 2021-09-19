@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 
 interface Props {
-  address: string
+  address: string,
+  showCopy: boolean
 }
 
 const CopyableAddress = (props: Props) => {
@@ -29,7 +30,7 @@ const CopyableAddress = (props: Props) => {
         className="text-xs bg-gray-300 dark:bg-gray-800 dark:text-gray-400 rounded px-2 mr-2 focus:outline-none">
         {props.address}
       </button>
-      {hoveringAddress && copiedText}
+      {hoveringAddress && props.showCopy && copiedText}
     </div>
   )
 }

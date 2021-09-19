@@ -40,7 +40,7 @@ function VoteProposal() {
   const [vote, setVote] = useState<Vote|null>(null)
   const [balance, setBalance] = useState<BigNumber|null>(null)
   const [msg, setMsg] = useState<ProposalMessage|null>(null)
-  const [status, setStatus] = useState<'upcoming'|'active'|'closed'>('upcoming')
+  const [status, setStatus] = useState<'upcoming'|'active'|'closed'|'invalid'>('upcoming')
 
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
@@ -96,7 +96,9 @@ function VoteProposal() {
       setMsg(newMsg)
       
       if(newMsg) {
-        if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
+        if(hash === 'QmdbfEAd4ukcPd4N9yyfosS2asEcgq4ptC5RJH8CbaheeA') {
+          setStatus('invalid')
+        } else if(dayjs.unix(newMsg.payload.start).isAfter(dayjs())) {
           setStatus('upcoming')
         } else if(dayjs.unix(newMsg.payload.start).isBefore(dayjs()) && dayjs.unix(newMsg.payload.end).isAfter(dayjs())) {
           setStatus('active')
@@ -108,20 +110,20 @@ function VoteProposal() {
   }, [snapshot])
 
   useEffect(() => {
-    if(accountState.address === '') {
+    if(!accountState.selectedWallet) {
       setVote(null)
       setBalance(null)
       return
     }
 
-    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address)).length > 0) {
-      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.address))[0])
+    if(votes && Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.selectedWallet!.address)).length > 0) {
+      setVote(Object.values(votes).filter(vote => vote.address === fromBech32Address(accountState.selectedWallet!.address))[0])
     }
   
-    if(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()] !== undefined) {
-      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.address).toLowerCase()]))
+    if(snapshot?.balances[fromBech32Address(accountState.selectedWallet.address).toLowerCase()] !== undefined) {
+      setBalance(toBigNumber(snapshot?.balances[fromBech32Address(accountState.selectedWallet.address).toLowerCase()]))
     }
-  }, [votes, snapshot, accountState.address])
+  }, [votes, snapshot, accountState.selectedWallet])
 
   return (
     <>
@@ -244,6 +246,10 @@ function VoteProposal() {
                       {status === 'closed' &&
                         <span className="block text-sm">Closed</span>
                       }
+
+                      {status === 'invalid' &&
+                        <span className="block text-sm">Invalid</span>
+                      }
                     </div>
                   </div>
 
@@ -308,7 +314,7 @@ function VoteProposal() {
 
                 {status === 'active' ? (
                   <>
-                    {accountState.address === '' &&
+                    {accountState.selectedWallet?.address === '' &&
                       <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
                         <div>Connect your wallet before you can vote.</div>
                       </div>

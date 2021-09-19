@@ -37,11 +37,14 @@ const StateProvider = (props: Props) => {
 
     const favoritesString = localStorage.getItem('favorites') ?? ''
     var favorites = favoritesString.split(',')
-    favorites.forEach(address => {
-      dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-        address_bech32: address,
-        isFavorited: true
-      }})
+
+    batch(() => {
+      favorites.forEach(address => {
+        dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+          address_bech32: address,
+          isFavorited: true
+        }})
+      })
     })
 
     await loadRates()
@@ -63,25 +66,29 @@ const StateProvider = (props: Props) => {
   }
 
   async function setTokenAPRs() {
-    tokenState.tokens.forEach(token => {
-      const apr = getTokenAPR(token, tokenState)
-      dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-        address_bech32: token.address_bech32,
-        apr: apr
-      }})
+    batch(() => {
+      tokenState.tokens.forEach(token => {
+        const apr = getTokenAPR(token, tokenState)
+        dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+          address_bech32: token.address_bech32,
+          apr: apr
+        }})
+      })
     })
   }
 
   async function loadZilRates() {
     const zilRates = await getZilRates()
-    Object.entries(zilRates.zilliqa).map(([key, value]: [string, any]) => {
-      dispatch({type: CurrencyActionTypes.CURRENCY_UPDATE, payload: {
-        code: key.toUpperCase(),
-        rate: value as number
-      }})
+    batch(() => {
+      Object.entries(zilRates.zilliqa).map(([key, value]: [string, any]) => {
+        dispatch({type: CurrencyActionTypes.CURRENCY_UPDATE, payload: {
+          code: key.toUpperCase(),
+          rate: value as number
+        }})
+      })
+
+      dispatch({type: CurrencyActionTypes.CURRENCY_SELECT, payload: {currency: localStorage.getItem('selectedCurrency') ?? 'USD'}})
     })
-    
-    dispatch({type: CurrencyActionTypes.CURRENCY_SELECT, payload: {currency: localStorage.getItem('selectedCurrency') ?? 'USD'}})
   }
 
   async function loadWalletState() {
@@ -264,10 +271,12 @@ const StateProvider = (props: Props) => {
   }, [])
 
   useEffect(() => {
+    if(!tokenState.initialized) return
     setTokenAPRs()
   }, [tokenState.initialized])
 
   useEffect(() => {
+    if(!tokenState.initialized) return
     loadWalletState()
   }, [accountState.selectedWallet, tokenState.initialized])
 

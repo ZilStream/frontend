@@ -9,6 +9,15 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
+      name: 'Okipad',
+      symbol: 'OKI',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
+      goal: new BigNumber(3000000),
+      tags: ['Launchpad'],
+      website: 'https://okimoto.io/',
+      twitter: 'https://twitter.com/Okimoto_Dex'
+    },
+    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
@@ -20,29 +29,13 @@ function Calendar() {
       telegram: 'https://t.me/AthleteToken'
     },
     {
-      name: 'Consult Coin',
-      symbol: 'CONSULT',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/consult.png',
-      sale_type: 'Private Sale',
-      goal: new BigNumber(2160000),
-      tags: ['Business'],
-      website: 'https://www.consultcrypto.net',
-      telegram: 'https://t.me/stokenlaunch'
-    },
-    {
-      name: 'DeMons',
-      symbol: 'DMZ',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/demons.png',
-      tags: ['NFT'],
-      website: 'https://demons.world/',
-      twitter: 'https://twitter.com/de_monsters'
-    },
-    {
-      name: 'Pele',
-      symbol: 'PELE',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/pele.png',
-      tags: ['Media'],
-      website: 'https://pele.network/',
+      name: 'Unifees',
+      symbol: 'FEES',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/fees.png',
+      tags: ['Education'],
+      website: 'https://unifees.io/',
+      twitter: 'https://twitter.com/UnifeesToken',
+      telegram: 'https://t.me/unifees'
     },
     {
       name: 'GodZilliqa DeFi',
@@ -56,7 +49,7 @@ function Calendar() {
       symbol: 'CRL',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/coral.png',
       tags: ['Community'],
-      website: 'https://www.mycoralapp.tech',
+      website: 'https://mycoralapp.com',
       telegram: 'https://t.me/coraltribe'
     },
     {
@@ -66,13 +59,6 @@ function Calendar() {
       tags: ['Media'],
       website: 'https://reviewcapital.org',
       telegram: 'https://t.me/RECAPCommunity'
-    },
-    {
-      name: 'Okimoto',
-      symbol: '?',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
-      tags: ['NFT'],
-      website: 'https://okimoto.io/'
     },
     {
       name: 'FIAT',

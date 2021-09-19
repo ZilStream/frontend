@@ -69,7 +69,7 @@ const TokenRow = (props: Props) => {
 
   return (
     <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
-      <td className={`pl-4 sm:pl-5 sm:pr-2 py-2 font-normal text-sm ${props.index == 0 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>
+      <td className={`pl-4 sm:pl-5 sm:pr-2 py-2 font-normal text-sm sticky ${props.index == 0 ? 'rounded-tl-lg' : ''} ${props.isLast ? 'rounded-bl-lg' : ''}`}>
         <button onClick={() => onFavorited()} className="flex items-center justify-center focus:outline-none">
           {resolvedTheme === 'dark' ? (
             <Star size={13} className="text-gray-500 dark:text-gray-400" fill={isFavorited ? 'rgba(156, 163, 175, 1)' : 'rgba(0,0,0,0)'} />
@@ -79,16 +79,21 @@ const TokenRow = (props: Props) => {
         </button>
       </td>
       <td className="pl-2 sm:pl-3 pr-1 sm:pr-2 py-2 font-normal text-sm">{props.rank}</td>
-      <td className="px-2 py-2 font-medium">
+      <td className="px-2 py-2 font-medium sticky left-0 z-10">
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
           <a className="flex items-center">
             <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
               <TokenIcon url={props.token.icon} />
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center">
-              <div className="flex items-center">
-                <span className="hidden lg:inline">{props.token.name}</span>
-                <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="hidden lg:inline">{props.token.name}</span>
+                  <span className="lg:font-normal ml-2 lg:text-gray-500">{props.token.symbol}</span>
+                </div>
+                {(props.token.symbol === 'ZILLEX' || props.token.symbol === 'UNIDEX' || props.token.symbol === 'NFTDEX') &&
+                  <span className="text-xs font-normal text-gray-500" style={{marginTop: 1}}>Compound token</span>
+                }
               </div>
 
               {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&

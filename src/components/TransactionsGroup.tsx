@@ -37,7 +37,7 @@ const TransactionsGroup = (props: Props) => {
               <div className="md:w-64 flex items-center">
                 <div className="flex mr-2 md:mr-6">
                   <div className="bg-gray-100 dark:bg-gray-700 h-6 w-6 md:w-10 md:h-10 p-1 md:p-3 rounded-full flex items-center justify-center">
-                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="transactions-type" xmlns="http://www.w3.org/2000/svg"><path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path></svg>
+                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="transactions-type" xmlns="http://www.w3.org/2000/svg"><path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path></svg>
                   </div>
                 </div>
                 <div className="flex-grow mr-4 flex items-center md:items-start md:flex-col">
@@ -92,9 +92,7 @@ const TransactionsGroup = (props: Props) => {
               </div>
             </div>
           )
-        }
-    
-        if(transaction.sub_type === 'add_liquidity') {
+        } else if(transaction.sub_type === 'add_liquidity') {
           const token = findToken(transaction.token_in_address)
           return (
             <div className="px-4 py-3 border-b dark:border-gray-700 last:border-b-0 flex flex-col md:flex-row md:items-center text-sm md:text-base">
@@ -169,9 +167,7 @@ const TransactionsGroup = (props: Props) => {
               </div>
             </div>
           )
-        }
-
-        if(transaction.sub_type === 'remove_liquidity') {
+        } else if(transaction.sub_type === 'remove_liquidity') {
           const token = findToken(transaction.token_in_address)
           return (
             <div className="px-4 py-3 border-b dark:border-gray-700 last:border-b-0 flex flex-col md:flex-row md:items-center text-sm md:text-base">
@@ -246,11 +242,9 @@ const TransactionsGroup = (props: Props) => {
               </div>
             </div>
           )
-        }
-    
-        if(transaction.type === 'payment') {
+        } else if(transaction.type === 'payment') {
           var incoming = true
-          if(transaction.from_address === accountState.address) {
+          if(transaction.from_address === accountState.selectedWallet?.address) {
             incoming = false
           }
     
@@ -335,11 +329,64 @@ const TransactionsGroup = (props: Props) => {
               </div>
             </div>
           )
+        } else {
+          return (
+            <div className="px-4 py-3 border-b dark:border-gray-700 last:border-b-0 flex flex-col md:flex-row md:items-center text-sm md:text-base">
+              <div className="md:w-64 flex items-center">
+                <div className="flex mr-2 md:mr-6">
+                  <div className="bg-gray-100 dark:bg-gray-700 h-6 w-6 md:w-10 md:h-10 p-1 md:p-3 rounded-full flex items-center justify-center">
+                    <ArrowUp size={16} />
+                  </div>
+                </div>
+                <div className="flex-grow mr-4 flex items-center md:items-start md:flex-col">
+                  <div className="mr-1 flex items-center gap-2">Send {transaction.success === false && <span className="bg-red-500 rounded-full px-1 text-xs font-medium">Failed</span>}</div>
+                  <time className="text-sm text-gray-500">{dayjs(transaction.timestamp).format('h:mm a')}</time>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-300 block md:hidden">
+                  <a 
+                    href={`https://viewblock.io/zilliqa/tx/0x${transaction.hash}`} 
+                    target="_blank" 
+                    className="flex items-center py-1 rounded font-normal">
+                    ViewBlock 
+                    <ExternalLink size={12} className="ml-2 text-gray-500 dark:text-gray-300" />
+                  </a>
+                </div>
+              </div>
+              <div className="flex-grow flex items-center">
+                <div className="w-48 flex flex-col font-medium">
+                  <div className="text-gray-500">From</div>
+                  <a 
+                    href={`https://viewblock.io/zilliqa/address/${transaction.from_address}`} 
+                    target="_blank" 
+                    className="font-medium">
+                    {shortenAddress(transaction.from_address)}
+                  </a>
+                </div>
+                <div className="mx-5">
+                  <ArrowRight size={18} className="text-gray-500" />
+                </div>
+                <div className="w-48 flex flex-col font-medium">
+                  <div className="text-gray-500">To</div>
+                  <a 
+                    href={`https://viewblock.io/zilliqa/address/${transaction.to_address}`} 
+                    target="_blank" 
+                    className="font-medium">
+                    {shortenAddress(transaction.to_address)}
+                  </a>
+                </div>
+              </div>
+              <div className="hidden md:block text-sm text-gray-500 dark:text-gray-300">
+                <a 
+                  href={`https://viewblock.io/zilliqa/tx/0x${transaction.hash}`} 
+                  target="_blank" 
+                  className="flex items-center px-2 py-1 rounded mr-2 font-normal">
+                  ViewBlock 
+                  <ExternalLink size={12} className="ml-2 text-gray-500 dark:text-gray-300" />
+                </a>
+              </div>
+            </div>
+          )
         }
-    
-        return (
-          <></>
-        )
       })}
     </>
   )

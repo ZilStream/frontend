@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import CopyableAddress from 'components/CopyableAddress'
 import TokenIcon from 'components/TokenIcon'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
