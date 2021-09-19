@@ -97,7 +97,13 @@ function PortfolioPools() {
                     {currencyFormat(zilAmount.times(2).shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat(toBigNumber(token.daily_volume).times(0.003).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
+                    {membership.isMember ? (
+                      <>
+                        {currencyFormat(toBigNumber(token.daily_volume).times(0.003).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
+                      </>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-sm"><Link href="/membership">Membership</Link></span>
+                    )}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {membership.isMember ? (
