@@ -1,6 +1,9 @@
+import Tippy from '@tippyjs/react'
 import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
 import Link from 'next/link'
 import React from 'react'
+import { Info } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, StakingState, TokenState } from 'store/types'
 import { currencyFormat } from 'utils/format'
@@ -17,8 +20,6 @@ function PortfolioOverview() {
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useBalances()
-
-  let zilRate = tokenState.zilRate
 
   const estimatedFees = tokenState.tokens.reduce((sum, current) => {
     if(!current.pool || !current.pool.userContribution || !current.pool.totalContribution)  return sum 
@@ -84,11 +85,23 @@ function PortfolioOverview() {
           <div className="text-sm">
             {Object.keys(rewards).map(address => {
               let reward = rewards[address]
+              const paymentDayDetail = reward.payment_day !== null ? (
+                <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md text-sm">
+                  Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
+                </div>
+              ) : (<></>)
               return (
                 <div key={address} className="flex items-center">
                   <span className="w-4 h-4 mr-2"><TokenIcon address={reward.address} /></span>
                   <span className="mr-1">{moneyFormat(reward.amount, {compression: 0, maxFractionDigits: 2})}</span>
                   <span className="font-medium">{reward.symbol}</span>
+                  {reward.payment_day !== null &&
+                    <Tippy content={paymentDayDetail}>
+                      <button className="ml-2 focus:outline-none">
+                        <Info size={14} className="text-gray-400 dark:text-gray-500" />
+                      </button>
+                    </Tippy>
+                  }
                 </div>
               )
             })}

@@ -9,6 +9,7 @@ export interface TokenReward {
   amount: BigNumber
   address: string
   symbol: string
+  payment_day: number|null
 }
 
 export default function useBalances() {
@@ -118,13 +119,15 @@ export default function useBalances() {
           rewards[reward.reward_token_address] = {
             amount: currentReward.amount.plus(newReward),
             address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
           }
         } else {
           rewards[reward.reward_token_address] = {
             amount: newReward,
             address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
           }
         }
       })
