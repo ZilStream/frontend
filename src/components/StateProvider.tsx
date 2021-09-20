@@ -93,10 +93,9 @@ const StateProvider = (props: Props) => {
 
   async function loadWalletState() {
     if(!accountState.selectedWallet || tokenState.initialized === false) return
-
     let batchResults = await getPortfolioState(accountState.selectedWallet.address, tokenState.tokens, stakingState.operators)
+
     await processBatchResults(batchResults)
-    await loadMemberState()
   }
 
   async function fetchStakingState() {
@@ -252,13 +251,6 @@ const StateProvider = (props: Props) => {
     })
   }
 
-  async function loadMemberState() {
-    dispatch({ type: AccountActionTypes.UPDATE_WALLET, payload: {
-      address: accountState.selectedWallet?.address,
-      isMember: membership.isMember
-    }})
-  }
-
   useInterval(async () => {
     loadRates()
     loadWalletState()
@@ -276,7 +268,7 @@ const StateProvider = (props: Props) => {
   }, [tokenState.initialized])
 
   useEffect(() => {
-    if(!tokenState.initialized) return
+    if(!tokenState.initialized || !accountState.selectedWallet) return
     loadWalletState()
   }, [accountState.selectedWallet, tokenState.initialized])
 
@@ -305,64 +297,6 @@ const StateProvider = (props: Props) => {
         wallets: [],
         selectedWallet: null
       }})
-    }
-
-    const zilPay = (window as any).zilPay
-    
-    if(typeof zilPay !== "undefined" && localStorage.getItem('zilpay') === 'true') {
-      try {
-        const walletAddress = zilPay.wallet.defaultAccount.bech32
-        // const network = zilPay.wallet.net
-        
-        if(accountState.wallets.filter(wallet => wallet.address === walletAddress).length === 0) {
-          let wallet: ConnectedWallet = {
-            address: walletAddress,
-            label: '',
-            isDefault: accountState.wallets.length === 0,
-            isConnected: true,
-            isMember: false,
-            type: AccountType.ZilPay
-          }
-          dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
-          localStorage.removeItem('zilpay')
-        }
-
-        zilPay.wallet.observableAccount().subscribe(function(account: any) {
-          // dispatch({ type: AccountActionTypes.WALLET_UPDATE, payload: account.bech32 })
-          // TODO: Show popup asking if user wants to add new address
-        })
-  
-        // zilPay.wallet.observableNetwork().subscribe(function(network: any) {
-        //   dispatch({ type: AccountActionTypes.NETWORK_UPDATE, payload: network })
-        // })
-      } catch (e) {
-        console.error(e)
-      }
-    } else if(localStorage.getItem('avatar') !== null && localStorage.getItem('avatar') !== '') {
-      fetch('https://api.carbontoken.info/api/v1/avatar/' + localStorage.getItem('avatar'))
-      .then(response => response.json())
-      .then(data => {
-
-        const walletAddress = toBech32Address(data.address)
-
-
-        if(accountState.wallets.filter(wallet => wallet.address === walletAddress).length === 0) {
-          let wallet: ConnectedWallet = {
-            address: walletAddress,
-            label: '',
-            isDefault: accountState.wallets.length === 0,
-            isConnected: false,
-            isMember: false,
-            type: AccountType.Avatar
-          }
-          dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
-          localStorage.removeItem('avatar')
-        }
-      })
-      .catch(error => {
-        console.log('Avatar doesn\'t exist')
-        localStorage.removeItem('avatar')
-      })
     }
   }, [])
 
