@@ -400,6 +400,10 @@ function Membership() {
             <div className="font-semibold">Transaction History</div>
             <div className="text-gray-700 dark:text-gray-200">Live now</div>
           </div>
+          <div className="bg-primary px-2 py-8 rounded text-center">
+            <div className="font-semibold">Multiple wallets</div>
+            <div className="text-gray-700 dark:text-gray-200">Live now</div>
+          </div>
           <div className="bg-gray-300 dark:bg-gray-700 px-2 py-8 rounded text-center">
             <div className="font-semibold">Price Alerts</div>
             <div className="text-gray-700 dark:text-gray-200">Coming soon</div>

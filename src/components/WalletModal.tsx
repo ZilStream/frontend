@@ -38,6 +38,8 @@ const WalletModal = () => {
   }, [modalState.walletOpen])
 
   const connectZilPay = async () => {
+    if(!isOpen) return
+
     const zilPay = (window as any).zilPay
     
     // Check if ZilPay is installed
@@ -68,6 +70,8 @@ const WalletModal = () => {
   }
 
   const connectZeeves = async () => {
+    if(!isOpen) return
+
     const zeeves = (window as any).Zeeves;
 
     if (!zeeves) {
@@ -95,7 +99,7 @@ const WalletModal = () => {
   }
 
   const handleAddressKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if(e.key !== 'Enter') return
+    if(e.key !== 'Enter' || !isOpen) return
 
     try {
       fromBech32Address(address)

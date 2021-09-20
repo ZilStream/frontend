@@ -6,9 +6,11 @@ import { AccountState, ConnectedWallet, RootState } from 'store/types'
 import { AccountActionTypes } from 'store/account/actions'
 import { shortenAddress } from 'utils/addressShortener'
 import { ModalActionTypes } from 'store/modal/actions'
+import useBalances from 'utils/useBalances'
 
 const AccountPopover = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
+  const {membership} = useBalances()
   const dispatch = useDispatch()
 
   const handleAddWallet = () => {
@@ -50,7 +52,7 @@ const AccountPopover = () => {
                   <div className="flex-grow flex flex-col">
                     <div className="text-sm flex items-center">
                       {shortenAddress(accountState.selectedWallet!.address)}
-                      {accountState.selectedWallet?.isMember &&
+                      {membership.isMember &&
                         <div className="bg-primary h-4 px-1 rounded flex items-center justify-center text-xs font-bold ml-2">Premium</div>
                       }
                     </div>
