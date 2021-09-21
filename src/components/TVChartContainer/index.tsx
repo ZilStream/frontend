@@ -8,6 +8,7 @@ import {
   IBasicDataFeed,
 } from '../../../public/charting_library';
 import DataFeed from './api'
+import { SaveLoadAdapter } from './saveLoadAdapter';
 
 export interface ChartContainerProps {
 	symbol: ChartingLibraryWidgetOptions['symbol'];
@@ -67,16 +68,17 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			library_path: this.props.libraryPath as string,
 
 			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['use_localstorage_for_settings', 'create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
-			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode'],
-			charts_storage_url: this.props.chartsStorageUrl,
-			charts_storage_api_version: this.props.chartsStorageApiVersion,
+			disabled_features: ['create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
+			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode', 'use_localstorage_for_settings'],
+			save_load_adapter: new SaveLoadAdapter(),
+			auto_save_delay: 5,
+			load_last_chart: true,
 			client_id: this.props.clientId,
 			user_id: this.props.userId,
 			fullscreen: this.props.fullscreen,
 			autosize: true,
 			studies_overrides: this.props.studiesOverrides,
-			theme: this.props.theme === 'dark' ? 'Dark' : 'Light'
+			theme: this.props.theme === 'dark' ? 'Dark' : 'Light',
 		};
 
 		const tvWidget = new widget(widgetOptions);
@@ -96,6 +98,10 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 					button.innerHTML = 'Change to ' + oldCurrency
 				})
 				button.innerHTML = 'Change to USD';
+			})
+
+			tvWidget.subscribe('onAutoSaveNeeded', function() {
+				tvWidget.save(function() {})
 			})
 		})
 	}
