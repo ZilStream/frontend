@@ -57,6 +57,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 	private tvWidget: IChartingLibraryWidget | null = null;
 
 	public componentDidMount(): void {
+		const saveLoadAdapter = new SaveLoadAdapter()
 		const widgetOptions: ChartingLibraryWidgetOptions = {
       // debug: true,
 			symbol: this.props.symbol as string,
@@ -70,8 +71,8 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			locale: getLanguageFromURL() || 'en',
 			disabled_features: ['create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode', 'use_localstorage_for_settings'],
-			save_load_adapter: new SaveLoadAdapter(),
-			auto_save_delay: 5,
+			save_load_adapter: saveLoadAdapter,
+			auto_save_delay: 3,
 			load_last_chart: true,
 			client_id: this.props.clientId,
 			user_id: this.props.userId,
@@ -101,7 +102,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			})
 
 			tvWidget.subscribe('onAutoSaveNeeded', function() {
-				tvWidget.save(function() {})
+				tvWidget.saveChartToServer()
 			})
 		})
 	}
