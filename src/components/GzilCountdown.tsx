@@ -13,7 +13,7 @@ function GzilCountdown() {
   const [currentBlock, setCurrentBlock] = useState<number>()
   const [countdown, setCountdown] = useState<Countdown>()
   const [secondsLeft, setSecondsLeft] = useState<number>()
-  const secondsPerBlock = 36
+  const secondsPerBlock = 34
   const endBlock = 1483713
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const zilliqa = new Zilliqa('https://ssn.ignitedao.io/api')
