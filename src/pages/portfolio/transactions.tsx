@@ -98,6 +98,18 @@ const Transactions = () => {
           </>
         )
       })}
+      <div className="flex items-center mt-6">
+        <div className="flex-grow"></div>
+        <div className="flex items-center gap-3">
+          <button onClick={() => setCurrentPage(currentPage-1)} className={`bg-gray-300 dark:bg-gray-700 flex items-center justify-center rounded-lg w-8 h-8 p-1 focus:outline-none ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={currentPage === 1}>
+            <ArrowLeft size={18} />
+          </button>
+          <div className="text-sm">Page {currentPage} of {totalPages}</div>
+          <button onClick={() => setCurrentPage(currentPage+1)} className={`bg-gray-300 dark:bg-gray-700 flex items-center justify-center rounded-lg w-8 h-8 p-1 focus:outline-none ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
     </>
   )
 }
