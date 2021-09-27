@@ -214,7 +214,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
           <div className="relative w-full md:w-72 mt-4 lg:mt-0">
             <div className="font-bold mb-1">gZIL Minting Countdown</div>
-            <GzilCountdown />
+            <Link href={`/tokens/gzil`}>
+              <a>
+                <GzilCountdown />
+              </a>
+            </Link>
           </div>
         </div>
       </div>
