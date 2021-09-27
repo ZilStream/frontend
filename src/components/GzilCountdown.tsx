@@ -13,7 +13,7 @@ function GzilCountdown() {
   const [currentBlock, setCurrentBlock] = useState<number>()
   const [countdown, setCountdown] = useState<Countdown>()
   const [secondsLeft, setSecondsLeft] = useState<number>()
-  const secondsPerBlock = 36
+  const secondsPerBlock = 34
   const endBlock = 1483713
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const zilliqa = new Zilliqa('https://ssn.ignitedao.io/api')
@@ -80,7 +80,7 @@ function GzilCountdown() {
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 py-2 sm:py-4 px-2 sm:px-5 rounded-lg">
+      <div className="bg-white dark:bg-gray-800 py-3 sm:py-4 px-2 sm:px-5 rounded-lg">
         <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-6">
           <div className="flex flex-col items-center">
             <span className="font-semibold">{countdown?.days}</span>
