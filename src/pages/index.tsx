@@ -16,6 +16,7 @@ import { Rate } from 'types/rate.interface'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import Notice from 'components/Notice'
+import GzilCountdown from 'components/GzilCountdown'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -210,6 +211,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </div>
               )}
             </div>
+          </div>
+          <div className="relative w-full md:w-72 mt-4 lg:mt-0">
+            <div className="font-bold mb-1">gZIL Minting Countdown</div>
+            <GzilCountdown />
           </div>
         </div>
       </div>
