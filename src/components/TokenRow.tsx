@@ -110,8 +110,8 @@ const TokenRow = (props: Props) => {
       <td className={change >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
         {changeRounded}%
       </td>
-      <td className="px-2 py-2 font-normal text-right">{currencyFormat(marketCap, selectedCurrency.symbol)}</td>
-      <td className="px-2 py-2 font-normal text-right">{currencyFormat(currentLiquidity, selectedCurrency.symbol)}</td>
+      <td className="px-2 py-2 font-normal text-right">{currencyFormat(marketCap, selectedCurrency.symbol, 0)}</td>
+      <td className="px-2 py-2 font-normal text-right">{currencyFormat(currentLiquidity, selectedCurrency.symbol, 0)}</td>
       {props.showAPR &&
         <td className="px-2 py-2 font-normal text-right">
           {props.token.apr?.isZero() ? (
@@ -123,7 +123,7 @@ const TokenRow = (props: Props) => {
         </td>
       }
       {!props.showAPR &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(usdVolume, selectedCurrency.symbol, 0)}</td>
       }
       <td className={`px-2 py-2 flex justify-end ${props.index == 0 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
         <Link href={`/tokens/${props.token.symbol.toLowerCase()}`}>
