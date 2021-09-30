@@ -108,8 +108,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
     } else if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
+    } else if(currentList == ListType.Bridged) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.bridged === true)
     } else {
-      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false && token.bridged === false)
     }
 
     if(currentList === ListType.APR) {
@@ -253,9 +255,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Ranking</button>
             <button 
+              onClick={() => setCurrentList(ListType.Bridged)}
+              className={`${currentList == ListType.Bridged ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Bridged</button>
+            <button 
               onClick={() => setCurrentList(ListType.Favorites)}
               className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Favorites</button>
+            >Favorited</button>
             <button 
               onClick={() => setCurrentList(ListType.APR)}
               className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1`}
@@ -387,8 +393,14 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </tbody>
       </table>
 
+      {tokenState.initialized && currentList === ListType.Bridged && displayedTokens.length === 0 &&
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
+          <span className="text-gray-500 dark:text-gray-400 italic">Bridged tokens from Ethereum will show up here when ZilBridge has launched.</span>
+        </div>
+      }
+
       {tokenState.initialized && currentList === ListType.Favorites && displayedTokens.length === 0 &&
-        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-4 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
           <span className="text-gray-500 dark:text-gray-400 italic">Star a token and you'll see it here in your favorites.</span>
         </div>
       }
