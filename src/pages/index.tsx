@@ -378,7 +378,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 <TokenRow 
                   key={token.id} 
                   token={token}
-                  rank={tokens.indexOf(token)+1}
+                  rank={index+1}
                   index={index}
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
