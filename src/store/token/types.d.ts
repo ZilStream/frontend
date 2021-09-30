@@ -21,6 +21,7 @@ export type TokenInfo = {
   last_vote_hash: string
   supply_skip_addresses: string
   unvetted: boolean
+  bridged: boolean
   isZil: boolean
   isStream: boolean
   isFavorited: boolean = false
