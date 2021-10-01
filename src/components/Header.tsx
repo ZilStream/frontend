@@ -75,6 +75,10 @@ const Header = () => {
                 <Link href="/calendar">
                   <a className={router.pathname === '/calendar' ? 'menu-item-active' : 'menu-item'}>Calendar</a>
                 </Link>
+
+                <Link href="/bridge">
+                  <a className={router.pathname === '/bridge' ? 'menu-item-active' : 'menu-item'}>Bridge</a>
+                </Link>
               </div>
             </div>
           </div>
@@ -117,6 +121,10 @@ const Header = () => {
 
             <Link href="/calendar">
               <a className={router.pathname.includes('/calendar') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Calendar</a>
+            </Link>
+
+            <Link href="/bridge">
+              <a className={router.pathname.includes('/bridge') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Bridge</a>
             </Link>
 
             <button  
