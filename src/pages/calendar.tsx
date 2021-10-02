@@ -23,7 +23,7 @@ function Calendar() {
       name: 'Unifees',
       symbol: 'FEES',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/fees.png',
-      sale_type: 'Private Sale',
+      sale_type: 'Pre-sale',
       sale_date: new Date('October 3, 2021, 15:00:00 UTC'),
       tags: ['Education'],
       website: 'https://unifees.io/',
