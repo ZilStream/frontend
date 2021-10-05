@@ -188,6 +188,9 @@ function GzilCountdown() {
                     <span className="text-base lg:text-lg text-gray-500 dark:text-gray-400">secs</span>
                   </div>
                 </div>
+                <div className="flex items-center text-xs mt-1 text-gray-400 dark:text-gray-600 py-2">
+                  <div>Current: {currentBlock}, End: {endBlock}</div>
+                </div>
               </>
             )}
 
