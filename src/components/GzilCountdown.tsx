@@ -207,26 +207,12 @@ function GzilCountdown() {
               </>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 lg:gap-8 p-4 mt-2 md:mt-12 lg:mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 lg:gap-8 p-4 mt-2 md:mt-12 lg:mt-16">
               <div className="text-base md:text-xl lg:text-2xl text-center">
                 <div>Current supply</div>
                 <div className="font-bold">{currentSupply.times(Math.pow(10, -15)).toFixed(2)}</div>
                 <div className="text-base text-gray-500">gZIL</div>
                 <div className="hidden md:block mt-2 text-xs text-gray-500 max-w-xs">When minting has ended max supply will have been reached.</div>
-              </div>
-
-              <div className="text-base md:text-xl lg:text-2xl text-center">
-                <div>Rewards end</div>
-                {rewardsBlocksLeft > 0 ? (
-                  <>
-                    <div className="font-bold">{rewardsBlocksLeft}</div>
-                    <div className="text-base text-gray-500">blocks</div>
-                  </>
-                ) : (
-                  <div className="font-bold py-3">Rewards have ended</div>
-                )}
-                
-                <div className="mt-2 text-xs text-gray-500 max-w-xs">Staking rewards for gZIL have ended and the last 113 blocks can be used to claim the last rewards.</div>
               </div>
 
               <div className="text-base md:text-xl lg:text-2xl text-center">
