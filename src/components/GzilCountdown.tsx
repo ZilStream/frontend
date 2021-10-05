@@ -23,7 +23,7 @@ function GzilCountdown() {
   const rewardsEndBlock = 1483600
   const endBlock = 1483713
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const zilliqa = new Zilliqa('https://ssn.ignitedao.io/api')
+  const zilliqa = new Zilliqa('https://api.zilliqa.com')
   const [isOpen, setIsOpen] = useState(false)
   const modalRef = useRef(null)
 
