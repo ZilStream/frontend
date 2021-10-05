@@ -64,7 +64,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   useInterval(async () => {
       let newRates = await getRates()
-      setRates(newRates)
+      if(newRates === null) {
+        setRates([])
+      } else {
+        setRates(newRates)
+      }
+      
     },
     30000
   )
