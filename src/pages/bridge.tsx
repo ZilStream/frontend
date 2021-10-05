@@ -13,7 +13,7 @@ const Bridge = () => {
   }, [])
 
   const fetchAssets = async () => {
-    const assets = await getBridgeAssets("1470000", "1480000")
+    const assets = await getBridgeAssets("1470000", "5470000")
     setAssets(assets)
   }
 
