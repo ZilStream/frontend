@@ -219,10 +219,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               )}
             </div>
           </div>
-          <div className="w-full md:w-72 mt-4 lg:mt-0">
-            <div className="font-bold mb-1">gZIL Minting Ends Countdown</div>
-            <GzilCountdown />
-          </div>
         </div>
       </div>
       <div className="scrollable-table-container max-w-full overflow-x-scroll">

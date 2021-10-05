@@ -251,13 +251,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
 
-          {token.symbol === 'gZIL' &&
-            <>
-              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6 mb-1">Minting stops in</div>
-              <GzilCountdown />
-            </>
-          }
-
           {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX') &&
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Compound Token</div>
