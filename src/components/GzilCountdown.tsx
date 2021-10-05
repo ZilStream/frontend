@@ -1,6 +1,11 @@
 import { MessageType, StatusType, Zilliqa } from '@zilliqa-js/zilliqa'
-import React, { useEffect, useMemo, useState } from 'react'
+import BigNumber from 'bignumber.js'
+import React, { createRef, useEffect, useMemo, useRef, useState } from 'react'
+import Confetti from 'react-confetti'
+import { X } from 'react-feather'
 import { useInterval } from 'utils/interval'
+import { toBigNumber } from 'utils/useMoneyFormatter'
+import TokenIcon from './TokenIcon'
 
 interface Countdown {
   days: number,
@@ -11,12 +16,16 @@ interface Countdown {
 
 function GzilCountdown() {
   const [currentBlock, setCurrentBlock] = useState<number>()
+  const [currentSupply, setCurrentSupply] = useState<BigNumber>()
   const [countdown, setCountdown] = useState<Countdown>()
   const [secondsLeft, setSecondsLeft] = useState<number>()
   const secondsPerBlock = 34
+  const rewardsEndBlock = 1483600
   const endBlock = 1483713
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const zilliqa = new Zilliqa('https://ssn.ignitedao.io/api')
+  const zilliqa = new Zilliqa('https://api.zilliqa.com')
+  const [isOpen, setIsOpen] = useState(false)
+  const modalRef = useRef(null)
 
   const connectSocket = async () => {
     const subscriber = zilliqa.subscriptionBuilder.buildNewBlockSubscriptions('wss://api-ws.zilliqa.com')
@@ -26,6 +35,7 @@ function GzilCountdown() {
 
     subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
       setCurrentBlock(+event.value.TxBlock.header.BlockNum)
+      updateSupply()      
     });
 
     subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
@@ -41,11 +51,20 @@ function GzilCountdown() {
       if(info.result) {
         setCurrentBlock(+info.result.NumTxBlocks-1)
       }
+
+      updateSupply()
     }
     
     getInfo()
     connectSocket()
   }, [])
+
+  const updateSupply = async () => {
+    const response = await zilliqa.blockchain.getSmartContractSubState('0xa845c1034cd077bd8d32be0447239c7e4be6cb21', 'total_supply', [])
+    if(response.result) {
+      setCurrentSupply(toBigNumber(response.result.total_supply))
+    }
+  }
 
   useEffect(() => {
     if(!currentBlock) return
@@ -70,7 +89,7 @@ function GzilCountdown() {
     })
   }, [secondsLeft])
 
-  if(isLoading) {
+  if(isLoading || !currentBlock || !countdown || !currentSupply) {
     return (
       <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg">
         <span className="text-gray-500 dark:text-gray-400 italic">Loading..</span>
@@ -78,32 +97,148 @@ function GzilCountdown() {
     )
   }
 
-  return (
-    <>
-      <div className="bg-white dark:bg-gray-800 py-3 sm:py-4 px-2 sm:px-5 rounded-lg">
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-6">
-          <div className="flex flex-col items-center">
-            <span className="font-semibold">{countdown?.days}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">days</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-semibold">{countdown?.hours}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">hours</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-semibold">{countdown?.minutes}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">mins</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="font-semibold">{countdown?.seconds}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">secs</span>
-          </div>
+  var countdownNode = (<div></div>)
+  
+  if(countdown.days > 0) {
+    countdownNode = (
+      <div className={`grid grid-cols-4 gap-2 sm:gap-4 md:gap-6`}>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.days}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">days</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.hours}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">hours</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.minutes}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">mins</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.seconds}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">secs</span>
         </div>
       </div>
-      <div className="flex items-center text-xs mt-1 text-gray-400 dark:text-gray-600">
-        <div className="flex-grow">Current block: {currentBlock}</div>
-        <div>End: {endBlock}</div>
+    )
+  } else if(countdown.hours > 0) {
+    countdownNode = (
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.hours}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">hours</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.minutes}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">mins</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.seconds}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">secs</span>
+        </div>
       </div>
+    )
+  } else if(countdown.minutes > 0) {
+    countdownNode = (
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 text-2xl">
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.minutes}</span>
+          <span className="text-base text- text-gray-500 dark:text-gray-400">mins</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.seconds}</span>
+          <span className="text-base text-gray-500 dark:text-gray-400">secs</span>
+        </div>
+      </div>
+    )
+  } else if(countdown.seconds > 0) {
+    countdownNode = (
+      <div className="grid grid-cols-1 gap-2 sm:gap-4 md:gap-6 text-3xl">
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{countdown?.seconds}</span>
+          <span className="text-base text-gray-500 dark:text-gray-400">secs</span>
+        </div>
+      </div>
+    )
+  }
+
+  const rewardsBlocksLeft = rewardsEndBlock-currentBlock
+  const endBlocksLeft = endBlock-currentBlock
+  
+  return (
+    <>
+      <div onClick={() => setIsOpen(true)} className="bg-white dark:bg-gray-800 py-3 sm:py-4 px-2 sm:px-5 rounded-lg cursor-pointer shadow-sm hover:shadow-xl">
+        {endBlocksLeft > 0 ? (
+          <>{countdownNode}</>
+        ) : (
+          <div className="font-bold">gZIL minting has finished</div>
+        )}
+      </div>
+      
+      <div className="flex items-center text-xs mt-1 text-gray-400 dark:text-gray-600">
+        <div className="font-bold">Click to expand the countdown</div>
+      </div>
+
+      {isOpen &&
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col items-stretch justify-center z-50 p-8 md:p-16 lg:p-24 bg-gray-900 bg-opacity-70">
+          <div ref={modalRef} className="relative bg-white dark:bg-gray-800 flex-grow rounded-lg shadow-md flex flex-col items-center justify-center overflow-hidden">
+            <div className="font-bold text-2xl md:text-3xl lg:text-4xl mb-2">gZIL</div>
+            <div className="w-16 md:w-24 lg:w-40 h-16 md:h-24 lg:h-40 flex items-center justify-center"><TokenIcon address="zil14pzuzq6v6pmmmrfjhczywguu0e97djepxt8g3e" /></div>
+            {currentBlock >= endBlock ? (
+              <div className="font-bold text-2xl">gZIL minting has finished</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-3 gap-4 md:gap-10 text-2xl lg:text-4xl mt-2 md:mt-4">
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold">{countdown.hours}</span>
+                    <span className="text-base lg:text-lg text-gray-500 dark:text-gray-400">hours</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold">{countdown.minutes}</span>
+                    <span className="text-base lg:text-lg text-gray-500 dark:text-gray-400">mins</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold">{countdown.seconds}</span>
+                    <span className="text-base lg:text-lg text-gray-500 dark:text-gray-400">secs</span>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center text-xs mt-1 text-gray-400 dark:text-gray-600 py-2">
+                  <div>Current: {currentBlock}, End: {endBlock}</div>
+                </div>
+              </>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 lg:gap-8 p-4 mt-2 md:mt-12 lg:mt-16">
+              <div className="text-base md:text-xl lg:text-2xl text-center">
+                <div>Current supply</div>
+                <div className="font-bold">{currentSupply.times(Math.pow(10, -15)).toFixed(2)}</div>
+                <div className="text-base text-gray-500">gZIL</div>
+                <div className="hidden md:block mt-2 text-xs text-gray-500 max-w-xs">When minting has ended max supply will have been reached.</div>
+              </div>
+
+              <div className="text-base md:text-xl lg:text-2xl text-center">
+                <div>Minting ends</div>
+                {endBlocksLeft > 0 ? (
+                  <>
+                    <div className="font-bold">{endBlocksLeft}</div>
+                    <div className="text-base text-gray-500">blocks</div>
+                  </>
+                ) : (
+                  <div className="font-bold py-3">Minting has ended</div>
+                )}
+                
+                <div className="mt-2 text-xs text-gray-500 max-w-xs">At this stage minting stops and any gZIL rewards are not claimable anymore.</div>
+              </div>
+            </div>
+
+            <button onClick={() => setIsOpen(false)} className="absolute top-4 right-4"><X /></button>
+
+            {endBlocksLeft <= 0 &&
+              <Confetti height={1500} />
+            }
+          </div>
+        </div>
+      }
+      
     </>
   )
 }

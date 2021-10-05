@@ -1,4 +1,4 @@
-export function currencyFormat(num: number, symbol: string = "$"): string {
+export function currencyFormat(num: number, symbol: string = "$", decimals: number = 2): string {
   if(num === undefined) return ''
   if(symbol === '₿') {
     return symbol + num.toFixed(8)
@@ -6,7 +6,7 @@ export function currencyFormat(num: number, symbol: string = "$"): string {
   if(num < 0.5) {
     return symbol + num.toFixed(5)
   }
-  return symbol + num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  return symbol + num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
 export function numberFormat(num: number, decimals: number = 2): string {

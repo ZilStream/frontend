@@ -18,6 +18,7 @@ const MarketBar = () => {
   const { membership } = useBalances()
 
   const marketCap = tokenState.tokens.reduce((sum, current) => {
+    if(current.bridged) return sum
     const rate = current.rate ?? 0
     const supply = current.current_supply ?? 0
     return sum + (supply * (selectedCurrency.rate * rate))
