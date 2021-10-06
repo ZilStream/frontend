@@ -14,7 +14,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.6.0",
     "@tanem/react-nprogress": "^3.0.64",
     "@tippyjs/react": "^4.2.4",
-    "@zilliqa-js/zilliqa": "^2.2.1",
+    "@zilliqa-js/zilliqa": "^3.3.0",
     "apexcharts": "^3.26.1",
     "bignumber.js": "^9.0.1",
     "dayjs": "^1.10.6",
