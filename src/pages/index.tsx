@@ -115,6 +115,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
     } else if(currentList == ListType.Bridged) {
       tokensToDisplay = tokensToDisplay.filter(token => token.bridged === true)
+    } else if(currentList == ListType.APR) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     } else {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false && token.bridged === false)
     }
