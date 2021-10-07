@@ -36,6 +36,9 @@ function PortfolioOverview() {
   const totalRewardZil = Object.keys(rewards).reduce((sum, current) => {
     let reward = rewards[current]
     let token = tokenState.tokens.filter(token => token.address_bech32 === reward.address)[0]
+    if(token.symbol === 'ZIL') {
+      return sum.plus(reward.amount)
+    }
     return sum.plus(reward.amount.times(token.rate))
   }, new BigNumber(0))
 

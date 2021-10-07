@@ -64,7 +64,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   useInterval(async () => {
       let newRates = await getRates()
-      setRates(newRates)
+      if(newRates === null) {
+        setRates([])
+      } else {
+        setRates(newRates)
+      }
+      
     },
     30000
   )
@@ -78,7 +83,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   const topTokens = useMemo(() => {
     if(!tokenState.initialized) return []
-    return tokens.sort(sortTokensByMarketCap).slice(0, 3)
+    return tokens.filter(token => !token.bridged).sort(sortTokensByMarketCap).slice(0, 3)
   }, [tokenState])
 
   const handleSort = (sort: SortType) => {
@@ -110,6 +115,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
     } else if(currentList == ListType.Bridged) {
       tokensToDisplay = tokensToDisplay.filter(token => token.bridged === true)
+    } else if(currentList == ListType.APR) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     } else {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false && token.bridged === false)
     }
@@ -213,14 +220,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </div>
               )}
             </div>
-          </div>
-          <div className="relative w-full md:w-72 mt-4 lg:mt-0">
-            <div className="font-bold mb-1">gZIL Minting Ends Countdown</div>
-            <Link href={`/tokens/gzil`}>
-              <a>
-                <GzilCountdown />
-              </a>
-            </Link>
           </div>
         </div>
       </div>
@@ -378,7 +377,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 <TokenRow 
                   key={token.id} 
                   token={token}
-                  rank={tokens.indexOf(token)+1}
+                  rank={index+1}
                   index={index}
                   rates={rates.filter(rate => rate.token_id == token.id)} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}

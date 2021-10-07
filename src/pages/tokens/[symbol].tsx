@@ -65,7 +65,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
       if(rewardTokens.length > 0) {
         const rewardToken = rewardTokens[0]
-        const rewardsValue = toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate)
+        const rewardsValue = reward.reward_token_symbol !== 'ZIL' ? toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate) : toBigNumber(reward.amount).times(rewardToken.rate)
         const liquidity = toBigNumber(reward.adjusted_total_contributed_share).times(token.market_data.current_liquidity)
         const roiPerEpoch = rewardsValue.dividedBy(liquidity)
         const apr = bnOrZero(roiPerEpoch.times(52).shiftedBy(2).decimalPlaces(1))
@@ -250,13 +250,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         <div className="px-4 py-2">
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
-
-          {token.symbol === 'gZIL' &&
-            <>
-              <div className="text-gray-700 dark:text-gray-400 text-sm mt-6 mb-1">Minting stops in</div>
-              <GzilCountdown />
-            </>
-          }
 
           {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX') &&
             <>
