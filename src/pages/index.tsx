@@ -15,8 +15,6 @@ import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
 import { currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
-import Notice from 'components/Notice'
-import GzilCountdown from 'components/GzilCountdown'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -113,12 +111,14 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
     } else if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
+    } else if(currentList == ListType.Native) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.bridged === false && token.unvetted === false)
     } else if(currentList == ListType.Bridged) {
       tokensToDisplay = tokensToDisplay.filter(token => token.bridged === true)
     } else if(currentList == ListType.APR) {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     } else {
-      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false && token.bridged === false)
+      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     }
 
     if(currentList === ListType.APR) {
@@ -254,6 +254,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Ranking</button>
             <button 
+              onClick={() => setCurrentList(ListType.Native)}
+              className={`${currentList == ListType.Native ? 'list-btn-selected' : 'list-btn'} mr-1`}
+            >Native</button>
+            <button 
               onClick={() => setCurrentList(ListType.Bridged)}
               className={`${currentList == ListType.Bridged ? 'list-btn-selected' : 'list-btn'} mr-1`}
             >Bridged</button>
@@ -263,7 +267,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             >Favorited</button>
             <button 
               onClick={() => setCurrentList(ListType.APR)}
-              className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1`}
+              className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
             >Highest APR</button>
             <button 
               onClick={() => setCurrentList(ListType.Unvetted)}
@@ -339,7 +343,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </button>
               </th>
               <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.MarketCap)}>
+                <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.MarketCap)}>
                   {currentSort === SortType.MarketCap &&
                     <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
                   }
@@ -360,7 +364,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               }
               {currentList !== ListType.APR &&
                 <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Volume)}>
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.Volume)}>
                     {currentSort === SortType.Volume &&
                       <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
                     }
@@ -368,7 +372,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   </button>
                 </th>
               }
-              <th className="px-2 py-2 text-right">Last 24 hours</th>
+              <th className="px-2 py-2 text-right whitespace-nowrap">Last 24 hours</th>
             </tr>
           </thead>
           <tbody>
