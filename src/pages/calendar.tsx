@@ -9,28 +9,6 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'Okipad',
-      symbol: 'OKI',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/okimoto.png',
-      sale_type: 'Private Sale',
-      sale_date: new Date('October 1, 2021'),
-      goal: new BigNumber(3000000),
-      tags: ['Launchpad'],
-      website: 'https://okimoto.io/',
-      twitter: 'https://twitter.com/Okimoto_Dex'
-    },
-    {
-      name: 'Unifees',
-      symbol: 'FEES',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/fees.png',
-      sale_type: 'Pre-sale',
-      sale_date: new Date('October 3, 2021, 15:00:00 UTC'),
-      tags: ['Education'],
-      website: 'https://unifees.io/',
-      twitter: 'https://twitter.com/UnifeesToken',
-      telegram: 'https://t.me/unifees'
-    },
-    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
