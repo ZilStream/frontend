@@ -9,6 +9,16 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
+      name: 'ZilAds',
+      symbol: 'ADS',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/zilads.png',
+      sale_type: 'MILO',
+      tags: ['Media'],
+      website: 'https://zilads.github.io/',
+      twitter: 'https://twitter.com/ZilliqaAds',
+      telegram: 'https://t.me/ziladschat'
+    },
+    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
