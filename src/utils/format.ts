@@ -16,11 +16,11 @@ export function numberFormat(num: number, decimals: number = 2): string {
   return num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
-export function cryptoFormat(num: number): string {
+export function cryptoFormat(num: number, decimals: number = 2): string {
   if(num % 1 === 0) {
     return num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
   } else if(num < 0.1) {
     return num.toFixed(5)
   }
-  return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  return num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }

@@ -19,8 +19,9 @@ import BigNumber from 'bignumber.js'
 import { bnOrZero } from 'utils/strings'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import GzilCountdown from 'components/GzilCountdown'
 import Tippy from '@tippyjs/react'
+import { Tab } from '@headlessui/react'
+import { classNames } from 'utils/classNames'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -100,13 +101,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       }
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center">
         <div className="flex-grow flex flex-col sm:flex-row items-center mb-1 pt-6 sm:pt-8 pb-2">
-          <div className="flex-shrink-0 flex items-center justify-center bg-gray-300 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3 mb-2 sm:mb-0">
+          <div className="flex-shrink-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3 mb-2 sm:mb-0">
             <TokenIcon url={token.icon} />
           </div>
           <div>
             <h2 className="text-center sm:text-left">{token.name}</h2>
             <div className="flex flex-col sm:flex-row items-center">
-              <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-lg sm:mr-3 mb-1 sm:mb-0 font-medium">${token.symbol}</span>
+              <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-lg sm:mr-3 mb-1 sm:mb-0 font-medium">{token.symbol}</span>
               <CopyableAddress address={token.address_bech32} showCopy={true} />
             </div>
           </div>
@@ -223,7 +224,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <div>
                 {token.rewards.map((reward: Reward) => {
                   const paymentDayDetail = reward.payment_day !== null ? (
-                    <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md text-sm">
+                    <div className="bg-white sdark:bg-gray-700 px-3 py-2 rounded-lg shadow-md text-sm">
                       Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
                     </div>
                   ) : (<></>)
@@ -271,14 +272,97 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       </div>
       
-      <div className="rounded-lg overflow-hidden shadow-md">
-        <TVChartContainer 
-          symbol={`${token.symbol}/ZIL`} 
-          interval={'240' as ResolutionString} 
-          autosize={true} 
-          fullscreen={false} 
-          theme={resolvedTheme}
-        />
+      <div className="flex items-start">
+        <div className="flex-grow">
+          <Tab.Group>
+            <Tab.List className="inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 mb-3">
+              <Tab className={({selected}) => classNames(
+                'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
+                'focus:outline-none',
+                selected
+                  ? 'bg-white shadow'
+                  : 'hover:bg-white/[0.12] hover:text-gray-600'
+              )}>Chart</Tab>
+              <Tab className={({selected}) => classNames(
+                'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
+                'focus:outline-none',
+                selected
+                  ? 'bg-white shadow'
+                  : 'hover:bg-white/[0.12] hover:text-gray-600'
+              )}>TradingView</Tab>
+              <Tab className={({selected}) => classNames(
+                'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
+                'focus:outline-none',
+                selected
+                  ? 'bg-white shadow'
+                  : 'hover:bg-white/[0.12] hover:text-gray-600'
+              )}>TVL</Tab>
+            </Tab.List>
+            <Tab.Panels>
+              <Tab.Panel>
+                Chart
+              </Tab.Panel>
+              <Tab.Panel>
+                <TVChartContainer 
+                  symbol={`${token.symbol}/ZIL`} 
+                  interval={'240' as ResolutionString} 
+                  autosize={true} 
+                  fullscreen={false} 
+                  theme={resolvedTheme}
+                />
+              </Tab.Panel>
+              <Tab.Panel>TVL</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+          {/* <div className="inline-block p-1 bg-gray-200 rounded-lg text-sm mb-3">
+            <button className="px-3 py-1 font-medium">
+              Chart
+            </button>
+            <button className="bg-white rounded-lg px-3 py-1 font-medium">
+              TradingView
+            </button>
+            <button className="px-3 py-1 font-medium">
+              TVL
+            </button>
+          </div>
+          <div className="rounded-lg overflow-hidden shadow-md">
+            <TVChartContainer 
+              symbol={`${token.symbol}/ZIL`} 
+              interval={'240' as ResolutionString} 
+              autosize={true} 
+              fullscreen={false} 
+              theme={resolvedTheme}
+            />
+          </div> */}
+        </div>
+        <div className="flex-grow-0 w-80 ml-4">
+          <div className="bg-gray-100 dark:bg-gray-800 py-4 px-5 rounded-lg">
+            <div className="text-lg font-bold mb-2">{token.symbol} Market Stats</div>
+            <table className="w-full text-sm table-auto">
+              <tbody>
+                <tr className="border-t border-b border-gray-200 dark:border-gray-900">
+                  <th scope="row" className="text-left font-normal py-3">Price</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{cryptoFormat(token.rate)} ZIL</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-900">
+                  <th scope="row" className="text-left font-normal py-3">Market Cap</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-900">
+                  <th scope="row" className="text-left font-normal py-3">Fully Diluted Market Cap</th>
+                  <td className="flex flex-col items-end py-3">
+                  <span className="font-bold">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </>
   )

@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@headlessui/react": "^1.2.0",
+    "@headlessui/react": "^1.4.1",
     "@heroicons/react": "^1.0.3",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webusb": "^6.6.0",

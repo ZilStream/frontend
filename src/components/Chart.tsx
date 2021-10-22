@@ -118,7 +118,7 @@ function Chart(props: Props) {
 
   return (
     <>
-      <div ref={ref} className="h-full" />
+      <div ref={ref} className="h-full w-full" />
     </>
   )
 }

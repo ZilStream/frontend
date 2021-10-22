@@ -13,8 +13,9 @@ import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store
 import { ListType } from 'types/list.interface'
 import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
-import { currencyFormat } from 'utils/format'
+import { cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
+import TokenIcon from 'components/TokenIcon'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -79,10 +80,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const topTokens = useMemo(() => {
-    if(!tokenState.initialized) return []
-    return tokens.filter(token => !token.bridged).sort(sortTokensByMarketCap).slice(0, 3)
-  }, [tokenState])
+  const liquidity = tokenState.tokens.reduce((sum, current) => {
+    return sum + current.current_liquidity
+  }, 0)
 
   const handleSort = (sort: SortType) => {
     if(sort === currentSort) {
@@ -223,25 +223,115 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      <div className="scrollable-table-container max-w-full overflow-x-scroll">
-        <div className="grid grid-cols-3 gap-4 mt-2" style={{minWidth: 840}}>
+      <div className="scrollable-table-container max-w-full">
+        <div className="grid grid-cols-4 gap-4 mt-2" style={{minWidth: 1200}}>
           {tokenState.initialized === false ? (
             <>
+              <LoadingChartBlock />
               <LoadingChartBlock />
               <LoadingChartBlock />
               <LoadingChartBlock />
             </>
           ) : (
             <>
-              {topTokens.map( token => {                
-                return (
-                  <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
-                    <a>
-                      <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
-                    </a>
-                  </Link>
-                )
-              })}
+              <RatesBlock
+                title="ZIL"
+                value={currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
+                subTitle={"MC $1.4B"}
+                token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
+                rates={rates.filter(rate => rate.token_id == "1")} 
+              />
+
+              <RatesBlock
+                title="TVL"
+                value={currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol, 0)}
+                subTitle={`${cryptoFormat(liquidity, 0)} ZIL`}
+                token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
+                rates={rates.filter(rate => rate.token_id == "1")} 
+              />
+
+              <div className="h-44 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+                <div className="mb-2">
+                  <div className="flex items-center text-lg -mb-1">
+                    <div className="flex-grow flex items-center">
+                      <span className="font-semibold mr-2">Highest APR</span>
+                      <span className="mr-2"></span>
+                    </div>
+                    <div>
+                      Up to 240%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 text-sm">Providing liquidity on ZilSwap</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <div>1.</div>
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy`} />
+                    </div>
+                    <div className="font-bold flex-grow">zUSDT</div>
+                    <div>240%</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div>2.</div>
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil1epq9dyctg0m5yaxeqv7ph0j532qze28psqfu8h`} />
+                    </div>
+                    <div className="font-bold flex-grow">BUTTON</div>
+                    <div>231%</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div>3.</div>
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} />
+                    </div>
+                    <div className="font-bold flex-grow">zWBTC</div>
+                    <div>229%</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-44 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+                <div className="mb-2">
+                  <div className="flex items-center text-lg -mb-1">
+                    <div className="flex-grow flex items-center">
+                      <span className="font-semibold mr-2">Bridged Assets</span>
+                      <span className="mr-2"></span>
+                    </div>
+                    <div>
+                      $10,867,566
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 text-sm">Incoming through ZilBridge</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil19j33tapjje2xzng7svslnsjjjgge930jx0w09v`} />
+                    </div>
+                    <div className="font-bold flex-grow">zETH</div>
+                    <div>$3.6M</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy`} />
+                    </div>
+                    <div className="font-bold flex-grow">zUSDT</div>
+                    <div>$3.1M</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6">
+                      <TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} />
+                    </div>
+                    <div className="font-bold flex-grow">zWBTC</div>
+                    <div>$4.0M</div>
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </div>
@@ -269,10 +359,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               onClick={() => setCurrentList(ListType.APR)}
               className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
             >Highest APR</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Unvetted)}
-              className={`${currentList == ListType.Unvetted ? 'list-btn-selected' : 'list-btn-disabled'}`}
-            >Unvetted</button>
           </div>
         </div>
       </div>
@@ -310,7 +396,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   }
                 </button>
               </th>
-              <th className="px-2 py-2 text-left bg-gray-200 dark:bg-gray-900 sticky left-0 z-10">
+              <th className="px-2 py-2 text-left sticky left-0 z-10">
                 <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Token)}>
                   Token
                   {currentSort === SortType.Token &&
