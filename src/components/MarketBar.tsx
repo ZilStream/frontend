@@ -4,7 +4,7 @@ import React from 'react'
 import { Moon } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
-import { currencyFormat } from 'utils/format'
+import { currencyFormat, numberFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 import CurrencyPopover from './CurrencyPopover'
@@ -38,17 +38,25 @@ const MarketBar = () => {
         <div className="overflow-x-auto flex-grow scrollable-table-container">
           <div className="flex items-center" style={{minWidth: '740px'}}>
             <div className="flex items-center mr-4">
-              <span className="text-gray-400 mr-2">ZIL:</span>
+              <span className="text-gray-400 mr-1">ZIL:</span>
               <span>{currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}</span>
             </div>
             <div className="flex items-center mr-4">
-              <span className="text-gray-400 mr-2">Market Cap:</span>
+              <span className="text-gray-400 mr-1">Tokens:</span>
+              <Link href="/">
+                <a className="font-normal hover:underline">
+                  <span>{numberFormat(tokenState.tokens.length, 0)}</span>
+                </a>
+              </Link>
+            </div>
+            <div className="flex items-center mr-4">
+              <span className="text-gray-400 mr-1">Market Cap:</span>
               <span>{currencyFormat(marketCap, selectedCurrency.symbol)}</span>
             </div>
             <div className="flex items-center mr-4">
-              <span className="text-gray-400 mr-2">TVL:</span>
+              <span className="text-gray-400 mr-1">TVL:</span>
               <Link href="/liquidity">
-                <a className="font-normal">
+                <a className="font-normal hover:underline">
                   <span>{currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol)}</span>
                   <span className="mx-1">-</span>
                   <span>{currencyFormat(liquidity, '')} ZIL</span>
@@ -56,7 +64,7 @@ const MarketBar = () => {
               </Link>
             </div>
             <div className="flex items-center">
-              <span className="text-gray-400 mr-2">Volume (24h):</span>
+              <span className="text-gray-400 mr-1">Volume (24h):</span>
               <span>{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol)}</span>
             </div>
           </div>

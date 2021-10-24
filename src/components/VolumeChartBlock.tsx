@@ -1,0 +1,65 @@
+import getTVL from 'lib/zilstream/getTVL'
+import dynamic from 'next/dynamic'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
+import { cryptoFormat, currencyFormat } from 'utils/format'
+
+const Chart = dynamic(
+  () => import('components/Chart'),
+  { ssr: false }
+)
+
+const VolumeChartBlock = () => {
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const [tvl, setTVL] = useState<{time: string, value: number}[]>([])
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+
+  const volume = tokenState.tokens.reduce((sum, current) => {
+    return sum + current.daily_volume
+  }, 0)
+
+  useEffect(() => {
+    fetchTVL()
+  }, [])
+
+  const fetchTVL = async () => {
+    const response = await getTVL()
+    setTVL(response)
+  }
+
+  const lastRate = tvl.length > 0 ? tvl[0].value : 0
+  const firstRate = tvl.length > 0 ? tvl[tvl.length-1].value : 0
+
+  const change = ((lastRate - firstRate) / firstRate) * 100
+  const changeRounded = Math.round(change * 100) / 100
+
+  return (
+    <div className="h-44 rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+      <div className="absolute top-0 left-0 w-full pt-2 px-3">
+        <div className="flex items-center text-lg">
+          <div className="flex-grow flex items-center">
+            <span className="font-semibold mr-2">Volume</span>
+            <span className="mr-2">{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+          </div>
+          {!isNaN(changeRounded) &&
+            <div className={change >= 0 ? 'positive-change' : 'negative-change'}>
+              {changeRounded} %
+            </div>
+          }
+        </div>
+        <div>
+          <span className="text-gray-400">{cryptoFormat(volume, 0)} ZIL</span>
+        </div>
+      </div>
+      <div className="h-full w-full pt-10">
+        {tvl.length > 0 &&
+          <Chart data={tvl} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
+        }
+      </div>
+    </div>
+  )
+}
+
+export default VolumeChartBlock

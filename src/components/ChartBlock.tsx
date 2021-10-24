@@ -1,11 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
-import { Token } from 'types/token.interface'
-import { currencyFormat } from 'utils/format'
-import FlashChange from './FlashChange'
-import { Currency, CurrencyState, RootState, TokenInfo } from 'store/types'
-import { useSelector } from 'react-redux'
+import { TokenInfo } from 'store/types'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -22,14 +18,9 @@ interface Props {
 }
 
 const RatesBlock = (props: Props) => {
-  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
-  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
-
   const sortedRates = props.rates ? props.rates.sort((a,b) => (a.time < b.time) ? 1 : -1) : []
   const lastRate = sortedRates && sortedRates.length > 0 ? sortedRates[0].value : 0
   const firstRate = sortedRates && sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
-  const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
-  const fiatRate = lastRate * selectedCurrency.rate
 
   const change = ((lastRate - firstRate) / firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100

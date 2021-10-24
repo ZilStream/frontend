@@ -3,13 +3,13 @@ import { createChart, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightwei
 import { Rate } from 'types/rate.interface';
 
 interface Props {
-  data: Rate[]
+  data: {time: string, value: number}[],
   isIncrease: boolean,
   isUserInteractionEnabled: boolean,
   isScalesEnabled: boolean,
 }
 
-interface ChartDataPoint {
+export interface ChartDataPoint {
   time: Time,
   value: number,
 }
@@ -59,7 +59,7 @@ function Chart(props: Props) {
           },
         },
       })
-      
+
       var data: ChartDataPoint[] = [];
 
       props.data.forEach(rate => {
@@ -77,8 +77,8 @@ function Chart(props: Props) {
         priceLineVisible: false,
         autoscaleInfoProvider: () => ({
           priceRange: {
-              minValue: Math.min(...data.map(item => item.value)),
-              maxValue: Math.max(...data.map(item => item.value)),
+              minValue: Math.min(...props.data.map(item => item.value)),
+              maxValue: Math.max(...props.data.map(item => item.value)),
           },
         }),
       });
@@ -100,6 +100,7 @@ function Chart(props: Props) {
         value: rate.value
       })
     })
+
     series?.setData(data)
     chart?.timeScale().fitContent()
   }, [props.data])

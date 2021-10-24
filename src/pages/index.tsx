@@ -7,7 +7,7 @@ import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertCircle, Triangle } from 'react-feather'
+import { AlertCircle, ChevronDown, Sliders, Star, Tool, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
@@ -16,6 +16,8 @@ import { Rate } from 'types/rate.interface'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import TokenIcon from 'components/TokenIcon'
+import TVLChartBlock from 'components/TVLChartBlock'
+import VolumeChartBlock from 'components/VolumeChartBlock'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -80,9 +82,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const liquidity = tokenState.tokens.reduce((sum, current) => {
-    return sum + current.current_liquidity
-  }, 0)
+  const aprTokens = tokens.filter(token => token.unvetted === false).sort((a: TokenInfo, b: TokenInfo) => {
+    if(!a.apr || !b.apr) return -1
+    return a.apr.isLessThan(b.apr) ? 1 : -1
+  }).slice(0,3)
 
   const handleSort = (sort: SortType) => {
     if(sort === currentSort) {
@@ -242,13 +245,17 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 rates={rates.filter(rate => rate.token_id == "1")} 
               />
 
-              <RatesBlock
-                title="TVL"
-                value={currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol, 0)}
-                subTitle={`${cryptoFormat(liquidity, 0)} ZIL`}
-                token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
-                rates={rates.filter(rate => rate.token_id == "1")} 
-              />
+              <Link href="/liquidity">
+                <a>
+                  <TVLChartBlock />
+                </a>
+              </Link>
+
+              <Link href="/liquidity">
+                <a>
+                  <VolumeChartBlock />
+                </a>
+              </Link>
 
               <div className="h-44 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
                 <div className="mb-2">
@@ -258,78 +265,26 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                       <span className="mr-2"></span>
                     </div>
                     <div>
-                      Up to 240%
+                      {aprTokens.length > 0 &&
+                        <>Up to {aprTokens[0].apr?.toNumber().toFixed(0)}%</>
+                      }
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-sm">Providing liquidity on ZilSwap</span>
+                    <span className="text-gray-400 text-sm">By providing liquidity on ZilSwap</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-3 text-sm">
-                  <div className="flex items-center gap-3">
-                    <div>1.</div>
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy`} />
+                  {aprTokens.map((token, index) => (
+                    <div className="flex items-center gap-3">
+                      <div>{index+1}.</div>
+                      <div className="w-6 h-6">
+                        <TokenIcon address={token.address_bech32} />
+                      </div>
+                      <div className="font-medium flex-grow">{token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol}</span></div>
+                      <div>{token.apr?.toNumber()}%</div>
                     </div>
-                    <div className="font-bold flex-grow">zUSDT</div>
-                    <div>240%</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div>2.</div>
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil1epq9dyctg0m5yaxeqv7ph0j532qze28psqfu8h`} />
-                    </div>
-                    <div className="font-bold flex-grow">BUTTON</div>
-                    <div>231%</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div>3.</div>
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} />
-                    </div>
-                    <div className="font-bold flex-grow">zWBTC</div>
-                    <div>229%</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="h-44 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
-                <div className="mb-2">
-                  <div className="flex items-center text-lg -mb-1">
-                    <div className="flex-grow flex items-center">
-                      <span className="font-semibold mr-2">Bridged Assets</span>
-                      <span className="mr-2"></span>
-                    </div>
-                    <div>
-                      $10,867,566
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 text-sm">Incoming through ZilBridge</span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-3 text-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil19j33tapjje2xzng7svslnsjjjgge930jx0w09v`} />
-                    </div>
-                    <div className="font-bold flex-grow">zETH</div>
-                    <div>$3.6M</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy`} />
-                    </div>
-                    <div className="font-bold flex-grow">zUSDT</div>
-                    <div>$3.1M</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6">
-                      <TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} />
-                    </div>
-                    <div className="font-bold flex-grow">zWBTC</div>
-                    <div>$4.0M</div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </>
@@ -338,27 +293,42 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       </div>
       <div className="token-order-list">
         <div className="flex items-center" style={{minWidth: '380px'}}>
-          <div className="flex-grow flex items-center">
-            <button 
-              onClick={() => setCurrentList(ListType.Ranking)}
-              className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Ranking</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Native)}
-              className={`${currentList == ListType.Native ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Native</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Bridged)}
-              className={`${currentList == ListType.Bridged ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Bridged</button>
-            <button 
-              onClick={() => setCurrentList(ListType.Favorites)}
-              className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'list-btn'} mr-1`}
-            >Favorited</button>
-            <button 
-              onClick={() => setCurrentList(ListType.APR)}
-              className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
-            >Highest APR</button>
+          <div className="flex-grow flex items-stretch">
+            <div className="flex items-center border-r border-gray-800 pr-3 mr-3">
+              <button 
+                onClick={() => setCurrentList(ListType.Favorites)}
+                className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3'}`}
+              ><Star size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Favorites</button>
+            </div>
+            <div className="flex items-stretch">
+              <button 
+                onClick={() => setCurrentList(ListType.Ranking)}
+                className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
+              >Ranking</button>
+              <button 
+                onClick={() => setCurrentList(ListType.Native)}
+                className={`${currentList == ListType.Native ? 'list-btn-selected' : 'list-btn'} mr-1`}
+              >Native</button>
+              <button 
+                onClick={() => setCurrentList(ListType.Bridged)}
+                className={`${currentList == ListType.Bridged ? 'list-btn-selected' : 'list-btn'} mr-1`}
+              >Bridged</button>
+              <button 
+                onClick={() => setCurrentList(ListType.APR)}
+                className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
+              >Highest APR</button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+              50 <ChevronDown size={12} className="ml-1 text-gray-500 dark:text-gray-400" />
+            </button>
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+              <Sliders size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Filters
+            </button>
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+              <Tool size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Customize
+            </button>
           </div>
         </div>
       </div>

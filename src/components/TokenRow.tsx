@@ -98,7 +98,7 @@ const TokenRow = (props: Props) => {
 
               {dayjs(props.token.last_vote_start).isBefore(dayjs()) && dayjs(props.token.last_vote_end).isAfter(dayjs()) &&
                 <Link href={`/vote/${props.token.symbol.toLowerCase()}/${props.token.last_vote_hash}`}>
-                  <a className="text-xs bg-primary rounded-full px-2 ml-2 font-medium" style={{paddingTop: 1, paddingBottom: 1}}>Vote</a>
+                  <span className="text-xs bg-primary rounded-full px-2 ml-2 font-medium cursor-pointer" style={{paddingTop: 1, paddingBottom: 1}}>Vote</span>
                 </Link>
               }
             </div>

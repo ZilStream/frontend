@@ -48,7 +48,7 @@ body, #__next {
   }
 
   .container {
-    max-width: 1300px;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
   }
@@ -82,7 +82,7 @@ body, #__next {
   }
 
   .token-order-list {
-    @apply py-3 mt-8 mb-3 border-b border-gray-300 dark:border-gray-800 text-sm overflow-x-scroll sm:overflow-x-auto;
+    @apply py-3 mt-8 mb-3 border-b border-gray-200 dark:border-gray-800 text-sm overflow-x-scroll sm:overflow-x-auto;
     -ms-overflow-style: none;
     scrollbar-width: none; 
   }
