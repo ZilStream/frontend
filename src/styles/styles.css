@@ -119,6 +119,10 @@ body, #__next {
     @apply text-primaryDark underline;
   }
 
+  .proposal pre {
+    @apply text-primaryDark max-w-2xl underline whitespace-pre-wrap;
+  }
+
   .zilstream-table {
     @apply min-w-full;
   }
