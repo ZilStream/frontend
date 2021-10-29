@@ -22,7 +22,10 @@ function VoteTokenDetail() {
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
     const newSpaces = Object.values(spacesRes)
-    setSpace(newSpaces.filter(s => s.symbol.toLowerCase() === symbol)[0])
+    Object.keys(spacesRes).forEach((key, index) => {
+      newSpaces[index].slug = key
+    })
+    setSpace(newSpaces.filter(s => s.slug.toLowerCase() === symbol)[0])
   }
 
   async function getProposals() {

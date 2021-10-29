@@ -252,7 +252,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
           <Supply token={token} />
 
-          {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX') &&
+          {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX-V2' || token.symbol === 'NFTDEX') &&
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Compound Token</div>
               <div className="text-sm">Compound tokens consist of other ZRC-2 tokens, more information on the <a href="https://zilall.com/" className="hover:underline">ZILALL website</a>.</div>

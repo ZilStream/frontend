@@ -35,14 +35,6 @@ function Calendar() {
       telegram: 'https://t.me/coraltribe'
     },
     {
-      name: 'News',
-      symbol: 'NEWS',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/news.png',
-      tags: ['Media'],
-      website: 'https://reviewcapital.org',
-      telegram: 'https://t.me/RECAPCommunity'
-    },
-    {
       name: 'FIAT',
       symbol: 'HOL',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/hol.png',

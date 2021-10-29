@@ -45,7 +45,10 @@ function VoteProposal() {
   async function getSpace() {
     const spacesRes = await getGovernanceSpaces()
     const newSpaces = Object.values(spacesRes)
-    setSpace(newSpaces.filter(s => s.symbol.toLowerCase() === symbol)[0])
+    Object.keys(spacesRes).forEach((key, index) => {
+      newSpaces[index].slug = key
+    })
+    setSpace(newSpaces.filter(s => s.slug.toLowerCase() === symbol)[0])
   }
 
   async function getSnapshot() {
@@ -75,7 +78,8 @@ function VoteProposal() {
   }
 
   async function findToken() {
-    const tokens = tokenState.tokens.filter(t => t.symbol.toLowerCase() === symbol as string)
+    const tokens = tokenState.tokens.filter(t => t.symbol.toLowerCase() === space?.symbol.toLowerCase() as string)
+    console.log(tokens, space)
     if(tokens.length > 0) {
       setToken(tokens[0])
     }
@@ -84,10 +88,14 @@ function VoteProposal() {
   useEffect(() => {
     if(symbol === undefined || hash === undefined || !tokenState.initialized) return
 
-    findToken()
     getSpace()
-    getSnapshot()
   }, [symbol, hash, tokenState])
+
+  useEffect(() => {
+    if(!space) return
+    findToken()
+    getSnapshot()
+  }, [space])
   
 
   useMemo(() => {
@@ -140,8 +148,8 @@ function VoteProposal() {
             <div className="flex flex-col">
               <Link href={`/vote/${space?.symbol.toLowerCase()}`}>
                 <a className="font-normal">
-                  <div className="font-semibold">{token?.name}</div>
-                  <div>{token?.symbol}</div>
+                  <div className="font-semibold">{space?.name}</div>
+                  <div>{space?.symbol}</div>
                 </a>
               </Link>
             </div>
