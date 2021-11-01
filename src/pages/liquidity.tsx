@@ -32,10 +32,10 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
   const zwapTokens = tokenState.tokens.filter(token => token.symbol === 'ZWAP')
   const zwapToken: TokenInfo|null = zwapTokens[0] ?? null
 
-  const [minimumLiquidity, setMinimumLiquidity] = useState<number>(500000)
-  const [liquidityFactor, setLiquidityFactor] = useState<number>(3000000)
+  const [minimumLiquidity, setMinimumLiquidity] = useState<number>(3000000)
+  const [liquidityFactor, setLiquidityFactor] = useState<number>(3500000)
   const [volumeFactor, setVolumeFactor] = useState<number>(0.01)
-  const [maxAP, setMaxAP] = useState<number>(5)
+  const [maxAP, setMaxAP] = useState<number>(8)
 
   tokens.forEach(token => {
     if(token.symbol === 'ZWAP') {
