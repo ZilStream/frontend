@@ -329,15 +329,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      {currentList == ListType.Unvetted &&
-        <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row mb-6">
-          <AlertCircle className="mb-2 sm:mr-3" />
-          <div>
-            <div className="font-medium">Unvetted tokens, be extra cautious</div>
-            <div className="text-sm">Unvetted tokens are not screened or audited by ZilStream. Please verify the legitimacy of these tokens yourself.</div>
-          </div>
-        </div>
-      }
       <div className="scrollable-table-container max-w-full overflow-x-scroll relative">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
