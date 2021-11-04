@@ -81,7 +81,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   const topTokens = useMemo(() => {
     if(!tokenState.initialized) return []
-    return tokens.filter(token => !token.bridged).sort(sortTokensByMarketCap).slice(0, 3)
+    return tokens.filter(token => !token.bridged && token.symbol !== 'ZIL').sort(sortTokensByMarketCap).slice(0, 3)
   }, [tokenState])
 
   const handleSort = (sort: SortType) => {
