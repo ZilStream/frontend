@@ -24,3 +24,8 @@ export function cryptoFormat(num: number, decimals: number = 2): string {
   }
   return num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
+
+export function compactFormat(num: number, symbol: string = "$"): string {
+  let formatter = Intl.NumberFormat('en', { notation: 'compact' })
+  return symbol + formatter.format(num)
+}

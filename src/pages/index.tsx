@@ -13,7 +13,7 @@ import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store
 import { ListType } from 'types/list.interface'
 import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
-import { cryptoFormat, currencyFormat } from 'utils/format'
+import { compactFormat, cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import TokenIcon from 'components/TokenIcon'
 import TVLChartBlock from 'components/TVLChartBlock'
@@ -44,12 +44,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return tokenState.tokens.sort(sortTokensByMarketCap)
   }, [tokenState])
 
+  const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
+
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   
   useEffect(() => {
     if(tokens.length === 0) return
 
-    const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
     const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
     const firstRate = zilRates[zilRates.length - 1].value
     const lastRate = zilRates[0].value
@@ -240,7 +241,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <RatesBlock
                 title="ZIL"
                 value={currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
-                subTitle={"MC $1.4B"}
+                subTitle={`MC ${compactFormat(zilToken.current_supply * selectedCurrency.rate)}`}
                 token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
                 rates={rates.filter(rate => rate.token_id == "1")} 
               />
@@ -298,23 +299,15 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <button 
                 onClick={() => setCurrentList(ListType.Favorites)}
                 className={`${currentList == ListType.Favorites ? 
-                  'flex items-center bg-primary rounded-lg text-xs font-semibold py-2 px-3' : 
-                  'flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3'}`}
-              ><Star size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Favorites</button>
+                  'flex items-center bg-primary rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none' : 
+                  'flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none'}`}
+              ><Star size={12} className={`mr-1 ${currentList == ListType.Favorites ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'}`} /> Favorites</button>
             </div>
             <div className="flex items-stretch">
               <button 
                 onClick={() => setCurrentList(ListType.Ranking)}
                 className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
               >Ranking</button>
-              <button 
-                onClick={() => setCurrentList(ListType.Native)}
-                className={`${currentList == ListType.Native ? 'list-btn-selected' : 'list-btn'} mr-1`}
-              >Native</button>
-              <button 
-                onClick={() => setCurrentList(ListType.Bridged)}
-                className={`${currentList == ListType.Bridged ? 'list-btn-selected' : 'list-btn'} mr-1`}
-              >Bridged</button>
               <button 
                 onClick={() => setCurrentList(ListType.APR)}
                 className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
