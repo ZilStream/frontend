@@ -111,14 +111,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
     var tokensToDisplay = tokens
 
-    if(currentList == ListType.Unvetted) {
-      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === true)
-    } else if(currentList == ListType.Favorites) {
+    if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
-    } else if(currentList == ListType.Native) {
-      tokensToDisplay = tokensToDisplay.filter(token => token.bridged === false && token.unvetted === false)
-    } else if(currentList == ListType.Bridged) {
-      tokensToDisplay = tokensToDisplay.filter(token => token.bridged === true)
     } else if(currentList == ListType.APR) {
       tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     } else {
@@ -306,22 +300,30 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <div className="flex items-stretch">
               <button 
                 onClick={() => setCurrentList(ListType.Ranking)}
-                className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-1`}
+                className={`${currentList == ListType.Ranking ? 'list-btn-selected' : 'list-btn'} mr-2`}
               >Ranking</button>
               <button 
+                onClick={() => setCurrentList(ListType.DeFi)}
+                className={`${currentList == ListType.DeFi ? 'list-btn-selected' : 'list-btn'} mr-2`}
+              >DeFi</button>
+              <button 
+                onClick={() => setCurrentList(ListType.NFT)}
+                className={`${currentList == ListType.NFT ? 'list-btn-selected' : 'list-btn'} mr-2`}
+              >NFT</button>
+              <button 
                 onClick={() => setCurrentList(ListType.APR)}
-                className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-1 whitespace-nowrap`}
+                className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-2 whitespace-nowrap`}
               >Highest APR</button>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               50 <ChevronDown size={12} className="ml-1 text-gray-500 dark:text-gray-400" />
             </button>
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               <Sliders size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Filters
             </button>
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3">
+            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               <Tool size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Customize
             </button>
           </div>
