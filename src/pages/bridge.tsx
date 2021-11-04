@@ -9,27 +9,29 @@ import { toBech32Address, fromBech32Address } from '@zilliqa-js/zilliqa'
 import BigNumber from 'bignumber.js'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import { useSelector } from 'react-redux'
-import { RootState, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
 
 const Bridge = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
-  const tokens = tokenState.tokens.filter(token => token.symbol === 'zETH' || token.symbol === 'zUSDT' || token.symbol === 'zWBTC')
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+
+  const [bridgeTokens, setBridgeTokens] = useState<TokenInfo[]>([])
 
   // Making this conveluted because ugh 
-  const [ethSupply, setEthSupply] = useState<number>(0)
-  const [usdtSupply, setUsdtSupply] = useState<number>(0)
-  const [wbtcSupply, setWbtcSupply] = useState<number>(0)
-
-  const [ethPrice, setEthPrice] = useState<number>(0)
-  const [usdtPrice, setUsdtPrice] = useState<number>(0)
-  const [wbtcPrice, setWbtcPrice] = useState<number>(0)
+  const [supplies, setSupplies] = useState<{[id: string]: number}>({
+    XCAD: 0,
+    zETH: 0,
+    zWBTC: 0,
+    zUSDT: 0,
+  })
 
   const zilliqa = new Zilliqa('https://api.zilliqa.com')
 
   useEffect(() => {
-    if(!tokenState.initialized || tokens.length === 0) return
+    if(!tokenState.initialized) return
+    setBridgeTokens(tokenState.tokens.filter(token => token.symbol === 'XCAD' || token.symbol === 'zETH' || token.symbol === 'zUSDT' || token.symbol === 'zWBTC'))
     fetchAssets()
-    fetchPrices()
   }, [tokenState.initialized])
 
   const fetchAssets = async () => {
@@ -40,45 +42,33 @@ const Bridge = () => {
     ])
 
     const result: any[] = response.batch_result
-    setUsdtSupply(toBigNumber(result[0].result.total_supply).times(Math.pow(10, -6)).toNumber())
-    setEthSupply(toBigNumber(result[1].result.total_supply).times(Math.pow(10, -18)).toNumber())
-    setWbtcSupply(toBigNumber(result[2].result.total_supply).times(Math.pow(10, -8)).toNumber())
-  }
 
-  const fetchPrices = async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,ethereum&vs_currencies=usd')
-    const json = await response.json()
+    const assets = await getBridgeAssets("1", "500000000")
 
-    Object.keys(json).forEach(name => {
-      if(name === 'tether') {
-        setUsdtPrice(json[name].usd)
-      } else if(name === 'ethereum') {
-        setEthPrice(json[name].usd)
-      } else if(name === 'bitcoin') {
-        setWbtcPrice(json[name].usd)
-      }
+    setSupplies({
+      XCAD: assets.assets.filter(asset => asset.symbol === 'XCAD')[0].amount,
+      zETH: toBigNumber(result[1].result.total_supply).times(Math.pow(10, -18)).toNumber(),
+      zWBTC: toBigNumber(result[2].result.total_supply).times(Math.pow(10, -8)).toNumber(),
+      zUSDT: toBigNumber(result[0].result.total_supply).times(Math.pow(10, -6)).toNumber(),
     })
   }
 
   useInterval(async () => {
       fetchAssets()
-      fetchPrices()
-    },
-    50000
-  )
+  }, 50000)
 
   const totalValue = useMemo(() => {
     var value = 0
-    value += ethSupply * ethPrice
-    value += usdtSupply * usdtPrice
-    value += wbtcSupply * wbtcPrice
+    bridgeTokens.forEach(token => {
+      value += supplies[token.symbol] * token.rate
+    })
     return value
-  }, [ethSupply, usdtSupply, wbtcSupply, ethPrice, usdtPrice, wbtcPrice])
+  }, [supplies])
 
-  if(!tokenState.initialized || tokens.length === 0) {
+  if(bridgeTokens.length === 0) {
     return <div></div>
   }
-
+  
   return (
     <>  
       <Head>
@@ -93,7 +83,7 @@ const Bridge = () => {
         </div>
         <div className="mt-12 flex flex-col items-center">
           <div className="font-bold mb-2">Total incoming asset value:</div>
-          <div className="bg-white dark:bg-gray-800 py-4 px-8 rounded-lg font-bold text-4xl">{currencyFormat(totalValue, '$', 0)}</div>
+          <div className="bg-white dark:bg-gray-800 py-4 px-8 rounded-lg font-bold text-4xl">{currencyFormat(totalValue * selectedCurrency.rate, selectedCurrency.symbol, 0)}</div>
         </div>
         <div className="scrollable-table-container max-w-2xl mx-auto overflow-x-scroll mt-10">
           <table className="zilstream-table table-fixed border-collapse">
@@ -110,57 +100,32 @@ const Bridge = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="text-lg border-b dark:border-gray-700 last:border-b-0">
-                <td className={`pl-4 pr-2 py-3 font-medium whitespace-nowrap rounded-tl-lg`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      <TokenIcon address={`zil19j33tapjje2xzng7svslnsjjjgge930jx0w09v`} />
-                    </div>
-                    <div className="font-bold">zETH</div>
-                  </div>
-                </td>
-                <td className="px-2 py-3 font-normal text-right">
-                  {cryptoFormat(ethSupply)} <span className="font-semibold">ETH</span>
-                  
-                </td>
-                <td className={`px-2 py-3 font-normal text-right rounded-tr-lg`}>
-                  {currencyFormat(ethSupply * ethPrice, '$', 0)}
-                </td>
-              </tr>
-              <tr className="text-lg border-b dark:border-gray-700 last:border-b-0">
-                <td className={`pl-4 pr-2 py-3 font-medium whitespace-nowrap`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      <TokenIcon address={`zil1sxx29cshups269ahh5qjffyr58mxjv9ft78jqy`} />
-                    </div>
-                    <div className="font-bold">zUSDT</div>
-                  </div>
-                </td>
-                <td className="px-2 py-3 font-normal text-right">
-                  {cryptoFormat(usdtSupply)} <span className="font-semibold">zUSDT</span>
-                  
-                </td>
-                <td className={`px-2 py-3 font-normal text-right`}>
-                  {currencyFormat(usdtSupply * usdtPrice, '$', 0)}
-                </td>
-              </tr>
-              <tr className="text-lg border-b dark:border-gray-700 last:border-b-0">
-                <td className={`pl-4 pr-2 py-3 font-medium whitespace-nowrap rounded-bl-lg`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      <TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} />
-                    </div>
-                    <div className="font-bold">zWBTC</div>
-                  </div>
-                </td>
-                <td className="px-2 py-3 font-normal text-right">
-                  {cryptoFormat(wbtcSupply)} <span className="font-semibold">zWBTC</span>
-                  
-                </td>
-                <td className={`px-2 py-3 font-normal text-right rounded-br-lg`}>
-                  {currencyFormat(wbtcSupply * wbtcPrice, '$', 0)}
-                </td>
-              </tr>
+              {bridgeTokens.sort((a,b) => {
+                const aValue = supplies[a.symbol] * a.rate
+                const bValue = supplies[b.symbol] * b.rate
+                return aValue > bValue ? -1 : 1
+              }).map((token, index) => {
+                const value = supplies[token.symbol] * token.rate
+                return (
+                  <tr key={token.address_bech32} className="text-lg border-b dark:border-gray-700 last:border-b-0">
+                    <td className={`pl-4 pr-2 py-3 font-medium whitespace-nowrap ${index === 0 ? 'rounded-tl-lg' : ''} ${index === bridgeTokens.length-1 ? 'rounded-bl-lg' : ''}`}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8">
+                          <TokenIcon address={token.address_bech32} />
+                        </div>
+                        <div className="font-bold">{token.symbol}</div>
+                      </div>
+                    </td>
+                    <td className="px-2 py-3 font-normal text-right">
+                      {cryptoFormat(supplies[token.symbol])} <span className="font-semibold">{token.symbol}</span>
+                      
+                    </td>
+                    <td className={`px-2 py-3 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === bridgeTokens.length-1 ? 'rounded-br-lg' : ''}`}>
+                      {currencyFormat(value * selectedCurrency.rate, selectedCurrency.symbol, 0)}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
