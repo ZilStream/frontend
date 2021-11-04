@@ -297,7 +297,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <div className="flex items-center border-r border-gray-800 pr-3 mr-3">
               <button 
                 onClick={() => setCurrentList(ListType.Favorites)}
-                className={`${currentList == ListType.Favorites ? 'list-btn-selected' : 'flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3'}`}
+                className={`${currentList == ListType.Favorites ? 
+                  'flex items-center bg-primary rounded-lg text-xs font-semibold py-2 px-3' : 
+                  'flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3'}`}
               ><Star size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Favorites</button>
             </div>
             <div className="flex items-stretch">

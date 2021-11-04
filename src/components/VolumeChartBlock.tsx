@@ -1,4 +1,4 @@
-import getTVL from 'lib/zilstream/getTVL'
+import getVolume from 'lib/zilstream/getVolume'
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -21,11 +21,11 @@ const VolumeChartBlock = () => {
   }, 0)
 
   useEffect(() => {
-    fetchTVL()
+    fetchVolume()
   }, [])
 
-  const fetchTVL = async () => {
-    const response = await getTVL()
+  const fetchVolume = async () => {
+    const response = await getVolume()
     setTVL(response)
   }
 
