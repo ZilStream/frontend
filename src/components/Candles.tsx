@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { createChart, CrosshairMode, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
 import { Rate } from 'types/rate.interface';
-import { TokenDetail } from 'types/token.interface';
 import { useTheme } from 'next-themes';
 import getRatesForToken from 'lib/zilstream/getRatesForToken';
+import { Token } from 'store/types';
 
 interface Props {
-  token: TokenDetail
+  token: Token
   data: Rate[]
   zilRate: Rate
 }

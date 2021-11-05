@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
-import { Token } from 'types/token.interface'
 import { currencyFormat } from 'utils/format'
 import TokenIcon from './TokenIcon'
 import FlashChange from './FlashChange'
 import Link from 'next/link'
-import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, Token } from 'store/types'
 import { useDispatch, useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { getTokenAPR } from 'utils/apr'
@@ -20,7 +19,7 @@ const Chart = dynamic(
 )
 
 interface Props {
-  token: TokenInfo,
+  token: Token,
   rates: Rate[],
   rank: number,
   index: number
@@ -44,8 +43,8 @@ const TokenRow = (props: Props) => {
   const changeRounded = Math.round(change * 100) / 100
 
   const marketCap = props.token.current_supply * fiatRate
-  const usdVolume = props.token.daily_volume * selectedCurrency.rate
-  const currentLiquidity = props.token.current_liquidity * selectedCurrency.rate
+  const usdVolume = props.token.market_data.daily_volume_zil * selectedCurrency.rate
+  const currentLiquidity = props.token.market_data.current_liquidity_zil * selectedCurrency.rate
 
   const onFavorited = () => {
     const favoritesString = localStorage.getItem('favorites') ?? ''

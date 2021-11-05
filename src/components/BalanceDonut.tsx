@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import React from 'react'
-import { Operator, TokenInfo } from 'store/types'
+import { Operator, Token } from 'store/types'
 import { BIG_ZERO } from 'utils/strings'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 
@@ -12,7 +12,7 @@ const ReactApexChart = dynamic(
 )
 
 interface Props {
-  tokens: TokenInfo[]
+  tokens: Token[]
   operators: Operator[]
 }
 

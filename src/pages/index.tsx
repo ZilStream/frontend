@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { AlertCircle, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, Token, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
@@ -30,7 +30,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
-  const [displayedTokens, setDisplayedTokens] = useState<TokenInfo[]>([])
+  const [displayedTokens, setDisplayedTokens] = useState<Token[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [currentSort, setCurrentSort] = useState<SortType>(SortType.Default)
   const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Ascending)
@@ -47,7 +47,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     if(tokens.length === 0) return
 
     const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
-    const zilRates = rates.filter(rate => rate.token_id == zilToken.id)
+    const zilRates = rates.filter(rate => rate.token_id == zilToken.id.toString())
     const firstRate = zilRates[zilRates.length - 1].value
     const lastRate = zilRates[0].value
     const change = ((lastRate - firstRate) / firstRate) * 100
@@ -72,7 +72,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     30000
   )
 
-  const sortTokensByMarketCap = (a: TokenInfo, b: TokenInfo) => {
+  const sortTokensByMarketCap = (a: Token, b: Token) => {
     const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
     const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
 
@@ -122,12 +122,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     }
 
     if(currentList === ListType.APR) {
-      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+      tokensToDisplay.sort((a: Token, b: Token) => {
         if(!a.apr || !b.apr) return -1
         return a.apr.isLessThan(b.apr) ? 1 : -1
       })
     } else if(currentSort === SortType.Default) {
-      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+      tokensToDisplay.sort((a: Token, b: Token) => {
         const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
         const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
     
@@ -152,12 +152,12 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       })
     } else if(currentSort === SortType.Change) {
       tokensToDisplay.sort((a,b) => {
-        const priorRates = rates.filter(rate => rate.token_id == a.id)
+        const priorRates = rates.filter(rate => rate.token_id == a.id.toString())
         const priorLastRate = priorRates.length > 0 ? priorRates[0].value : 0
         const priorFirstRate = priorRates.length > 0 ? priorRates[priorRates.length-1].value : 0
         const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
 
-        const nextRates = rates.filter(rate => rate.token_id == b.id)
+        const nextRates = rates.filter(rate => rate.token_id == b.id.toString())
         const nextLastRate = nextRates.length > 0 ? nextRates[0].value : 0
         const nextFirstRate = nextRates.length > 0 ? nextRates[nextRates.length-1].value : 0
         const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
@@ -182,7 +182,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         return (a.current_liquidity < b.current_liquidity) ? 1 : -1
       })
     } else {
-      tokensToDisplay.sort((a: TokenInfo, b: TokenInfo) => {
+      tokensToDisplay.sort((a: Token, b: Token) => {
         const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
         const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
     
@@ -237,7 +237,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 return (
                   <Link key={token.id} href={`/tokens/${token.symbol.toLowerCase()}`}>
                     <a>
-                      <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id)} />
+                      <RatesBlock token={token} rates={rates.filter(rate => rate.token_id == token.id.toString())} />
                     </a>
                   </Link>
                 )
@@ -383,7 +383,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   token={token}
                   rank={index+1}
                   index={index}
-                  rates={rates.filter(rate => rate.token_id == token.id)} 
+                  rates={rates.filter(rate => rate.token_id == token.id.toString())} 
                   isLast={displayedTokens.filter(token => token.symbol != 'ZIL').length === index+1}
                   showAPR={currentList === ListType.APR}
                 />

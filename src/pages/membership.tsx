@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccountState, Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, Currency, CurrencyState, RootState, Token, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import TokenIcon from 'components/TokenIcon'
@@ -18,7 +18,7 @@ function Membership() {
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   const streamTokens = tokenState.tokens.filter(token => token.isStream)
-  const streamToken: TokenInfo|null = streamTokens[0] ?? null
+  const streamToken: Token|null = streamTokens[0] ?? null
 
   return (
     <>

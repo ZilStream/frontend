@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, StakingState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, StakingState, Token, TokenState } from 'store/types'
 import { BIG_ZERO } from './strings'
 import { toBigNumber } from './useMoneyFormatter'
 
@@ -35,7 +35,7 @@ export default function useBalances() {
       }
     }
     const streamTokens = tokenState.tokens.filter(token => token.isStream)
-    const streamToken: TokenInfo|null = streamTokens[0] ?? null
+    const streamToken: Token|null = streamTokens[0] ?? null
     var streamBalance = new BigNumber(0)
     var streamBalanceUSD = new BigNumber(0)
     var streamBalanceZIL = new BigNumber(0)

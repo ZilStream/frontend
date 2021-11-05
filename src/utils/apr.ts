@@ -1,9 +1,9 @@
 import BigNumber from "bignumber.js";
-import { Reward, TokenInfo, TokenState } from "store/types";
+import { Reward, Token, TokenState } from "store/types";
 import { bnOrZero } from "./strings";
 import { toBigNumber } from "./useMoneyFormatter";
 
-export function getTokenAPR(token: TokenInfo, tokenState: TokenState): BigNumber {
+export function getTokenAPR(token: Token, tokenState: TokenState): BigNumber {
   const rewards: Reward[] = token.rewards
 
   var totalAPR = new BigNumber(0)

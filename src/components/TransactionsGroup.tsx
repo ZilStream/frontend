@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import React from 'react'
 import { ArrowDown, ArrowRight, ArrowUp, ExternalLink } from 'react-feather'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, Token, TokenState } from 'store/types'
 import { Transaction } from 'types/transaction.interface'
 import { shortenAddress } from 'utils/addressShortener'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
@@ -17,7 +17,7 @@ const TransactionsGroup = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const moneyFormat = useMoneyFormatter()
 
-  function findToken(address: string): TokenInfo|null {
+  function findToken(address: string): Token|null {
     const tokens = tokenState.tokens.filter(token => token.address_bech32 === address)
     if(tokens.length > 0) {
       return tokens[0]

@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { TokenDetail } from 'types/token.interface'
 import { numberFormat } from 'utils/format'
 import { Info } from 'react-feather'
 import Tippy from '@tippyjs/react'
+import { Token } from 'store/types'
 
 interface Props {
-  token: TokenDetail
+  token: Token
 }
 
 const Supply = (props: Props) => {

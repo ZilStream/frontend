@@ -1,9 +1,8 @@
 import getZRCBalance from "lib/zilliqa/getZRCBalance";
-import { TokenInfo } from "store/types";
+import { Token } from "store/types";
 import { Balance } from "types/balance.interface";
-import { Token } from "types/token.interface";
 
-export async function getBalancesForTokens(walletAddress: string, tokens: TokenInfo[]): Promise<Balance[]> {
+export async function getBalancesForTokens(walletAddress: string, tokens: Token[]): Promise<Balance[]> {
   var balances: Balance[] = []
 
 

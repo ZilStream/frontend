@@ -4,7 +4,7 @@ import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
 import { useRouter } from 'next/dist/client/router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, TokenInfo, TokenState } from 'store/types'
+import { AccountState, RootState, Token, TokenState } from 'store/types'
 import { ProposalMessage } from 'types/proposal.interface'
 import { Snapshot } from 'types/snapshot.interface'
 import { Space } from 'types/space.interface'
@@ -32,7 +32,7 @@ function VoteProposal() {
   const [space, setSpace] = useState<Space>()
   const [snapshot, setSnapshot] = useState<Snapshot>()
   const [votes, setVotes] = useState<{[id: string]: Vote}>()
-  const [token, setToken] = useState<TokenInfo|null>(null)
+  const [token, setToken] = useState<Token|null>(null)
   const [totalBalance, setTotalBalance] = useState<BigNumber>(new BigNumber(0))
   const [votedBalance, setVotedBalance] = useState<BigNumber>(new BigNumber(0))
   const moneyFormat = useMoneyFormatter()

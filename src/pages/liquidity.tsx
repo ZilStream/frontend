@@ -8,7 +8,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, TokenInfo, TokenState } from 'store/types'
+import { RootState, Token, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 
@@ -30,7 +30,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
   const zwapTokens = tokenState.tokens.filter(token => token.symbol === 'ZWAP')
-  const zwapToken: TokenInfo|null = zwapTokens[0] ?? null
+  const zwapToken: Token|null = zwapTokens[0] ?? null
 
   const [minimumLiquidity, setMinimumLiquidity] = useState<number>(3000000)
   const [liquidityFactor, setLiquidityFactor] = useState<number>(3500000)
