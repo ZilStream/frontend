@@ -18,6 +18,7 @@ import { useInterval } from 'utils/interval'
 import TokenIcon from 'components/TokenIcon'
 import TVLChartBlock from 'components/TVLChartBlock'
 import VolumeChartBlock from 'components/VolumeChartBlock'
+import Customize from 'components/Customization'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -235,7 +236,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <RatesBlock
                 title="ZIL"
                 value={currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
-                subTitle={`MC ${compactFormat(zilToken.current_supply * selectedCurrency.rate)}`}
+                subTitle={`MC ${compactFormat(zilToken.current_supply * selectedCurrency.rate, selectedCurrency.symbol)}`}
                 token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
                 rates={rates.filter(rate => rate.token_id == "1")} 
               />
@@ -310,10 +311,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 onClick={() => setCurrentList(ListType.NFT)}
                 className={`${currentList == ListType.NFT ? 'list-btn-selected' : 'list-btn'} mr-2`}
               >NFT</button>
-              <button 
-                onClick={() => setCurrentList(ListType.APR)}
-                className={`${currentList == ListType.APR ? 'list-btn-selected' : 'list-btn'} mr-2 whitespace-nowrap`}
-              >Highest APR</button>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -323,9 +320,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               <Sliders size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Filters
             </button>
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
-              <Tool size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Customize
-            </button>
+            <Customize />
           </div>
         </div>
       </div>
@@ -439,12 +434,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             }
           </tbody>
       </table>
-
-      {tokenState.initialized && currentList === ListType.Bridged && displayedTokens.length === 0 &&
-        <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
-          <span className="text-gray-500 dark:text-gray-400 italic">Bridged tokens from Ethereum will show up here when ZilBridge has launched.</span>
-        </div>
-      }
 
       {tokenState.initialized && currentList === ListType.Favorites && displayedTokens.length === 0 &&
         <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
