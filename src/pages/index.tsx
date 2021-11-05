@@ -289,7 +289,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       <div className="token-order-list">
         <div className="flex items-center" style={{minWidth: '380px'}}>
           <div className="flex-grow flex items-stretch">
-            <div className="flex items-center border-r border-gray-800 pr-3 mr-3">
+            <div className="flex items-center border-r border-gray-200 dark:border-gray-800 pr-3 mr-3">
               <button 
                 onClick={() => setCurrentList(ListType.Favorites)}
                 className={`${currentList == ListType.Favorites ? 
