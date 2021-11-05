@@ -10,7 +10,12 @@ const Chart = dynamic(
   { ssr: false }
 )
 
-const VolumeChartBlock = () => {
+interface Props {
+  className?: string
+}
+
+const VolumeChartBlock = (props: Props) => {
+  const { className } = props
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const [tvl, setTVL] = useState<{time: string, value: number}[]>([])
@@ -36,11 +41,11 @@ const VolumeChartBlock = () => {
   const changeRounded = Math.round(change * 100) / 100
 
   return (
-    <div className="h-44 rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+    <div className={`rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col ${className ?? 'h-44'}`}>
       <div className="absolute top-0 left-0 w-full pt-2 px-3">
         <div className="flex items-center text-lg">
           <div className="flex-grow flex items-center">
-            <span className="font-semibold mr-2">Volume</span>
+            <span className="font-semibold mr-2">Volume (24h)</span>
             <span className="mr-2">{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
           {!isNaN(changeRounded) &&
