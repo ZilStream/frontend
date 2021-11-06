@@ -1,8 +1,8 @@
-import { Operator, TokenInfo } from "store/types";
+import { Operator, Token } from "store/types";
 import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
-export default async function getPortfolioState(walletAddress: string, tokens: TokenInfo[], operators: Operator[] = []): Promise<BatchResponse[]> {
+export default async function getPortfolioState(walletAddress: string, tokens: Token[], operators: Operator[] = []): Promise<BatchResponse[]> {
   const batchRequests: any[] = [];
 
   tokens.forEach(token => {

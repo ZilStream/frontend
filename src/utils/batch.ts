@@ -1,5 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
-import { Operator, TokenInfo } from "store/types";
+import { Operator, Token } from "store/types";
 import { Network } from "./network";
 
 export enum BatchRequestType {
@@ -32,7 +32,7 @@ interface BatchRequestItem {
 
 interface BatchRequest {
   type: string
-  token?: TokenInfo
+  token?: Token
   item: BatchRequestItem
 }
 
@@ -44,11 +44,11 @@ export interface BatchResponse {
 /**
  * Create a `GetBalance` request.
  *
- * @param TokenInfo The token for which it's requested.
+ * @param Token The token for which it's requested.
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const balanceBatchRequest = (token: TokenInfo, address: string): BatchRequest => {
+export const balanceBatchRequest = (token: Token, address: string): BatchRequest => {
   const walletAddress = fromBech32Address(address).replace('0x', '').toLowerCase()
   return {
     type: BatchRequestType.Balance,
@@ -65,11 +65,11 @@ export const balanceBatchRequest = (token: TokenInfo, address: string): BatchReq
 /**
  * Create a `GetSmartContractSubState` request for the balances variable.
  *
- * @param TokenInfo The token for which it's requested.
+ * @param Token The token for which it's requested.
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const tokenBalanceBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
+export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
   const address = fromBech32Address(token.address_bech32)
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
@@ -91,11 +91,11 @@ export const tokenBalanceBatchRequest = (token: TokenInfo, walletAddress: string
 /**
  * Create a `GetSmartContractSubState` request for the allowances variable.
  *
- * @param TokenInfo The token for which it's requested.
+ * @param Token The token for which it's requested.
  * @param string The wallet address.
  * @returns BatchRequest
  */
-export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
+export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
   const address = fromBech32Address(token.address_bech32)
   return {
     type: BatchRequestType.TokenAllowance,
@@ -160,11 +160,11 @@ export const tokenAllowancesBatchRequest = (token: TokenInfo, walletAddress: str
 /**
  * Create a `GetSmartContractSubState` request for the token pool balance.
  *
- * @param TokenInfo The token for which it's requested.
+ * @param Token The token for which it's requested.
  * @param string The wallet address.
  * @returns BatchRequest
  */
- export const tokenPoolBalanceBatchRequest = (token: TokenInfo, walletAddress: string): BatchRequest => {
+ export const tokenPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
   const address = fromBech32Address(token.address_bech32).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {

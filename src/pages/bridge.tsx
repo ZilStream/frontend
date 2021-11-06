@@ -9,14 +9,14 @@ import { toBech32Address, fromBech32Address } from '@zilliqa-js/zilliqa'
 import BigNumber from 'bignumber.js'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, TokenInfo, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, Token, TokenState } from 'store/types'
 
 const Bridge = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
-  const [bridgeTokens, setBridgeTokens] = useState<TokenInfo[]>([])
+  const [bridgeTokens, setBridgeTokens] = useState<Token[]>([])
 
   // Making this conveluted because ugh 
   const [supplies, setSupplies] = useState<{[id: string]: number}>({

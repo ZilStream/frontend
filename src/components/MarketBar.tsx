@@ -25,11 +25,11 @@ const MarketBar = () => {
   }, 0)
 
   const liquidity = tokenState.tokens.reduce((sum, current) => {
-    return sum + current.current_liquidity
+    return sum + current.market_data.current_liquidity_zil
   }, 0)
 
   const volume = tokenState.tokens.reduce((sum, current) => {
-    return sum + current.daily_volume
+    return sum + current.market_data.daily_volume_zil
   }, 0)
 
   return (

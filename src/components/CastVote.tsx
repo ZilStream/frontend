@@ -2,7 +2,7 @@ import React, { useState, Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, TokenInfo } from 'store/types'
+import { AccountState, RootState, Token } from 'store/types'
 import { fromBech32Address } from '@zilliqa-js/zilliqa'
 import sendGovernanceMessage from 'lib/zilliqa/sendGovernanceMessage'
 import { Vote } from 'types/vote.interface'
@@ -14,7 +14,7 @@ interface Props {
   proposal: string
   choices: string[]
   balance: BigNumber
-  tokenInfo: TokenInfo
+  tokenInfo: Token
   onVoted: (() => void)
 }
 
