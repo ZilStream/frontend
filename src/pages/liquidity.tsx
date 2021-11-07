@@ -97,10 +97,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1">ZilSwap Liquidity</h1>
-            <div className="flex items-center text-sm">
-              <div className="text-gray-600">Total Value Locked: <span className="font-medium">{currencyFormat(stats.tvl)}</span></div>
-            </div>
+            <h1 className="mb-1">ZilSwap</h1>
           </div>
         </div>
       </div>

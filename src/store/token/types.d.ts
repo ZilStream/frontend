@@ -11,7 +11,6 @@ export interface Token {
   whitepaper: string
   telegram: string
   listed: boolean
-  unvetted: boolean
   bridged: boolean
   viewblock_score: number
   current_supply: number
@@ -47,7 +46,9 @@ export interface MarketData {
   zil_reserve: number
   token_reserve: number
   market_cap: number
+  market_cap_zil: number
   fully_diluted_valuation: number
+  fully_diluted_valuation_zil: number
   ath: number
   atl: number
   change_24h: number

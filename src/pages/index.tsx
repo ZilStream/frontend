@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { AlertCircle, ChevronDown, Sliders, Star, Tool, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, Token, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, SettingsState, Token, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
@@ -34,6 +34,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const [rates, setRates] = useState<Rate[]>(initialRates)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const [displayedTokens, setDisplayedTokens] = useState<Token[]>([])
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [currentSort, setCurrentSort] = useState<SortType>(SortType.Default)
@@ -85,7 +86,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return (priorMarketCap < nextMarketCap) ? 1 : -1
   }
 
-  const aprTokens = tokens.filter(token => token.unvetted === false).sort((a: Token, b: Token) => {
+  const aprTokens = tokens.filter(token => token.listed === true).sort((a: Token, b: Token) => {
     if(!a.apr || !b.apr) return -1
     return a.apr.isLessThan(b.apr) ? 1 : -1
   }).slice(0,3)
@@ -115,15 +116,16 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
     if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
-    } else if(currentList == ListType.APR) {
-      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
     } else {
-      tokensToDisplay = tokensToDisplay.filter(token => token.unvetted === false)
+      tokensToDisplay = tokensToDisplay.filter(token => token.listed === true)
     }
 
-    if(currentList === ListType.APR) {
+    if(currentSort === SortType.APR || currentSort === SortType.APY) {
       tokensToDisplay.sort((a: Token, b: Token) => {
         if(!a.apr || !b.apr) return -1
+        if(currentSortDirection == SortDirection.Ascending) {
+          return a.apr.isGreaterThan(b.apr) ? 1 : -1
+        }
         return a.apr.isLessThan(b.apr) ? 1 : -1
       })
     } else if(currentSort === SortType.Default) {
@@ -150,22 +152,40 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         }
         return (a.rate < b.rate) ? 1 : -1
       })
-    } else if(currentSort === SortType.Change) {
+    } else if(currentSort === SortType.ATH) {
       tokensToDisplay.sort((a,b) => {
-        const priorRates = rates.filter(rate => rate.token_id == a.id.toString())
-        const priorLastRate = priorRates.length > 0 ? priorRates[0].value : 0
-        const priorFirstRate = priorRates.length > 0 ? priorRates[priorRates.length-1].value : 0
-        const priorChange = ((priorLastRate - priorFirstRate) / priorFirstRate) * 100
-
-        const nextRates = rates.filter(rate => rate.token_id == b.id.toString())
-        const nextLastRate = nextRates.length > 0 ? nextRates[0].value : 0
-        const nextFirstRate = nextRates.length > 0 ? nextRates[nextRates.length-1].value : 0
-        const nextChange = ((nextLastRate - nextFirstRate) / nextFirstRate) * 100
-
         if(currentSortDirection == SortDirection.Ascending) {
-          return (priorChange > nextChange) ? 1 : -1
+          return (a.market_data.ath > b.market_data.ath) ? 1 : -1
         }
-        return (priorChange < nextChange) ? 1 : -1
+        return (a.market_data.ath < b.market_data.ath) ? 1 : -1
+      })
+    } else if(currentSort === SortType.ATL) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.atl > b.market_data.atl) ? 1 : -1
+        }
+        return (a.market_data.atl < b.market_data.atl) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change24H) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.change_percentage_24h > b.market_data.change_percentage_24h) ? 1 : -1
+        }
+        return (a.market_data.change_percentage_24h < b.market_data.change_percentage_24h) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change7D) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.change_percentage_7d > b.market_data.change_percentage_7d) ? 1 : -1
+        }
+        return (a.market_data.change_percentage_7d < b.market_data.change_percentage_7d) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change30D) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.change_percentage_30d > b.market_data.change_percentage_30d) ? 1 : -1
+        }
+        return (a.market_data.change_percentage_30d < b.market_data.change_percentage_30d) ? 1 : -1
       })
     } else if(currentSort === SortType.Volume) {
       tokensToDisplay.sort((a,b) => {
@@ -180,6 +200,34 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           return (a.current_liquidity < b.current_liquidity) ? 1 : -1
         }
         return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+      })
+    } else if(currentSort === SortType.CircSupply) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.current_supply < b.current_supply) ? 1 : -1
+        }
+        return (a.current_supply < b.current_supply) ? 1 : -1
+      })
+    } else if(currentSort === SortType.TotalSupply) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.total_supply < b.market_data.total_supply) ? 1 : -1
+        }
+        return (a.market_data.total_supply < b.market_data.total_supply) ? 1 : -1
+      })
+    } else if(currentSort === SortType.MaxSupply) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.max_supply < b.market_data.max_supply) ? 1 : -1
+        }
+        return (a.market_data.max_supply < b.market_data.max_supply) ? 1 : -1
+      })
+    } else if(currentSort === SortType.FullyDilutedMarketCap) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.fully_diluted_valuation < b.market_data.fully_diluted_valuation) ? 1 : -1
+        }
+        return (a.market_data.fully_diluted_valuation < b.market_data.fully_diluted_valuation) ? 1 : -1
       })
     } else {
       tokensToDisplay.sort((a: Token, b: Token) => {
@@ -330,14 +378,75 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           <colgroup>
             <col style={{width: '24px', minWidth: 'auto'}} />
             <col style={{width: '42px', minWidth: 'auto'}} />
-            <col style={{width: '276px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '160px', minWidth: 'auto'}} />
-            <col style={{width: '160px', minWidth: 'auto'}} />
-            <col style={{width: '160px', minWidth: 'auto'}} />
-            <col style={{width: '160px', minWidth: 'auto'}} />
+            <col style={{width: '276px', minWidth: 'auto'}} /> 
+
+            {settingsState.columns.priceZIL &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.priceFiat &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.ath &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.atl &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+            
+            {settingsState.columns.change24H &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.change7D &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.change30D &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+            
+            {settingsState.columns.marketCap &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.marketCapDiluted &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.circSupply &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.totalSupply &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.maxSupply &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.liquidity &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.volume &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.apr &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.apy &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+            
+            {settingsState.columns.graph24H &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs" style={{height: 33}}>
             <tr className="py-2">
@@ -358,51 +467,145 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   }
                 </button>
               </th>
-              <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
-                  {currentSort === SortType.Price &&
-                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                  }
-                  ZIL
-                </button>
-              </th>
-              <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.PriceFiat)}>
-                  {currentSort === SortType.PriceFiat &&
-                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                  }
-                  {selectedCurrency.code}
-                </button>
-              </th>
-              <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change)}>
-                  {currentSort === SortType.Change &&
-                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                  }
-                  24h %
-                </button>
-              </th>
-              <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.MarketCap)}>
-                  {currentSort === SortType.MarketCap &&
-                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                  }
-                  Market Cap</button>
-              </th>
-              <th className="px-2 py-2 text-right">
-                <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Liquidity)}>
-                  {currentSort === SortType.Liquidity &&
-                    <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                  }
-                  Liquidity
-                </button>
-              </th>
-              {currentList === ListType.APR &&
+              {settingsState.columns.priceZIL &&
                 <th className="px-2 py-2 text-right">
-                  APR
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
+                    {currentSort === SortType.Price &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    ZIL
+                  </button>
                 </th>
               }
-              {currentList !== ListType.APR &&
+
+              {settingsState.columns.priceFiat &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.PriceFiat)}>
+                    {currentSort === SortType.PriceFiat &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    {selectedCurrency.code}
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.ath &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.ATH)}>
+                    {currentSort === SortType.ATH &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    ATH
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.atl &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.ATL)}>
+                    {currentSort === SortType.ATL &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    ATL
+                  </button>
+                </th>
+              }
+              
+              {settingsState.columns.change24H &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change24H)}>
+                    {currentSort === SortType.Change24H &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    24h %
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.change7D &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change7D)}>
+                    {currentSort === SortType.Change7D &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    7d %
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.change30D &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change30D)}>
+                    {currentSort === SortType.Change30D &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    30d %
+                  </button>
+                </th>
+              }
+              
+              {settingsState.columns.marketCap &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.MarketCap)}>
+                    {currentSort === SortType.MarketCap &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Market Cap</button>
+                </th>
+              }
+
+              {settingsState.columns.marketCapDiluted &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.FullyDilutedMarketCap)}>
+                    {currentSort === SortType.FullyDilutedMarketCap &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Fully Diluted Mcap</button>
+                </th>
+              }
+
+              {settingsState.columns.circSupply &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.CircSupply)}>
+                    {currentSort === SortType.CircSupply &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Circ Supply</button>
+                </th>
+              }
+
+              {settingsState.columns.totalSupply &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.TotalSupply)}>
+                    {currentSort === SortType.TotalSupply &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Total Supply</button>
+                </th>
+              }
+
+              {settingsState.columns.maxSupply &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.MaxSupply)}>
+                    {currentSort === SortType.MaxSupply &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Max Supply</button>
+                </th>
+              }
+
+              {settingsState.columns.liquidity &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Liquidity)}>
+                    {currentSort === SortType.Liquidity &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    Liquidity
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.volume &&
                 <th className="px-2 py-2 text-right">
                   <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.Volume)}>
                     {currentSort === SortType.Volume &&
@@ -412,7 +615,32 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   </button>
                 </th>
               }
-              <th className="px-2 py-2 text-right whitespace-nowrap">Last 24 hours</th>
+
+              {settingsState.columns.apr &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.APR)}>
+                    {currentSort === SortType.APR &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    APR
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.apy &&
+                  <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center whitespace-nowrap" onClick={() => handleSort(SortType.APY)}>
+                    {currentSort === SortType.APY &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    APY
+                  </button>
+                </th>
+              }
+              
+              {settingsState.columns.graph24H &&
+                <th className="px-2 py-2 text-right whitespace-nowrap">Last 24 hours</th>
+              }
             </tr>
           </thead>
           <tbody>

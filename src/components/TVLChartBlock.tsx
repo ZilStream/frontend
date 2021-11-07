@@ -22,7 +22,7 @@ const TVLChartBlock = (props: Props) => {
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   const liquidity = tokenState.tokens.reduce((sum, current) => {
-    return sum + current.current_liquidity
+    return sum + current.market_data.current_liquidity_zil
   }, 0)
 
   useEffect(() => {

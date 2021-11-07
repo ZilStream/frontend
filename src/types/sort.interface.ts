@@ -3,11 +3,20 @@ export enum SortType {
   Token,
   Price,
   PriceFiat,
+  ATH,
+  ATL,
+  Change24H,
+  Change7D,
+  Change30D,
   MarketCap,
-  Change,
+  FullyDilutedMarketCap,
+  CircSupply,
+  TotalSupply,
+  MaxSupply,
   Liquidity,
   Volume,
-  APR
+  APR,
+  APY
 }
 
 export enum SortDirection {

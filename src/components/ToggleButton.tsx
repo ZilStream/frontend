@@ -1,14 +1,24 @@
-import React, { useState } from 'react'
+import React, { ChangeEventHandler, useEffect, useState } from 'react'
 import { X } from 'react-feather'
 
 interface Props {
-  defaultSelected?: boolean
+  selected: boolean
+  onChange?: (() => void)
   children: React.ReactNode
 }
 
 const ToggleButton = (props: Props) => {
-  const { children } = props
-  const [isSelected, setIsSelected] = useState<boolean>(props.defaultSelected ?? false)
+  const { selected, children } = props
+  const [isSelected, setIsSelected] = useState<boolean>(props.selected)
+  const [initialized, setInitialized] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!initialized) {
+      setInitialized(true)
+    } else {
+      props.onChange?.()
+    }
+  }, [isSelected])
 
   return (
     <button className={isSelected ? 'toggle-btn-selected' : 'toggle-btn'} onClick={() => setIsSelected(!isSelected)}>

@@ -1,17 +1,29 @@
 import {HYDRATE} from 'next-redux-wrapper'
 import { AnyAction } from 'redux'
+import { UpdateColumnsProps, UpdateSettingsProps } from 'store/types'
+import { SettingsActionTypes } from './actions'
 import { SettingsState } from './types'
 
 const initialState: SettingsState = {
+  initialized: false,
   columns: {
-    zil: true,
-    usd: true,
+    priceZIL: true,
+    priceFiat: true,
+    ath: false,
+    atl: false,
+    change24H: true,
+    change7D: false,
+    change30D: false,
     marketCap: true,
+    marketCapDiluted: false,
+    circSupply: false,
+    totalSupply: false,
+    maxSupply: false,
     liquidity: true,
     volume: true,
-    graph24h: true,
     apr: false,
-    change24h: true
+    apy: false,
+    graph24H: true,
   },
   filters: {
     unvetted: false,
@@ -26,6 +38,24 @@ const reducer = (state: SettingsState = initialState, action: AnyAction) => {
   switch(action.type) {
     case HYDRATE:
       return {...state, ...payload.settings}
+
+    case SettingsActionTypes.SETTINGS_UPDATE:
+      const updateProps: UpdateSettingsProps = payload 
+      return {
+        ...state,
+        ...updateProps
+      }
+
+    case SettingsActionTypes.SETTINGS_COLUMNS_UPDATE: {
+      const updateProps: UpdateColumnsProps = payload
+      return {
+        ...state,
+        columns: {
+          ...state.columns,
+          ...updateProps
+        }
+      }
+    }
 
     default:
       return state

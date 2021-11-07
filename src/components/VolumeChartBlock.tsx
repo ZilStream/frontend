@@ -22,7 +22,7 @@ const VolumeChartBlock = (props: Props) => {
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   const volume = tokenState.tokens.reduce((sum, current) => {
-    return sum + current.daily_volume
+    return sum + current.market_data.daily_volume_zil
   }, 0)
 
   useEffect(() => {

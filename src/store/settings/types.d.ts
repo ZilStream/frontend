@@ -1,21 +1,34 @@
 export interface SettingsState {
+  initialized: boolean
   columns: DataColumns
   filters: TokenFilters
   rows: number
 }
 
-export type DataColumns = {
-  zil: boolean = true
-  usd: boolean = true
-  marketCap: boolean = true
-  liquidity: boolean = true
-  volume: boolean = true
-  graph24h: boolean = true
-  apr: boolean = false
-  change24h: boolean = true
+export interface DataColumns {
+  priceZIL: boolean
+  priceFiat: boolean
+  ath: boolean
+  atl: boolean
+  change24H: boolean
+  change7D: boolean
+  change30D: boolean
+  marketCap: boolean
+  marketCapDiluted: boolean
+  circSupply: boolean
+  totalSupply: boolean
+  maxSupply: boolean
+  liquidity: boolean
+  volume: boolean
+  apr: boolean
+  apy: boolean
+  graph24H: boolean
 }
 
-export type TokenFilters =  {
-  unvetted: boolean = false
-  bridged: boolean = true
+export interface TokenFilters {
+  unvetted: boolean
+  bridged: boolean
 }
+
+export interface UpdateSettingsProps extends Partial<SettingsState> {}
+export interface UpdateColumnsProps extends Partial<DataColumns> {}
