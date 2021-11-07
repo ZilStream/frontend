@@ -26,9 +26,10 @@ export interface DataColumns {
 }
 
 export interface TokenFilters {
-  unvetted: boolean
+  unlisted: boolean
   bridged: boolean
 }
 
 export interface UpdateSettingsProps extends Partial<SettingsState> {}
 export interface UpdateColumnsProps extends Partial<DataColumns> {}
+export interface UpdateFiltersProps extends Partial<TokenFilters> {}

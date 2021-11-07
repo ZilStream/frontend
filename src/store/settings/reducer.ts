@@ -1,6 +1,6 @@
 import {HYDRATE} from 'next-redux-wrapper'
 import { AnyAction } from 'redux'
-import { UpdateColumnsProps, UpdateSettingsProps } from 'store/types'
+import { UpdateColumnsProps, UpdateFiltersProps, UpdateSettingsProps } from 'store/types'
 import { SettingsActionTypes } from './actions'
 import { SettingsState } from './types'
 
@@ -26,7 +26,7 @@ const initialState: SettingsState = {
     graph24H: true,
   },
   filters: {
-    unvetted: false,
+    unlisted: false,
     bridged: true
   },
   rows: 50
@@ -46,16 +46,25 @@ const reducer = (state: SettingsState = initialState, action: AnyAction) => {
         ...updateProps
       }
 
-    case SettingsActionTypes.SETTINGS_COLUMNS_UPDATE: {
-      const updateProps: UpdateColumnsProps = payload
+    case SettingsActionTypes.SETTINGS_COLUMNS_UPDATE: 
+      const updateColumnsProps: UpdateColumnsProps = payload
       return {
         ...state,
         columns: {
           ...state.columns,
-          ...updateProps
+          ...updateColumnsProps
         }
       }
-    }
+
+    case SettingsActionTypes.SETTINGS_FILTERS_UPDATE:
+      const updateFiltersProps: UpdateFiltersProps = payload
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          ...updateFiltersProps
+        }
+      }
 
     default:
       return state

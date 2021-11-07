@@ -21,7 +21,9 @@ module.exports = {
       borderRadius: ['first', 'last']
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
   corePlugins: {
     container: false,
   }

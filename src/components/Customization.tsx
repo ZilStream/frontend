@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Tool } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateColumns } from 'store/settings/actions'
-import { DataColumns, RootState, SettingsState } from 'store/types'
+import { RootState, SettingsState } from 'store/types'
 import ToggleButton from './ToggleButton'
 
 const Customize = () => {

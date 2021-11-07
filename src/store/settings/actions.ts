@@ -1,4 +1,4 @@
-import { UpdateColumnsProps, UpdateSettingsProps } from "store/types";
+import { UpdateColumnsProps, UpdateFiltersProps, UpdateSettingsProps } from "store/types";
 
 export const SettingsActionTypes = {
   SETTINGS_UPDATE: "SETTINGS_UPDATE",
@@ -16,6 +16,13 @@ export function updateSettings(payload: UpdateSettingsProps) {
 export function updateColumns(payload: UpdateColumnsProps) {
   return {
     type: SettingsActionTypes.SETTINGS_COLUMNS_UPDATE,
+    payload
+  }
+}
+
+export function updateFilters(payload: UpdateFiltersProps) {
+  return {
+    type: SettingsActionTypes.SETTINGS_FILTERS_UPDATE,
     payload
   }
 }

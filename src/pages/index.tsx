@@ -19,6 +19,7 @@ import TokenIcon from 'components/TokenIcon'
 import TVLChartBlock from 'components/TVLChartBlock'
 import VolumeChartBlock from 'components/VolumeChartBlock'
 import Customize from 'components/Customization'
+import Filters from 'components/Filters'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -117,7 +118,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
     } else {
-      tokensToDisplay = tokensToDisplay.filter(token => token.listed === true)
+      if(!settingsState.filters.bridged) {
+        tokensToDisplay = tokensToDisplay.filter(token => !token.bridged)
+      }
+
+      if(!settingsState.filters.unlisted) {
+        tokensToDisplay = tokensToDisplay.filter(token => token.listed)
+      }
     }
 
     if(currentSort === SortType.APR || currentSort === SortType.APY) {
@@ -242,7 +249,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     }
 
     setDisplayedTokens(tokensToDisplay)
-  }, [currentList, tokenState, currentSort, currentSortDirection])
+  }, [currentList, tokenState, currentSort, currentSortDirection, settingsState.filters])
   
   return (
     <>
@@ -366,9 +373,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               50 <ChevronDown size={12} className="ml-1 text-gray-500 dark:text-gray-400" />
             </button>
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
-              <Sliders size={12} className="mr-1 text-gray-500 dark:text-gray-400" /> Filters
-            </button>
+            <Filters />
             <Customize />
           </div>
         </div>
