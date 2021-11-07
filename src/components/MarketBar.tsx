@@ -18,10 +18,7 @@ const MarketBar = () => {
   const { membership } = useBalances()
 
   const marketCap = tokenState.tokens.reduce((sum, current) => {
-    if(current.bridged) return sum
-    const rate = current.rate ?? 0
-    const supply = current.current_supply ?? 0
-    return sum + (supply * (selectedCurrency.rate * rate))
+    return sum + current.market_data.market_cap_zil
   }, 0)
 
   const liquidity = tokenState.tokens.reduce((sum, current) => {
@@ -51,7 +48,7 @@ const MarketBar = () => {
             </div>
             <div className="flex items-center mr-4">
               <span className="text-gray-400 mr-1">Market Cap:</span>
-              <span>{currencyFormat(marketCap, selectedCurrency.symbol)}</span>
+              <span>{currencyFormat(marketCap * selectedCurrency.rate, selectedCurrency.symbol)}</span>
             </div>
             <div className="flex items-center mr-4">
               <span className="text-gray-400 mr-1">TVL:</span>
