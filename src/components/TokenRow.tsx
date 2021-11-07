@@ -126,15 +126,28 @@ const TokenRow = (props: Props) => {
       }
 
       {settingsState.columns.change7D &&
-        <td className={token.market_data.change_percentage_7d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
-          {token.market_data.change_percentage_7d.toFixed(2)}%
-        </td>
+        <>
+          {token.market_data.change_percentage_7d != 0 ? (
+            <td className={token.market_data.change_percentage_7d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
+              {token.market_data.change_percentage_7d.toFixed(2)}%
+            </td>
+          ) : (
+            <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">—</td>
+          )}
+        
+        </>
       }
 
       {settingsState.columns.change30D &&
-        <td className={token.market_data.change_percentage_30d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
-          {token.market_data.change_percentage_30d.toFixed(2)}%
-        </td>
+        <>
+          {token.market_data.change_percentage_30d != 0 ? (
+            <td className={token.market_data.change_percentage_30d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
+              {token.market_data.change_percentage_30d.toFixed(2)}%
+            </td>
+          ) : (
+            <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">—</td>
+          )}
+        </>
       }
       
       {settingsState.columns.marketCap &&
