@@ -264,7 +264,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
-      <div className="pt-2 pb-2">
+      <div className="pt-3 pb-2">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
             <h1 className="mb-1 text-xl">Today's prices in Zilliqa</h1>
