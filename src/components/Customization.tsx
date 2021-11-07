@@ -25,9 +25,9 @@ const Customize = () => {
         open={isOpen} 
         onClose={() => setIsOpen(false)}
       >
-        <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+        <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30 dark:bg-opacity-50" />
 
-        <div className="relative max-w-md w-full bg-white rounded-lg shadow-md p-6">
+        <div className="relative max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <Dialog.Title className="text-xl">Customize</Dialog.Title>
           <Dialog.Description>Choose which data points you'd like to see.</Dialog.Description>
 
