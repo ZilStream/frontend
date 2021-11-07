@@ -30,7 +30,7 @@ const MarketBar = () => {
   }, 0)
 
   return (
-    <div className="flex items-center text-xs bg-white dark:bg-gray-800 border-t border-b border-gray-100 dark:border-gray-900">
+    <div className="flex items-center text-xs bg-white dark:bg-gray-800 border-t border-b border-gray-100 dark:border-gray-900 whitespace-nowrap">
       <div className="container relative px-3 md:px-4 py-2 flex items-center">
         <div className="overflow-x-auto flex-grow scrollable-table-container">
           <div className="flex items-center" style={{minWidth: '740px'}}>
