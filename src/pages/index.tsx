@@ -264,10 +264,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         <meta name="description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
         <meta property="og:description" content="Zilliqa ecosystem prices and charts, listed by market capitalization. Free access to current and historic data for gZIL, ZWAP, PORT and many more." />
       </Head>
-      <div className="pt-8 pb-2 md:pb-8">
+      <div className="pt-2 pb-2">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1">Today's prices in Zilliqa</h1>
+            <h1 className="mb-1 text-xl">Today's prices in Zilliqa</h1>
             <div className="text-gray-600 dark:text-gray-400">
               Zilliqa is currently valued at <span className="font-medium">{currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}, </span>
               {zilRates.change >= 0 ? (
@@ -283,7 +283,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      <div className="scrollable-table-container max-w-full">
+      <div className="scrollable-table-container overflow-y-scroll max-w-full">
         <div className="grid grid-cols-4 gap-4 mt-2" style={{minWidth: 1200}}>
           {tokenState.initialized === false ? (
             <>
