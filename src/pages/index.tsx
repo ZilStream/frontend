@@ -47,6 +47,14 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     return tokenState.tokens.sort(sortTokensByMarketCap)
   }, [tokenState])
 
+  const marketCap = tokenState.tokens.reduce((sum, current) => {
+    return sum + current.market_data.market_cap_zil
+  }, 0)
+
+  const volume = tokenState.tokens.reduce((sum, current) => {
+    return sum + current.market_data.daily_volume_zil
+  }, 0)
+
   const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
 
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
@@ -267,19 +275,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       <div className="pt-3 pb-2">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1 text-xl">Today's prices in Zilliqa</h1>
+            <h1 className="mb-1 text-xl">Zilliqa token prices by Market Cap</h1>
             <div className="text-gray-600 dark:text-gray-400">
-              Zilliqa is currently valued at <span className="font-medium">{currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}, </span>
-              {zilRates.change >= 0 ? (
-                <div className="inline">
-                  up <span className="text-green-600 dark:text-green-500 font-medium">{zilRates.changeRounded}%</span> from yesterday.
-                </div>
-              ) : (
-                <div className="inline">
-                  down <span className="text-red-600 dark:text-red-500 font-medium">{zilRates.changeRounded}%</span> from yesterday.
-                </div>
-              )}
+              The total market cap is <span className="font-semibold">{currencyFormat(marketCap * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>, with <span className="font-semibold">{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span> in volume over the last 24 hours.
             </div>
+            <div className="sr-only">ZilStream is currently tracking {tokens.length} tokens. Popular trends within Zilliqa right now are NFT and DeFi.</div>
           </div>
         </div>
       </div>
