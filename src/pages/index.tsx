@@ -117,14 +117,19 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
     if(currentList == ListType.Favorites) {
       tokensToDisplay = tokensToDisplay.filter(token => token.isFavorited)
-    } else {
-      if(!settingsState.filters.bridged) {
-        tokensToDisplay = tokensToDisplay.filter(token => !token.bridged)
-      }
+    } else if(currentList == ListType.DeFi) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.tags?.split(',').includes('defi'))
+    } else if(currentList == ListType.NFT) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.tags?.split(',').includes('nft'))
+    }
 
-      if(!settingsState.filters.unlisted) {
-        tokensToDisplay = tokensToDisplay.filter(token => token.listed)
-      }
+    // filters
+    if(!settingsState.filters.bridged) {
+      tokensToDisplay = tokensToDisplay.filter(token => !token.bridged)
+    }
+
+    if(!settingsState.filters.unlisted) {
+      tokensToDisplay = tokensToDisplay.filter(token => token.listed)
     }
 
     if(currentSort === SortType.APR || currentSort === SortType.APY) {
@@ -370,9 +375,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
+            {/* <button className="flex items-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg text-xs font-semibold py-2 px-3 focus:outline-none">
               50 <ChevronDown size={12} className="ml-1 text-gray-500 dark:text-gray-400" />
-            </button>
+            </button> */}
             <Filters />
             <Customize />
           </div>
