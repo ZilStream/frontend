@@ -1,3 +1,4 @@
+import { lchown } from 'fs'
 import React from 'react'
 import { ChevronUp } from 'react-feather'
 import { cryptoFormat, numberFormat } from 'utils/format'
@@ -10,7 +11,8 @@ interface Props {
 
 const PriceDayRange = (props: Props) => {
   const { price, low, high } = props
-  const filledPercentage = (price - low) / high * 100
+  const range = high - low
+  const filledPercentage = (price - low) / range * 100
 
   return (
     <div className="flex items-center text-xs whitespace-nowrap">
