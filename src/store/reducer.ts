@@ -6,6 +6,7 @@ import staking from './staking/reducer'
 import currency from './currency/reducer'
 import modal from './modal/reducer'
 import settings from './settings/reducer'
+import blockchain from './blockchain/reducer'
 
 export default combineReducers({
   token,
@@ -13,5 +14,6 @@ export default combineReducers({
   staking,
   currency,
   modal,
-  settings
+  settings,
+  blockchain
 })

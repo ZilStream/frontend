@@ -8,17 +8,15 @@ import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 import { AccountActionTypes } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
-import { SettingsActionTypes, updateSettings } from 'store/settings/actions'
+import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, ConnectedWallet, Operator, RootState, SettingsState, StakingState, Token, TokenState } from 'store/types'
-import { AccountType } from 'types/walletType.interface'
+import { AccountState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
 import { bnOrZero } from 'utils/strings'
-import useBalances from 'utils/useBalances'
 
 interface Props {
   children: React.ReactNode
@@ -30,7 +28,6 @@ const StateProvider = (props: Props) => {
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const dispatch = useDispatch()
-  const {membership} = useBalances()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
   async function loadTokens() {

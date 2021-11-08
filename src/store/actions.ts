@@ -4,5 +4,6 @@ import * as Staking from './staking/actions'
 import * as Currency from './currency/actions'
 import * as Modal from './modal/actions'
 import * as Settings from './settings/actions'
+import * as Blockchain from './blockchain/actions'
 
-export default { Token, Account, Staking, Currency, Modal, Settings }
+export default { Token, Account, Staking, Currency, Modal, Settings, Blockchain }
