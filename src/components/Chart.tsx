@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { createChart, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
-import { Rate } from 'types/rate.interface';
+import { useTheme } from 'next-themes'
 
 interface Props {
   data: {time: string, value: number}[],
@@ -17,6 +17,7 @@ function Chart(props: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
   const [chart, setChart] = useState<IChartApi|null>(null)
   const [series, setSeries] = useState<ISeriesApi<"Area">|null>(null)
+  const {resolvedTheme} = useTheme()
 
   useEffect(() => {
     if(ref.current) {
@@ -34,7 +35,8 @@ function Chart(props: Props) {
             visible: false,
           },
           horzLines: {
-            visible: false,
+            visible: props.isScalesEnabled ? true : false,
+            color: resolvedTheme === 'dark' ? 'rgb(41, 51, 65)' : 'rgb(248, 248, 256)'
           },
         },
         leftPriceScale: {
