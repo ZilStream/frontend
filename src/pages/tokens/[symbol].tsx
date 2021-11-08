@@ -287,7 +287,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     <span className="text-sm text-gray-500 dark:text-gray-400">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
                   </td>
                 </tr>
-                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{cryptoFormat(token.market_data.change_24h)} ZIL</span>
@@ -351,13 +351,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <table className="w-full text-sm table-auto mt-2">
               <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Price History</caption>
               <tbody>
-                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">7d</span></th>
                   <td className="flex flex-col items-end py-3">
                     <InlineChange num={token.market_data.change_percentage_7d} bold />
                   </td>
                 </tr>
-                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">30d</span></th>
                   <td className="flex flex-col items-end py-3">
                     <InlineChange num={token.market_data.change_percentage_30d} bold />
