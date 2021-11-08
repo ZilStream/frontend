@@ -21,6 +21,8 @@ import Link from 'next/link'
 import Tippy from '@tippyjs/react'
 import { Tab } from '@headlessui/react'
 import { classNames } from 'utils/classNames'
+import { getTokenAPR } from 'utils/apr'
+import InlineChange from 'components/InlineChange'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -56,25 +58,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   const {
-    apr
+    apr,
+    athChangePercentage,
+    atlChangePercentage
   } = React.useMemo(() => {
-    const rewards: Reward[] = token.rewards
-
-    var totalAPR = new BigNumber(0)
-    rewards.forEach(reward => {
-      const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
-      if(rewardTokens.length > 0) {
-        const rewardToken = rewardTokens[0]
-        const rewardsValue = reward.reward_token_symbol !== 'ZIL' ? toBigNumber(reward.amount).times(rewardToken.rate).times(tokenState.zilRate) : toBigNumber(reward.amount).times(rewardToken.rate)
-        const liquidity = toBigNumber(reward.adjusted_total_contributed_share).times(token.market_data.current_liquidity)
-        const roiPerEpoch = rewardsValue.dividedBy(liquidity)
-        const apr = bnOrZero(roiPerEpoch.times(52).shiftedBy(2).decimalPlaces(1))
-        totalAPR = totalAPR.plus(apr)
-      }
-    })
-
     return {
-      apr: totalAPR
+      apr: getTokenAPR(token, tokenState),
+      athChangePercentage: -(100 - (token.rate_usd / (token.market_data.ath * selectedCurrency.rate) * 100)),
+      atlChangePercentage: token.rate_usd / (token.market_data.atl * selectedCurrency.rate) * 100
     }
   }, [token, tokenState.tokens])
 
@@ -213,9 +204,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-xs text-gray-500"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
           <div className="text-xs text-gray-500"><span className="font-semibold">{numberFormat(token.market_data.liquidity_providers, 0)}</span> liquidity providers</div>
 
-          <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity / Market Cap</div>
-          <div className="font-medium">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap, 3)}</div>
-
           {token.rewards.length > 0 &&
             <>
               <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Liquidity Rewards</div>
@@ -274,26 +262,26 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       <div className="flex items-start">
         <div className="flex-grow">
           <Tab.Group>
-            <Tab.List className="inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 mb-3">
+            <Tab.List className="inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 dark:bg-gray-800 mb-3">
               <Tab className={({selected}) => classNames(
                 'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
                 'focus:outline-none',
                 selected
-                  ? 'bg-white shadow'
+                  ? 'bg-white dark:bg-gray-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-gray-600'
               )}>Chart</Tab>
               <Tab className={({selected}) => classNames(
                 'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
                 'focus:outline-none',
                 selected
-                  ? 'bg-white shadow'
+                  ? 'bg-white dark:bg-gray-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-gray-600'
               )}>TradingView</Tab>
               <Tab className={({selected}) => classNames(
                 'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
                 'focus:outline-none',
                 selected
-                  ? 'bg-white shadow'
+                  ? 'bg-white dark:bg-gray-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-gray-600'
               )}>TVL</Tab>
             </Tab.List>
@@ -333,29 +321,102 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               theme={resolvedTheme}
             />
           </div> */}
+
+          <div className="mt-4">
+            <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
+            <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
+          </div>
         </div>
-        <div className="flex-grow-0 w-80 ml-4">
-          <div className="bg-gray-100 dark:bg-gray-800 py-4 px-5 rounded-lg">
+        <div className="flex-grow-0 flex-shrink-0 w-96 ml-6">
+          <div className="bg-blue-900 bg-opacity-5 dark:bg-gray-800 py-4 px-5 rounded-lg">
             <div className="text-lg font-bold mb-2">{token.symbol} Market Stats</div>
             <table className="w-full text-sm table-auto">
+            <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Price</caption>
               <tbody>
-                <tr className="border-t border-b border-gray-200 dark:border-gray-900">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{cryptoFormat(token.rate)} ZIL</span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-900">
+                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{cryptoFormat(token.market_data.change_24h)} ZIL</span>
+                    <InlineChange num={token.market_data.change_percentage_24h} />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">All Time High</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <InlineChange num={athChangePercentage} />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">All Time Low</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <InlineChange num={atlChangePercentage} />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Volume <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Volume / Market Cap</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{numberFormat(token.market_data.daily_volume / token.market_data.market_cap)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="text-left font-normal py-3">Liquidity / Market Cap</th>
+                  <td className="flex flex-col items-end py-3">
+                  <span className="font-bold">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap)}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table className="w-full text-sm table-auto mt-2">
+              <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Market Cap</caption>
+              <tbody>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Market Cap</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-900">
+                <tr>
                   <th scope="row" className="text-left font-normal py-3">Fully Diluted Market Cap</th>
                   <td className="flex flex-col items-end py-3">
-                  <span className="font-bold">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                    <span className="font-bold">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table className="w-full text-sm table-auto mt-2">
+              <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Supply</caption>
+              <tbody>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Circulating Supply</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{numberFormat(token.market_data.current_supply, 0)}</span>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Total Supply</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{numberFormat(token.market_data.total_supply, 0)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="text-left font-normal py-3">Max Supply</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{numberFormat(token.market_data.max_supply, 0)}</span>
                   </td>
                 </tr>
               </tbody>
