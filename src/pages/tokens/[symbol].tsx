@@ -144,7 +144,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
         <div className="w-full flex-grow flex flex-col">
             
-          <div className="font-medium pb-3 mb-3 border-b border-gray-300 dark:border-gray-800">
+          <div className="font-medium pb-3 mb-3 sm:border-b border-gray-300 dark:border-gray-800">
             <div className="flex sm:flex-col">
               <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.rate)} ZIL</div>
               <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center">
@@ -157,9 +157,9 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             </div>
           </div>
 
-          <div className="sm:hidden mb-2 text-sm">
+          <div className="sm:hidden -mt-2 mb-2 text-sm">
             {token.website &&
-              <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
+              <div className="flex items-center py-3 border-t border-b border-gray-300 dark:border-gray-800">
                 <div className="flex-grow">Website</div>
                 <div className="flex items-center gap-2">
                   <a href={token.website} target="_blank">{new URL(token.website).hostname}</a>
@@ -190,10 +190,25 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <Copy size={14} />
               </button>
             </div>
+
+            <div className="mt-6 w-full text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2">{token.name} Stats</div>
+            <div className="flex items-center py-3 border-t border-b border-gray-300 dark:border-gray-800">
+              <div className="flex-grow">Market Cap</div>
+              <div className="flex items-center gap-2 font-semibold">
+                {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}
+              </div>
+            </div>
+
+            <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
+              <div className="flex-grow">Volume <span className="px-1 py-1 ml-1 text-xs font-medium bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></div>
+              <div className="flex items-center gap-2 font-semibold">
+                {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}
+              </div>
+            </div>
           </div>
         
 
-          <div className="py-2 grid grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+          <div className="hidden py-2 sm:grid grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
             <div className="py-2 border-r border-gray-300 dark:border-gray-800">
               <div className="text-gray-700 dark:text-gray-400">Market Cap</div>
               <div className="font-medium">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
@@ -316,7 +331,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="bg-blue-900 bg-opacity-5 dark:bg-gray-800 py-4 px-5 rounded-lg">
             <div className="text-lg font-bold mb-2">{token.symbol} Market Stats</div>
             <table className="w-full text-sm table-auto">
-            <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Price</caption>
+              <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Price</caption>
               <tbody>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price</th>
