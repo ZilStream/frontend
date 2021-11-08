@@ -1,3 +1,3 @@
-export function shortenAddress(address: string): string {
-  return address.substr(0, 5) + '...' + address.substr(address.length-4,4)
+export function shortenAddress(address: string, length: number = 4): string {
+  return address.substr(0, length+1) + '...' + address.substr(address.length-length,length)
 }

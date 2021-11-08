@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link as WebLink, FileText, Box, AlertCircle, MessageCircle, Info } from 'react-feather'
+import { Link as WebLink, FileText, Box, AlertCircle, MessageCircle, Info, ExternalLink, Copy } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -22,6 +22,7 @@ import { getTokenAPR } from 'utils/apr'
 import InlineChange from 'components/InlineChange'
 import ChartContainer from 'components/ChartContainer'
 import PriceDayRange from 'components/PriceDayRange'
+import { shortenAddress } from 'utils/addressShortener'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -88,20 +89,20 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       }
-      <div className="flex flex-col sm:flex-row items-start gap-2 mt-8 mb-6">
-        <div className="w-128">
-          <div className="flex-grow flex flex-col sm:flex-row items-center">
-            <div className="flex-shrink-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-0 sm:mr-3 mb-2 sm:mb-0">
+      <div className="w-full flex flex-col sm:flex-row items-start gap-2 mt-8 mb-6">
+        <div className="w-144 max-w-full">
+          <div className="flex-grow flex items-center">
+            <div className="flex-shrink-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-3 mb-2 sm:mb-0">
               <TokenIcon url={token.icon} />
             </div>
             <div>
-              <h2 className="text-center sm:text-left">{token.name}</h2>
-              <div className="flex flex-col sm:flex-row items-center">
+              <h2 className="text-left">{token.name}</h2>
+              <div className="flex items-center">
                 <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-lg sm:mr-3 mb-1 sm:mb-0 font-medium">{token.symbol}</span>
               </div>
             </div>
           </div>
-          <div className="text-gray-800 dark:text-gray-400 mt-2 text-sm">
+          <div className="hidden sm:block text-gray-800 dark:text-gray-400 mt-2 text-sm">
             <Score value={token.viewblock_score} />
 
             {token.website &&
@@ -141,21 +142,58 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
 
-        <div className="flex-grow flex flex-col">
+        <div className="w-full flex-grow flex flex-col">
             
           <div className="font-medium pb-3 mb-3 border-b border-gray-300 dark:border-gray-800">
-            <div className="font-bold text-2xl">{cryptoFormat(token.rate)} ZIL</div>
-            <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center">
-              <span className="font-medium">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-              <span className="text-base ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
+            <div className="flex sm:flex-col">
+              <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.rate)} ZIL</div>
+              <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center">
+                <span className="font-medium">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                <span className="text-base ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
+              </div>
             </div>
-            <div className="my-2">
+            <div className="my-3">
               <PriceDayRange price={token.rate} low={token.market_data.low_24h} high={token.market_data.high_24h} />
+            </div>
+          </div>
+
+          <div className="sm:hidden mb-2 text-sm">
+            {token.website &&
+              <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
+                <div className="flex-grow">Website</div>
+                <div className="flex items-center gap-2">
+                  <a href={token.website} target="_blank">{new URL(token.website).hostname}</a>
+                  <ExternalLink size={14} />
+                </div>
+              </div>
+            }
+            
+            {token.telegram &&
+              <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
+                <div className="flex-grow">Telegram</div>
+                <div className="flex items-center gap-2">
+                  <a href={token.telegram} target="_blank">{new URL(token.telegram).hostname}{new URL(token.telegram).pathname}</a>
+                  <ExternalLink size={14} />
+                </div>
+              </div>
+            }
+            
+            <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
+              <div className="flex-grow">Contract</div>
+              <button 
+                className="flex items-center gap-2 font-semibold"
+                onClick={() => {
+                  navigator.clipboard.writeText(token.address_bech32)
+                }}
+              >
+                {shortenAddress(token.address_bech32, 10)}
+                <Copy size={14} />
+              </button>
             </div>
           </div>
         
 
-          <div className="py-2 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+          <div className="py-2 grid grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
             <div className="py-2 border-r border-gray-300 dark:border-gray-800">
               <div className="text-gray-700 dark:text-gray-400">Market Cap</div>
               <div className="font-medium">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
@@ -229,7 +267,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       <div className="flex flex-col md:flex-row items-start">
         <div className="flex-grow">
           <Tab.Group>
-            <Tab.List className="inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 dark:bg-gray-800 mb-3">
+            <Tab.List className="w-full sm:w-auto inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 dark:bg-gray-800 mb-3">
               <Tab className={({selected}) => classNames(
                 'w-full py-1 px-4 text-sm leading-5 font-medium rounded-lg',
                 'focus:outline-none',
