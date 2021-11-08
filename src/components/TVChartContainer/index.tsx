@@ -122,7 +122,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 		return (
 			<div
 				id={ this.props.containerId }
-				className={ 'h-144 w-full' }
+				className={ 'h-80 md:h-144 w-full' }
 			/>
 		);
 	}

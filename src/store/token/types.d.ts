@@ -53,6 +53,8 @@ export interface MarketData {
   ath: number
   atl: number
   change_24h: number
+  low_24h: number
+  high_24h: number
   change_percentage_24h: number
   change_percentage_7d: number
   change_percentage_14d: number

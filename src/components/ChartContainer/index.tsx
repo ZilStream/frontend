@@ -33,7 +33,7 @@ const ChartContainer = (props: Props) => {
   }
 
   return (
-    <div className="h-144 bg-white dark:bg-gray-800 rounded-lg">
+    <div className="h-80 md:h-144 bg-white dark:bg-gray-800 rounded-lg">
       {rates &&
         <Chart data={rates} isUserInteractionEnabled={true} isScalesEnabled={true} />
       }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
@@ -8,7 +8,6 @@ import Link from 'next/link'
 import { Currency, CurrencyState, RootState, SettingsState, Token } from 'store/types'
 import { useDispatch, useSelector } from 'react-redux'
 import dayjs from 'dayjs'
-import { getTokenAPR } from 'utils/apr'
 import { Star } from 'react-feather'
 import { TokenActionTypes } from 'store/token/actions'
 import { useTheme } from 'next-themes'
@@ -40,10 +39,7 @@ const TokenRow = (props: Props) => {
   const fiatRate = lastRate * selectedCurrency.rate
   const [isFavorited, setIsFavorited] = useState<boolean>(token.isFavorited)
   const dispatch = useDispatch()
-  const {theme, setTheme, resolvedTheme} = useTheme()
-
-  const change = ((lastRate - firstRate) / firstRate) * 100
-  const changeRounded = Math.round(change * 100) / 100
+  const { resolvedTheme } = useTheme()
 
   const onFavorited = () => {
     const favoritesString = localStorage.getItem('favorites') ?? ''
