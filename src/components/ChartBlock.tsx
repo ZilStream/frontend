@@ -1,10 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
-import { currencyFormat } from 'utils/format'
-import FlashChange from './FlashChange'
-import { Currency, CurrencyState, RootState, Token } from 'store/types'
-import { useSelector } from 'react-redux'
+import { Token } from 'store/types'
 
 const Chart = dynamic(
   () => import('components/Chart'),

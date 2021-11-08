@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
-import { Link as WebLink, FileText, Box, ExternalLink, AlertCircle, MessageCircle, Info } from 'react-feather'
+import { Link as WebLink, FileText, Box, AlertCircle, MessageCircle, Info } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import Supply from 'components/Supply'
 import Head from 'next/head'
@@ -12,10 +12,7 @@ import Score from 'components/Score'
 import { ResolutionString } from '../../../public/charting_library/charting_library'
 import { useTheme } from 'next-themes'
 import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, Token, Reward, TokenState } from 'store/types'
-import { toBigNumber } from 'utils/useMoneyFormatter'
-import BigNumber from 'bignumber.js'
-import { bnOrZero } from 'utils/strings'
+import { Currency, CurrencyState, RootState, Reward, TokenState } from 'store/types'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import Tippy from '@tippyjs/react'
@@ -23,6 +20,7 @@ import { Tab } from '@headlessui/react'
 import { classNames } from 'utils/classNames'
 import { getTokenAPR } from 'utils/apr'
 import InlineChange from 'components/InlineChange'
+import ChartContainer from 'components/ChartContainer'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -106,10 +104,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="flex-grow font-bold text-2xl">{cryptoFormat(token.rate)} ZIL</div>
           <div className="text-gray-500 flex items-center justify-end">
             {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}
-            <div className="bg-gray-300 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
-              <div className={`font-medium ${token.market_data.change_24h >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_24h)}%
-              </div>
+            <div className="bg-gray-200 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
+              <InlineChange num={token.market_data.change_percentage_24h} />
             </div>
           </div>
         </div>
@@ -149,35 +145,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <span className="w-3 h-3 mr-1"><TokenIcon address="zil1p5suryq6q647usxczale29cu3336hhp376c627" /></span>
             Swap 
           </a>
-        </div>
-
-        <div className="flex items-center justify-center sm:justify-end text-xs sm:text-sm">
-          {token.market_data.change_percentage_7d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium">
-              <div className="mr-2 text-gray-500">7D</div>
-              <div className={`${token.market_data.change_percentage_7d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_7d)}%
-              </div>
-            </div>
-          }
-
-          {token.market_data.change_percentage_14d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
-              <div className="mr-2 text-gray-500">14D</div>
-              <div className={`${token.market_data.change_percentage_14d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_14d)}%
-              </div>
-            </div>
-          }
-
-          {token.market_data.change_percentage_30d !== 0 &&
-            <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded font-medium ml-2">
-              <div className="mr-2 text-gray-500">30D</div>
-              <div className={`${token.market_data.change_percentage_30d >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                {numberFormat(token.market_data.change_percentage_30d)}%
-              </div>
-            </div>
-          }
         </div>
       </div>
       <div className="py-2 -mx-4 mb-6 grid grid-cols-2 md:grid-cols-4">
@@ -287,7 +254,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             </Tab.List>
             <Tab.Panels>
               <Tab.Panel>
-                Chart
+                <ChartContainer token={token} />
               </Tab.Panel>
               <Tab.Panel>
                 <TVChartContainer 
@@ -300,33 +267,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
               <Tab.Panel>TVL</Tab.Panel>
             </Tab.Panels>
-          </Tab.Group>
-          {/* <div className="inline-block p-1 bg-gray-200 rounded-lg text-sm mb-3">
-            <button className="px-3 py-1 font-medium">
-              Chart
-            </button>
-            <button className="bg-white rounded-lg px-3 py-1 font-medium">
-              TradingView
-            </button>
-            <button className="px-3 py-1 font-medium">
-              TVL
-            </button>
-          </div>
-          <div className="rounded-lg overflow-hidden shadow-md">
-            <TVChartContainer 
-              symbol={`${token.symbol}/ZIL`} 
-              interval={'240' as ResolutionString} 
-              autosize={true} 
-              fullscreen={false} 
-              theme={resolvedTheme}
-            />
-          </div> */}
-
-          <div className="mt-4">
+          </Tab.Group> 
+          <div className="mt-6">
             <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
             <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
           </div>
         </div>
+
         <div className="flex-grow-0 flex-shrink-0 w-96 ml-6">
           <div className="bg-blue-900 bg-opacity-5 dark:bg-gray-800 py-4 px-5 rounded-lg">
             <div className="text-lg font-bold mb-2">{token.symbol} Market Stats</div>
@@ -345,20 +292,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{cryptoFormat(token.market_data.change_24h)} ZIL</span>
                     <InlineChange num={token.market_data.change_percentage_24h} />
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th scope="row" className="text-left font-normal py-3">All Time High</th>
-                  <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <InlineChange num={athChangePercentage} />
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th scope="row" className="text-left font-normal py-3">All Time Low</th>
-                  <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <InlineChange num={atlChangePercentage} />
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -394,6 +327,54 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Fully Diluted Market Cap</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table className="w-full text-sm table-auto mt-2">
+              <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Liquidity</caption>
+              <tbody>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Market Cap</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="text-left font-normal py-3">LP Reward APR</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{apr.toNumber()}%</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table className="w-full text-sm table-auto mt-2">
+              <caption className="text-left text-gray-500 dark:text-gray-400 text-xs font-medium py-2 border-b border-gray-200 dark:border-gray-700">{token.name} Price History</caption>
+              <tbody>
+                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">7d</span></th>
+                  <td className="flex flex-col items-end py-3">
+                    <InlineChange num={token.market_data.change_percentage_7d} />
+                  </td>
+                </tr>
+                <tr className="border-t border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">30d</span></th>
+                  <td className="flex flex-col items-end py-3">
+                    <InlineChange num={token.market_data.change_percentage_30d} />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th scope="row" className="text-left font-normal py-3">All Time High</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <InlineChange num={athChangePercentage} />
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="text-left font-normal py-3">All Time Low</th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <InlineChange num={atlChangePercentage} />
                   </td>
                 </tr>
               </tbody>
