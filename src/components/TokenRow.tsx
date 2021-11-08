@@ -12,6 +12,7 @@ import { getTokenAPR } from 'utils/apr'
 import { Star } from 'react-feather'
 import { TokenActionTypes } from 'store/token/actions'
 import { useTheme } from 'next-themes'
+import InlineChange from './InlineChange'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -120,41 +121,21 @@ const TokenRow = (props: Props) => {
       }
       
       {settingsState.columns.change24H &&
-        <>
-          {token.market_data.change_percentage_24h != 0 ? (
-            <td className={token.market_data.change_percentage_24h >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
-              {token.market_data.change_percentage_24h.toFixed(2)}%
-            </td>
-          ) : (
-            <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">—</td>
-          )}
-        
-        </>
+        <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">
+          <InlineChange num={token.market_data.change_percentage_24h} />
+        </td>
       }
 
       {settingsState.columns.change7D &&
-        <>
-          {token.market_data.change_percentage_7d != 0 ? (
-            <td className={token.market_data.change_percentage_7d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
-              {token.market_data.change_percentage_7d.toFixed(2)}%
-            </td>
-          ) : (
-            <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">—</td>
-          )}
-        
-        </>
+        <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">
+          <InlineChange num={token.market_data.change_percentage_7d} />
+        </td>
       }
 
       {settingsState.columns.change30D &&
-        <>
-          {token.market_data.change_percentage_30d != 0 ? (
-            <td className={token.market_data.change_percentage_30d >= 0 ? 'positive-change px-2 py-2 font-normal text-right' : 'negative-change px-2 py-2 font-normal text-right'}>
-              {token.market_data.change_percentage_30d.toFixed(2)}%
-            </td>
-          ) : (
-            <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">—</td>
-          )}
-        </>
+        <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">
+          <InlineChange num={token.market_data.change_percentage_30d} />
+        </td>
       }
       
       {settingsState.columns.marketCap &&

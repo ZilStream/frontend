@@ -4,6 +4,8 @@ import { numberFormat } from 'utils/format'
 
 interface Props {
   num: number
+  bold?: boolean
+  className?: string
 }
 
 const InlineChange = (props: Props) => {
@@ -11,7 +13,7 @@ const InlineChange = (props: Props) => {
   const isPositive = num > 0
   const isNeutral = num === 0
   const isNegative = num < 0
-  return <span className={`inline-flex items-center font-semibold ${num >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
+  return <span className={`inline-flex items-center ${props.bold && 'font-semibold'} ${isPositive && 'text-green-600 dark:text-green-500'}  ${isNegative && 'text-red-600 dark:text-red-500'} ${props.className ?? ""}`}>
     {isPositive &&
       <ChevronUp size={14} strokeWidth={3} />
     }

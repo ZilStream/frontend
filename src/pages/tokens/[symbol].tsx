@@ -105,7 +105,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           <div className="text-gray-500 flex items-center justify-end">
             {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}
             <div className="bg-gray-200 dark:bg-gray-800 text-sm rounded px-2 py-1 ml-2">
-              <InlineChange num={token.market_data.change_percentage_24h} />
+              <InlineChange num={token.market_data.change_percentage_24h} bold />
             </div>
           </div>
         </div>
@@ -291,7 +291,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{cryptoFormat(token.market_data.change_24h)} ZIL</span>
-                    <InlineChange num={token.market_data.change_percentage_24h} />
+                    <InlineChange num={token.market_data.change_percentage_24h} bold />
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -354,27 +354,27 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-t border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">7d</span></th>
                   <td className="flex flex-col items-end py-3">
-                    <InlineChange num={token.market_data.change_percentage_7d} />
+                    <InlineChange num={token.market_data.change_percentage_7d} bold />
                   </td>
                 </tr>
                 <tr className="border-t border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">30d</span></th>
                   <td className="flex flex-col items-end py-3">
-                    <InlineChange num={token.market_data.change_percentage_30d} />
+                    <InlineChange num={token.market_data.change_percentage_30d} bold />
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">All Time High</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <InlineChange num={athChangePercentage} />
+                    <InlineChange num={athChangePercentage} bold />
                   </td>
                 </tr>
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">All Time Low</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <InlineChange num={atlChangePercentage} />
+                    <InlineChange num={atlChangePercentage} bold />
                   </td>
                 </tr>
               </tbody>
