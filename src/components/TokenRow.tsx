@@ -190,7 +190,7 @@ const TokenRow = (props: Props) => {
         <td className={`px-2 py-2 flex justify-end ${props.index == 0 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
           <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
             <a className="inline-block w-28" style={{height: '52px'}}>
-              <Chart data={props.rates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
+              <Chart data={props.rates} isUserInteractionEnabled={false} isScalesEnabled={false} />
             </a>
           </Link>
         </td>

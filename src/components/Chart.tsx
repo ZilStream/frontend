@@ -4,9 +4,8 @@ import { Rate } from 'types/rate.interface';
 
 interface Props {
   data: {time: string, value: number}[],
-  isIncrease: boolean,
-  isUserInteractionEnabled: boolean,
-  isScalesEnabled: boolean,
+  isUserInteractionEnabled?: boolean,
+  isScalesEnabled?: boolean,
 }
 
 export interface ChartDataPoint {
@@ -62,6 +61,7 @@ function Chart(props: Props) {
 
       var data: ChartDataPoint[] = [];
 
+      props.data.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
       props.data.forEach(rate => {
         data.push({
           time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
@@ -69,12 +69,15 @@ function Chart(props: Props) {
         })
       })
 
+      const isIncrease = data?.[0].value < data?.[data.length-1].value
+
       const newSeries = newChart.addAreaSeries({
-        topColor: props.isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
-        bottomColor: props.isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
-        lineColor: props.isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
+        topColor: isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
+        bottomColor: isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
+        lineColor: isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
         lineWidth: 2,
         priceLineVisible: false,
+        crosshairMarkerVisible: props.isUserInteractionEnabled ? true : false,
         autoscaleInfoProvider: () => ({
           priceRange: {
               minValue: Math.min(...props.data.map(item => item.value)),

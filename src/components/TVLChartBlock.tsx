@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat } from 'utils/format'
+import InlineChange from './InlineChange'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -34,8 +35,8 @@ const TVLChartBlock = (props: Props) => {
     setTVL(response)
   }
 
-  const lastRate = tvl.length > 0 ? tvl[0].value : 0
-  const firstRate = tvl.length > 0 ? tvl[tvl.length-1].value : 0
+  const firstRate = tvl.length > 0 ? tvl[0].value : 0
+  const lastRate = tvl.length > 0 ? tvl[tvl.length-1].value : 0
 
   const change = ((lastRate - firstRate) / firstRate) * 100
   const changeRounded = Math.round(change * 100) / 100
@@ -49,9 +50,7 @@ const TVLChartBlock = (props: Props) => {
             <span className="mr-2">{currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
           {!isNaN(changeRounded) &&
-            <div className={change >= 0 ? 'positive-change' : 'negative-change'}>
-              {changeRounded} %
-            </div>
+            <InlineChange num={changeRounded} bold />
           }
         </div>
         <div>
@@ -60,7 +59,7 @@ const TVLChartBlock = (props: Props) => {
       </div>
       <div className="h-full w-full pt-10">
         {tvl.length > 0 &&
-          <Chart data={tvl} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
+          <Chart data={tvl} isUserInteractionEnabled={false} isScalesEnabled={false} />
         }
       </div>
     </div>

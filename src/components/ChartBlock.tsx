@@ -2,6 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { Rate } from 'types/rate.interface'
 import { Token } from 'store/types'
+import InlineChange from './InlineChange'
 
 const Chart = dynamic(
   () => import('components/Chart'),
@@ -32,16 +33,14 @@ const RatesBlock = (props: Props) => {
             <span className="font-semibold mr-2">{props.title}</span>
             <span className="mr-2">{props.value}</span>
           </div>
-          <div className={change >= 0 ? 'positive-change' : 'negative-change'}>
-            {changeRounded} %
-          </div>
+          <InlineChange num={changeRounded} bold />
         </div>
         <div>
           <span className="text-gray-400">{props.subTitle}</span>
         </div>
       </div>
       <div className="h-full w-full pt-10">
-        <Chart data={sortedRates} isIncrease={change >= 0} isUserInteractionEnabled={false} isScalesEnabled={false} />
+        <Chart data={sortedRates} isUserInteractionEnabled={false} isScalesEnabled={false} />
       </div>
     </div>
   )
