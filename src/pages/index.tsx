@@ -283,7 +283,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       </div>
-      <div className="scrollable-table-container overflow-y-scroll max-w-full">
+      <div className="scrollable-table-container overflow-y-scroll py-1 max-w-full">
         <div className="grid grid-cols-4 gap-4 mt-2" style={{minWidth: 1200}}>
           {tokenState.initialized === false ? (
             <>
