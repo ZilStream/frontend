@@ -1,12 +1,10 @@
 import TokenIcon from 'components/TokenIcon'
-import getBridgeAssets, { AssetResponse } from 'lib/zilstream/getBridgeAssets'
+import getBridgeAssets from 'lib/zilstream/getBridgeAssets'
 import Head from 'next/head'
 import React, { useEffect, useMemo, useState } from 'react'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
-import { toBech32Address, fromBech32Address } from '@zilliqa-js/zilliqa'
-import BigNumber from 'bignumber.js'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, Token, TokenState } from 'store/types'
@@ -24,13 +22,14 @@ const Bridge = () => {
     zETH: 0,
     zWBTC: 0,
     zUSDT: 0,
+    PORT: 0
   })
 
   const zilliqa = new Zilliqa('https://api.zilliqa.com')
 
   useEffect(() => {
     if(!tokenState.initialized) return
-    setBridgeTokens(tokenState.tokens.filter(token => token.symbol === 'XCAD' || token.symbol === 'zETH' || token.symbol === 'zUSDT' || token.symbol === 'zWBTC'))
+    setBridgeTokens(tokenState.tokens.filter(token => token.symbol === 'XCAD' || token.symbol === 'zETH' || token.symbol === 'zUSDT' || token.symbol === 'zWBTC' || token.symbol === 'PORT'))
     fetchAssets()
   }, [tokenState.initialized])
 
@@ -50,6 +49,7 @@ const Bridge = () => {
       zETH: toBigNumber(result[1].result.total_supply).times(Math.pow(10, -18)).toNumber(),
       zWBTC: toBigNumber(result[2].result.total_supply).times(Math.pow(10, -8)).toNumber(),
       zUSDT: toBigNumber(result[0].result.total_supply).times(Math.pow(10, -6)).toNumber(),
+      PORT: assets.assets.filter(asset => asset.symbol === 'PORT')[0].amount,
     })
   }
 
