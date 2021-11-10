@@ -25,7 +25,7 @@ const Bridge = () => {
     PORT: 0
   })
 
-  // const zilliqa = new Zilliqa('https://api.zilliqa.com')
+  const zilliqa = new Zilliqa('https://api.zilliqa.com')
 
   useEffect(() => {
     if(!tokenState.initialized) return
@@ -34,21 +34,21 @@ const Bridge = () => {
   }, [tokenState.initialized])
 
   const fetchAssets = async () => {
-    // const response: any = await zilliqa.blockchain.getSmartContractSubStateBatch([
-    //   [`818ca2e217e060ad17b7bd0124a483a1f66930a9`, "total_supply", []],
-    //   [`2ca315f4329654614d1e8321f9c252921192c5f2`, "total_supply", []],
-    //   [`75fa7d8ba6bed4a68774c758a5e43cfb6633d9d6`, "total_supply", []]
-    // ])
+    const response: any = await zilliqa.blockchain.getSmartContractSubStateBatch([
+      [`818ca2e217e060ad17b7bd0124a483a1f66930a9`, "total_supply", []],
+      [`2ca315f4329654614d1e8321f9c252921192c5f2`, "total_supply", []],
+      [`75fa7d8ba6bed4a68774c758a5e43cfb6633d9d6`, "total_supply", []]
+    ])
 
-    // const result: any[] = response.batch_result
+    const result: any[] = response.batch_result
 
     const assets = await getBridgeAssets("1", "500000000")
 
     setSupplies({
       XCAD: assets.assets.filter(asset => asset.symbol === 'XCAD')[0].amount,
-      zETH: assets.assets.filter(asset => asset.symbol === 'zETH')[0].amount,
-      zWBTC: assets.assets.filter(asset => asset.symbol === 'zWBTC')[0].amount,
-      zUSDT: assets.assets.filter(asset => asset.symbol === 'zUSDT')[0].amount,
+      zETH: toBigNumber(result[1].result.total_supply).times(Math.pow(10, -18)).toNumber(),
+      zWBTC: toBigNumber(result[2].result.total_supply).times(Math.pow(10, -8)).toNumber(),
+      zUSDT: toBigNumber(result[0].result.total_supply).times(Math.pow(10, -6)).toNumber(),
       PORT: assets.assets.filter(asset => asset.symbol === 'PORT')[0].amount,
     })
   }
