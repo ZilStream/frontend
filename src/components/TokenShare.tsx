@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react'
 import { toJpeg } from 'html-to-image'
 import TokenIcon from './TokenIcon'
 import { Currency, CurrencyState, RootState, Token } from 'store/types'
-import { currencyFormat } from 'utils/format'
+import { cryptoFormat, currencyFormat } from 'utils/format'
 import InlineChange from './InlineChange'
 import { useSelector } from 'react-redux'
 
