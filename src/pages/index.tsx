@@ -333,7 +333,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </div>
                 <div className="flex flex-col gap-3 text-sm">
                   {aprTokens.map((token, index) => (
-                    <div className="flex items-center gap-3">
+                    <div key={token.id} className="flex items-center gap-3">
                       <div>{index+1}.</div>
                       <div className="w-6 h-6">
                         <TokenIcon address={token.address_bech32} />

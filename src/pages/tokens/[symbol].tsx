@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
@@ -23,8 +23,8 @@ import InlineChange from 'components/InlineChange'
 import ChartContainer from 'components/ChartContainer'
 import PriceDayRange from 'components/PriceDayRange'
 import { shortenAddress } from 'utils/addressShortener'
-import { toJpeg } from 'html-to-image'
-import html2canvas from 'html2canvas'
+import TVLChartContainer from 'components/TVLChartContainer'
+import MemberWrapper from 'components/MemberWrapper'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -58,7 +58,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
-  const shareImageRef = useRef<HTMLDivElement>(null)
 
   const {
     apr,
@@ -71,19 +70,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       atlChangePercentage: token.rate_usd / (token.market_data.atl * selectedCurrency.rate) * 100
     }
   }, [token, tokenState.tokens])
-
-
-  const onShare = useCallback(() => {
-    if(shareImageRef.current === null) return
-
-    toJpeg(shareImageRef.current, { quality: 1, pixelRatio: 1 })
-      .then(function (dataUrl) {
-        var link = document.createElement('a');
-        link.download = 'token.jpg';
-        link.href = dataUrl;
-        link.click();
-      });
-  }, [shareImageRef])
 
   return (
     <>
@@ -105,7 +91,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           </div>
         </div>
       }
-      <div className="w-full flex flex-col sm:flex-row items-start gap-2 mt-8 mb-6">
+      <div className="w-full flex flex-col sm:flex-row items-start gap-6 mt-8 mb-6">
         <div className="w-96 flex-shrink-0 max-w-full">
           <div className="flex-grow flex items-center">
             <div className="flex-shrink-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 w-12 sm:w-16 h-12 sm:h-16 p-2 rounded-lg mr-3 mb-2 sm:mb-0">
@@ -170,46 +156,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             </div>
             <div className="my-3">
               <PriceDayRange price={token.rate} low={token.market_data.low_24h} high={token.market_data.high_24h} />
-            </div>
-          </div>
-
-          <button onClick={onShare}>Share</button>
-           
-          <div id="tokenCard" ref={shareImageRef} className="absolute w-144 h-96 bg-gray-900 text-white border p-11" style={{zIndex: -1}}>
-            <div className="flex flex-col items-stretch w-full">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12">
-                  <TokenIcon url={token.icon} />
-                </div>
-                <div className="text-4xl font-extrabold flex-grow">
-                  {token.name}
-                </div>
-                <div className="text-4xl font-medium text-gray-400">
-                  {token.symbol}
-                </div>
-              </div>
-              <div className="text-4xl flex items-center mt-3">
-                <span className="flex-grow flex items-center gap-2 font-bold">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} <span className="text-gray-400 text-2xl">{cryptoFormat(token.rate)} ZIL</span></span>
-                <span className="text-3xl ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
-              </div>
-
-              <div className="mt-8 text-2xl flex items-center py-3 border-t border-b border-gray-300 dark:border-gray-800">
-                <div className="flex-grow">Market Cap</div>
-                <div className="flex items-center gap-2 font-semibold">
-                  {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}
-                </div>
-              </div>
-
-              <div className="text-2xl flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
-                <div className="flex-grow flex items-center gap-2">Volume <span className="px-2 py-1 ml-1 text-base font-medium bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></div>
-                <div className="flex items-center gap-2 font-semibold">
-                  {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}
-                </div>
-              </div>
-
-              <div className="text-gray-400 font-medium mt-6">
-                More Zilliqa market data on <span className="font-bold">ZilStream.com</span>
-              </div>
             </div>
           </div>
 
@@ -359,22 +305,28 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 selected
                   ? 'bg-white dark:bg-gray-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-gray-600'
-              )}>TVL</Tab>
+              )}>Liquidity</Tab>
             </Tab.List>
             <Tab.Panels>
               <Tab.Panel>
                 <ChartContainer token={token} />
               </Tab.Panel>
               <Tab.Panel>
-                <TVChartContainer 
-                  symbol={`${token.symbol}/ZIL`} 
-                  interval={'240' as ResolutionString} 
-                  autosize={true} 
-                  fullscreen={false} 
-                  theme={resolvedTheme}
-                />
+                <MemberWrapper>
+                  <TVChartContainer 
+                    symbol={`${token.symbol}/ZIL`} 
+                    interval={'240' as ResolutionString} 
+                    autosize={true} 
+                    fullscreen={false} 
+                    theme={resolvedTheme}
+                  />
+                </MemberWrapper>
               </Tab.Panel>
-              <Tab.Panel>TVL</Tab.Panel>
+              <Tab.Panel>
+                <MemberWrapper>
+                  <TVLChartContainer token={token} />
+                </MemberWrapper>
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group> 
           <div className="mt-6">
