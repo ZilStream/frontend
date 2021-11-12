@@ -42,6 +42,15 @@ function Calendar() {
       website: 'https://heroesoflowhelm.com',
       twitter: 'https://twitter.com/HLowhelm'
     },
+    {
+      name: 'Zilwar',
+      symbol: '?',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/zilwar.svg',
+      tags: ['Game'],
+      website: 'https://zilwar.com',
+      twitter: 'https://twitter.com/Zilwarofficial',
+      telegram: 'https://t.me/Zilwarofficial'
+    },
   ]
 
   return (
