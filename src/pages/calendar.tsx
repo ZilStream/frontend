@@ -9,16 +9,6 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'ZilAds',
-      symbol: 'ADS',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/zilads.png',
-      sale_type: 'MILO',
-      tags: ['Media'],
-      website: 'https://zilads.github.io/',
-      twitter: 'https://twitter.com/ZilliqaAds',
-      telegram: 'https://t.me/ziladschat'
-    },
-    {
       name: 'AO Sports',
       symbol: 'ATHLETE',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
@@ -59,6 +49,15 @@ function Calendar() {
       tags: ['Game'],
       website: 'https://heroesoflowhelm.com',
       twitter: 'https://twitter.com/HLowhelm'
+    },
+    {
+      name: 'Zilwar',
+      symbol: '?',
+      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/zilwar.svg',
+      tags: ['Game'],
+      website: 'https://zilwar.com',
+      twitter: 'https://twitter.com/Zilwarofficial',
+      telegram: 'https://t.me/Zilwarofficial'
     },
   ]
 
