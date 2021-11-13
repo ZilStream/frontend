@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { BlockchainState, RootState, Token } from 'store/types'
+import { shortenAddress } from 'utils/addressShortener'
 import { cryptoFormat, numberFormat } from 'utils/format'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import LoadingSpinner from './LoadingSpinner'
@@ -134,7 +135,8 @@ const TokenHolders = (props: Props) => {
             <div key={holder.address} className="flex items-center text-gray-800 dark:text-gray-300 py-2 border-b last:border-b-0 dark:border-gray-700">
               <div className="flex-grow flex items-center">
                 <div className="w-10 text-gray-500 dark:text-gray-400">{index+1}.</div>
-                <div>{holder.address}</div>
+                <div className="none md:block">{holder.address}</div>
+                <div className="block md:none">{shortenAddress(holder.address)}</div>
                 {excludedAddresses.includes(holder.address) && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">Team Locked</span>}
                 {holder.address === zilSwapAddress && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">ZilSwap</span>}
               </div>
