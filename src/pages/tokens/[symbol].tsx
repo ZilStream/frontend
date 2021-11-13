@@ -25,6 +25,8 @@ import PriceDayRange from 'components/PriceDayRange'
 import { shortenAddress } from 'utils/addressShortener'
 import TVLChartContainer from 'components/TVLChartContainer'
 import MemberWrapper from 'components/MemberWrapper'
+import TokenHolders from 'components/TokenHolders'
+import TokenLiquidity from 'components/TokenLiquidity'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -328,10 +330,49 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 </MemberWrapper>
               </Tab.Panel>
             </Tab.Panels>
-          </Tab.Group> 
-          <div className="mt-6">
-            <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
-            <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
+          </Tab.Group>
+            
+          <div className="mt-8">
+            <Tab.Group>
+              <Tab.List className="relative w-full inline-flex gap-2 mb-5 border-b dark:border-gray-700">
+                <Tab className={({selected}) => classNames(
+                  'focus:outline-none py-2 px-3',
+                  selected
+                    ? 'font-bold text-primary border-b-2 border-primary'
+                    : 'font-medium hover:bg-white/[0.12] hover:text-gray-600'
+                )} style={{marginBottom: -1}}>Info</Tab>
+                <Tab className={({selected}) => classNames(
+                  'font-medium focus:outline-none py-2 px-3',
+                  selected
+                    ? 'font-bold text-primary border-b-2 border-primary'
+                    : 'font-medium hover:bg-white/[0.12] hover:text-gray-600'
+                )} style={{marginBottom: -1}}>Holders</Tab>
+                <Tab className={({selected}) => classNames(
+                  'font-medium focus:outline-none py-2 px-3',
+                  selected
+                    ? 'font-bold text-primary border-b-2 border-primary'
+                    : 'font-medium hover:bg-white/[0.12] hover:text-gray-600'
+                )} style={{marginBottom: -1}}>Liquidity Providers</Tab>  
+              </Tab.List>
+              <Tab.Panels>
+                <Tab.Panel>
+                  <div className="">
+                    <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
+                    <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
+                  </div>
+                </Tab.Panel>
+                <Tab.Panel>
+                  <MemberWrapper>
+                    <TokenHolders token={token} />
+                  </MemberWrapper>
+                </Tab.Panel>
+                <Tab.Panel>
+                  <MemberWrapper>
+                    <TokenLiquidity token={token} />
+                  </MemberWrapper>
+                </Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
           </div>
         </div>
 
