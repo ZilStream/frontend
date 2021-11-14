@@ -91,7 +91,7 @@ const TokenLiquidity = (props: Props) => {
       <div>
         <div className="flex items-center py-2 text-xs uppercase text-gray-500 dark:text-gray-400 border-b dark:border-gray-700 mt-4">
           <div className="flex-grow flex items-center">Address</div>
-          <div>Balance</div>
+          <div>Liquidity</div>
           <div className="w-24 text-right">
             Share
           </div>
@@ -100,7 +100,7 @@ const TokenLiquidity = (props: Props) => {
           const share = holder.balance.dividedBy(state.totalContribution)
           const tokenAmount = share.times(token.market_data.token_reserve)
           return (
-            <div key={holder.address} className="flex items-center text-gray-800 dark:text-gray-300 py-2 border-b last:border-b-0 dark:border-gray-700">
+            <div key={holder.address} className="flex items-center text-gray-800 dark:text-gray-300 py-2 whitespace-nowrap border-b last:border-b-0 dark:border-gray-700">
               <div className="flex-grow flex items-center">
                 <div className="w-10 text-gray-500 dark:text-gray-400">{index+1}.</div>
                 <div className="hidden md:block">{holder.address}</div>
@@ -108,7 +108,7 @@ const TokenLiquidity = (props: Props) => {
                 {excludedAddresses.includes(holder.address) && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">Team Locked</span>}
                 {holder.address === zilSwapAddress && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">ZilSwap</span>}
               </div>
-              <div className="text-right">{cryptoFormat(tokenAmount.toNumber())}</div>
+              <div className="text-right">{cryptoFormat(tokenAmount.toNumber())} <span className="font-semibold">{token.symbol}</span></div>
               <div className="w-24 text-right">
                 {numberFormat(share.times(100).toNumber())}%
               </div>
