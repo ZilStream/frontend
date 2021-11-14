@@ -42,7 +42,7 @@ const VolumeChartBlock = (props: Props) => {
   const changeRounded = Math.round(change * 100) / 100
 
   return (
-    <div className={`rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col ${className ?? 'h-44'}`}>
+    <div className={`rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col ${className ?? 'h-48'}`}>
       <div className="absolute top-0 left-0 w-full pt-2 px-3">
         <div className="flex items-center text-lg">
           <div className="flex-grow flex items-center">

@@ -314,7 +314,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              <div className="h-44 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
+              <div className="h-48 rounded-lg py-2 px-3 shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col">
                 <div className="mb-2">
                   <div className="flex items-center text-lg -mb-1">
                     <div className="flex-grow flex items-center">
@@ -331,7 +331,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                     <span className="text-gray-400 text-sm">By providing liquidity on ZilSwap</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-3 text-sm">
+                <div className="flex flex-col gap-4 text-sm mt-1">
                   {aprTokens.map((token, index) => (
                     <div key={token.id} className="flex items-center gap-3">
                       <div>{index+1}.</div>
