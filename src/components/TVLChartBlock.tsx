@@ -32,14 +32,14 @@ const TVLChartBlock = (props: Props) => {
 
   const fetchTVL = async () => {
     const response = await getTVL()
+    response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
     setTVL(response)
-  }
+  }  
 
   const firstRate = tvl.length > 0 ? tvl[0].value : 0
   const lastRate = tvl.length > 0 ? tvl[tvl.length-1].value : 0
 
   const change = ((lastRate - firstRate) / firstRate) * 100
-  const changeRounded = Math.round(change * 100) / 100
 
   return (
     <div className={`rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col ${className ?? 'h-48'}`}>
@@ -49,8 +49,8 @@ const TVLChartBlock = (props: Props) => {
             <span className="font-semibold mr-2">TVL</span>
             <span className="mr-2">{currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
-          {!isNaN(changeRounded) &&
-            <InlineChange num={changeRounded} bold />
+          {!isNaN(change) &&
+            <InlineChange num={change} bold />
           }
         </div>
         <div>

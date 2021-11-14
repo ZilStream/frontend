@@ -32,6 +32,7 @@ const VolumeChartBlock = (props: Props) => {
 
   const fetchVolume = async () => {
     const response = await getVolume()
+    response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
     setTVL(response)
   }
 
@@ -39,7 +40,6 @@ const VolumeChartBlock = (props: Props) => {
   const lastRate = tvl.length > 0 ? tvl[tvl.length-1].value : 0
 
   const change = ((lastRate - firstRate) / firstRate) * 100
-  const changeRounded = Math.round(change * 100) / 100
 
   return (
     <div className={`rounded-lg shadow bg-white dark:bg-gray-800 text-black dark:text-white relative flex flex-col ${className ?? 'h-48'}`}>
@@ -49,8 +49,8 @@ const VolumeChartBlock = (props: Props) => {
             <span className="font-semibold mr-2 flex items-center">Volume <span className="px-1 ml-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-400 rounded">24h</span></span>
             <span className="mr-2">{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
-          {!isNaN(changeRounded) &&
-            <InlineChange num={changeRounded} bold />
+          {!isNaN(change) &&
+            <InlineChange num={change} bold />
           }
         </div>
         <div>
