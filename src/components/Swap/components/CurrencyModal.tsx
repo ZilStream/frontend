@@ -124,7 +124,8 @@ const CurrencyModal = () => {
               </div>
               <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2">
                 {filteredTokens.map(token => (
-                  <div 
+                  <div
+                    key={token.address_bech32}
                     className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer"
                     onClick={() => selectToken(token.address_bech32)}
                   >

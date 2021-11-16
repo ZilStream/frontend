@@ -25,8 +25,6 @@ const AccountPopover = () => {
     dispatch({ type: AccountActionTypes.LOGOUT, payload: '' })
   }
 
-  console.log(membership)
-
   return (
     <Popover>
       {({ open }) => (

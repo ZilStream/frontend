@@ -6,13 +6,14 @@ import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
-import { AccountActionTypes } from 'store/account/actions'
+import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
+import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
@@ -312,6 +313,11 @@ const StateProvider = (props: Props) => {
       account.wallets = account.wallets.map(a => ({...a, isConnected: false }))
 
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: account })
+
+      if(account.wallets.filter(a => a.type === AccountType.ZilPay).length > 0) {
+        // Has ZilPay wallet, try to connect
+        connectZilPay()
+      }
     } else {
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: {
         initialized: true,
@@ -330,6 +336,26 @@ const StateProvider = (props: Props) => {
   if (typeof(window) !== 'undefined') {
     // @ts-ignore
     import('zeeves-auth-sdk-js');
+  }
+
+  const connectZilPay = async () => {
+    const zilPay = (window as any).zilPay
+    
+    // Check if ZilPay is installed
+    if(typeof zilPay === "undefined") {
+      console.log("ZilPay extension not installed")
+      return
+    }
+      
+    const result = await zilPay.wallet.connect()
+
+    if(result !== zilPay.wallet.isConnect) {
+      console.log("Could not connect to ZilPay")
+      return
+    }
+
+    const walletAddress = zilPay.wallet.defaultAccount.bech32
+    dispatch(updateWallet({address: walletAddress, isConnected: true, provider: zilPay}))
   }
   
   return <>{props.children}</>
