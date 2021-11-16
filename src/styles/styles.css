@@ -43,6 +43,10 @@ body, #__next {
     @apply max-w-full;
   }
 
+  .max-h-screen-margin {
+    height: calc(100vh - 2rem)!important;
+  }
+
   .token-row {
     @apply flex items-center bg-white dark:bg-gray-800 pl-3 pr-1 sm:pl-4 sm:pr-2 rounded-lg shadow-md;
   }
@@ -186,5 +190,15 @@ body, #__next {
 
   .toggle-btn-selected {
     @apply inline-flex items-center text-sm bg-primary bg-opacity-75 rounded-full px-3 py-1 font-medium mr-2 mb-2 focus:outline-none transition;
+  }
+
+  .input-arrows-hidden::-webkit-outer-spin-button,
+  .input-arrows-hidden::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .input-arrows-hidden[type=number] {
+    -moz-appearance: textfield;
   }
 }

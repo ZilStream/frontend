@@ -84,7 +84,6 @@ function Calendar() {
           </thead>
           <tbody>
             {launches.map((launch, index) => {
-              console.log(launch.sale_date)
               return (
                 <tr key={launch.symbol} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-3 ${index === 0 ? 'rounded-tl-lg' : ''} ${index === launches.length-1 ? 'rounded-bl-lg' : ''}`}>

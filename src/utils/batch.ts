@@ -1,6 +1,7 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
 import { Operator, Token } from "store/types";
 import { Network } from "./network";
+import { Node, TestnetNode } from "./node";
 
 export enum BatchRequestType {
   Balance = "balance",
@@ -262,13 +263,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @param BatchRequest[] An array of RPC requests.
  * @returns Promise<BatchResponse[]> Array of responses.
  */
-export const sendBatchRequest = async (network: Network, requests: BatchRequest[]): Promise<BatchResponse[]> => {
-  var baseUrl = "https://api.zilliqa.com/"
-  if (network == Network.TestNet) {
-    baseUrl = "https://dev-api.zilliqa.com/"
-  }
-  
-  const response = await fetch(baseUrl, {
+export const sendBatchRequest = async (requests: BatchRequest[], network: Network = Network.MainNet, node: Node|TestnetNode = Node.ZilStream, ): Promise<BatchResponse[]> => {  
+  const response = await fetch(node, {
     method: 'POST',
     body: JSON.stringify(requests.flatMap(request => request.item))
   })

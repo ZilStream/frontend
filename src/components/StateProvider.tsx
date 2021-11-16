@@ -10,6 +10,7 @@ import { AccountActionTypes } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
+import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { getTokenAPR } from 'utils/apr'
@@ -45,6 +46,13 @@ const StateProvider = (props: Props) => {
         }})
       })
     })
+
+    if(tokens.length > 0) {
+      dispatch(updateSwap({
+        tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
+        tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
+      }))
+    }
 
     await loadRates()
   }
@@ -105,7 +113,7 @@ const StateProvider = (props: Props) => {
     stakingState.operators.forEach(operator => {
       batchRequests.push(stakingDelegatorsBatchRequest(operator, walletAddress))
     })
-    let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
+    let batchResults = await sendBatchRequest(batchRequests)
     await processBatchResults(batchResults)
   }
 
@@ -121,7 +129,7 @@ const StateProvider = (props: Props) => {
           case BatchRequestType.Balance: {
             dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
               address_bech32: token?.address_bech32,
-              balance: result.result.balance,
+              balance: bnOrZero(result.result.balance),
               isZil: true,
             }})
             return

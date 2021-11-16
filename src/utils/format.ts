@@ -34,3 +34,14 @@ export function compactFormat(num: number, symbol: string = "$"): string {
   let formatter = Intl.NumberFormat('en', { notation: 'compact' })
   return symbol + formatter.format(num)
 }
+
+export function fieldFormat(num: number, decimals: number = 2): string {
+  if(num % 1 === 0) {
+    return num.toFixed(0)
+  } else if(num < 0.1) {
+    return num.toFixed(5)
+  } else if(num > 10000) {
+    decimals = 0
+  }
+  return num.toFixed(decimals)
+}

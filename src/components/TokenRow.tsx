@@ -135,11 +135,11 @@ const TokenRow = (props: Props) => {
       }
       
       {settingsState.columns.marketCap &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.marketCapDiluted &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.circSupply &&
@@ -155,11 +155,11 @@ const TokenRow = (props: Props) => {
       }
 
       {settingsState.columns.liquidity &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.volume &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.apr &&
