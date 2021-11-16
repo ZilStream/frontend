@@ -15,6 +15,7 @@ export interface ConnectedWallet {
   isConnected: boolean,
   isMember: boolean,
   type: AccountType
+  provider?: any
 }
 
 export interface AddWalletProps {

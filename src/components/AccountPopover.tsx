@@ -25,6 +25,8 @@ const AccountPopover = () => {
     dispatch({ type: AccountActionTypes.LOGOUT, payload: '' })
   }
 
+  console.log(membership)
+
   return (
     <Popover>
       {({ open }) => (
@@ -98,7 +100,7 @@ const AccountPopover = () => {
                 </div>
               </div>
               <div className="mt-4 text-sm flex flex-col items-stretch">
-                {accountState.selectedWallet?.isMember &&
+                {membership.isMember &&
                   <button
                     className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"
                     onClick={() => handleAddWallet()}

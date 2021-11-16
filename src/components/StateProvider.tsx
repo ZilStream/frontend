@@ -301,7 +301,7 @@ const StateProvider = (props: Props) => {
   useEffect(() => {
     if(!accountState.initialized) return
     // This makes sure all account changes persist.
-    localStorage.setItem('account', JSON.stringify(accountState))
+    localStorage.setItem('account', JSON.stringify(accountState))    
   }, [accountState])
 
   useEffect(() => {
@@ -309,6 +309,8 @@ const StateProvider = (props: Props) => {
     if(accountString) {
       const account: AccountState = JSON.parse(accountString)
       account.initialized = true
+      account.wallets = account.wallets.map(a => ({...a, isConnected: false }))
+
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: account })
     } else {
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: {
