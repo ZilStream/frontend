@@ -102,7 +102,7 @@ const TokenHolders = (props: Props) => {
         <div className="flex-grow">
           <span className="font-semibold">{holders.length} holders</span>
         </div>
-        <div className="flex items-center bg-gray-800 rounded py-1 px-3 text-sm">
+        <div className="flex items-center bg-gray-200 dark:bg-gray-800 rounded py-1 px-3 text-sm">
           <div className="text-gray-500 dark:text-gray-400 mr-3">Excluding</div>
           <label className="flex items-center font-medium mr-2">
             <input 

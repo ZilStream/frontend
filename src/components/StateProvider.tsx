@@ -355,7 +355,7 @@ const StateProvider = (props: Props) => {
     }
 
     const walletAddress = zilPay.wallet.defaultAccount.bech32
-    dispatch(updateWallet({address: walletAddress, isConnected: true, provider: zilPay}))
+    dispatch(updateWallet({address: walletAddress, isConnected: true}))
   }
   
   return <>{props.children}</>

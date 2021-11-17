@@ -1,15 +1,19 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, Info, Maximize, Settings } from 'react-feather'
 import { useSelector } from 'react-redux'
-import { RootState, SwapState, TokenState } from 'store/types'
+import { BlockchainState, RootState, SwapState, TokenState } from 'store/types'
 import CurrencyInput from './components/CurrencyInput'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import Tippy from '@tippyjs/react'
-import { getExchangeRate } from 'lib/zilswap'
 import TokenIcon from 'components/TokenIcon'
+import { Exchange } from 'lib/exchange/exchange'
+import { ZilSwap } from 'lib/exchange/zilswap/zilswap'
+import { toast } from 'react-toastify'
+import { ZIL_ADDRESS } from 'lib/constants'
+import { BIG_ONE } from 'utils/strings'
 
 interface Props {
   showFullscreen?: boolean
@@ -20,7 +24,22 @@ const Swap = (props: Props) => {
   const { tokenInAddress, tokenOutAddress, slippage } = useSelector<RootState, SwapState>(state => state.swap)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
-  
+  const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
+
+  const [exchange, setExchange] = useState<Exchange|null>(null)
+  const [state, setState] = useState({
+    tokenInAmount: new BigNumber(0),
+    tokenOutAmount: new BigNumber(0),
+    expectedSlippage: new BigNumber(0),
+    focusDirectionIn: true,
+    needsApproval: false
+  })
+
+  useEffect(() => {
+    let zilPay = (window as any).zilPay
+    setExchange(new ZilSwap(blockchainState.client, zilPay))
+  }, [])
+
   const { tokenIn, tokenOut } = useMemo(() => {
     return {
       tokenIn: tokenState.tokens.filter(t => t.address_bech32 === tokenInAddress)?.[0],
@@ -28,18 +47,42 @@ const Swap = (props: Props) => {
     }
   }, [tokenState, swapState])
 
-  const [state, setState] = useState({
-    tokenInAmount: new BigNumber(0),
-    tokenOutAmount: new BigNumber(0),
-    expectedSlippage: new BigNumber(0),
-    focusDirectionIn: true
-  })
+  useEffect(() => {
+    if(!exchange || !tokenIn) return
+
+    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+      setState({...state, needsApproval: false})
+    } else {
+      checkApproval()
+      }
+  }, [exchange, swapState.tokenInAddress])
+
+  const checkApproval = async () => {
+    const approval = await exchange!.tokenNeedsApproval(tokenIn, BIG_ONE)
+    setState({...state, needsApproval: approval.needsApproval})
+  }
 
   const getCurrentRate = (): BigNumber => {
     if(!tokenIn || !tokenOut) return new BigNumber(0)
     const inRate = toBigNumber(tokenIn.symbol === 'ZIL' ? 1 : tokenIn.rate)
     const outRate = toBigNumber(tokenOut.symbol === 'ZIL' ? 1 : tokenOut.rate)
     return inRate.dividedBy(outRate)
+  }
+
+  const handleApprove = async () => {
+    if(!tokenIn) return
+    const tx = await exchange?.approve(tokenIn, state.tokenInAmount.shiftedBy(tokenIn.decimals))
+    if(tx === null) {
+      toast.info('This token has already been approved.')
+      setState({...state, needsApproval: false})
+    } else {
+      toast.info('Approval transaction has been sent.')
+    }
+  }
+
+  const handleSwap = () => {
+    toast.info('Your swap transaction has been sent.')
+    toast.success('Swapped 4000 ZIL for 3500 STREAM.')
   }
 
   return (
@@ -63,7 +106,8 @@ const Swap = (props: Props) => {
           selectedToken={tokenIn}
           amount={state.tokenInAmount}
           onAmountChange={amount => {
-            const { expectedAmount, expectedSlippage } = getExchangeRate(tokenIn!, tokenOut!, amount, true)
+            if(!exchange || !tokenIn || !tokenOut) return
+            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount, true)
             setState({
               ...state,
               tokenInAmount: amount,
@@ -76,10 +120,11 @@ const Swap = (props: Props) => {
           isIn
         />
         <CurrencyInput 
-          selectedToken={tokenOut} className="mt-2" 
+          selectedToken={tokenOut || !tokenIn || !tokenOut} className="mt-2" 
           amount={state.tokenOutAmount}
           onAmountChange={amount => {
-            const { expectedAmount, expectedSlippage } = getExchangeRate(tokenIn!, tokenOut!, amount, false)
+            if(!exchange) return
+            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount, false)
             setState({
               ...state,
               tokenOutAmount: amount,
@@ -125,7 +170,12 @@ const Swap = (props: Props) => {
           </button>
         </Tippy>
       </div>
-      <button className="bg-primary px-4 py-3 rounded-lg w-full font-bold mt-2">Swap</button>
+      <div className="flex items-center gap-4">
+        {state.needsApproval &&
+          <button className="flex-grow bg-primary px-4 py-3 rounded-lg w-full font-bold mt-2" onClick={() => handleApprove()}>Approve</button>
+        }
+        <button className="flex-grow bg-primary px-4 py-3 rounded-lg w-full font-bold mt-2" onClick={() => handleSwap()}>Swap</button>
+      </div>
     </div>
   )
 }

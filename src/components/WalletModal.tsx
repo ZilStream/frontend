@@ -61,8 +61,7 @@ const WalletModal = () => {
       isDefault: accountState.wallets.length === 0,
       isConnected: true,
       isMember: false,
-      type: AccountType.ZilPay,
-      provider: zilPay
+      type: AccountType.ZilPay
     }
     dispatch({ type: AccountActionTypes.ADD_WALLET, payload: {wallet: wallet}})
     dispatch({ type: AccountActionTypes.SELECT_WALLET, payload: {wallet: wallet}})

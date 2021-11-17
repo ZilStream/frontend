@@ -201,4 +201,12 @@ body, #__next {
   .input-arrows-hidden[type=number] {
     -moz-appearance: textfield;
   }
+
+  .Toastify__toast {
+    @apply bg-white dark:bg-gray-900 border dark:border-black text-black dark:text-white;
+  }
+
+  .Toastify__close-button {
+    @apply text-black dark:text-white;
+  }
 }

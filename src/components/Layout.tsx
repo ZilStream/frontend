@@ -9,6 +9,7 @@ import WalletModal from './WalletModal'
 import CurrencyModal from './Swap/components/CurrencyModal'
 import SwapPopover from './Swap/SwapPopover'
 import Link from 'next/link'
+import { ToastContainer } from 'react-toastify'
 
 interface Props {
   children: React.ReactNode
@@ -72,6 +73,7 @@ export default function Layout(props: Props) {
         <PageLoading isRouteChanging={state.isRouteChanging} key={state.loadingKey} />
         <Header />
         <MarketBar />
+        <ToastContainer />
         <div className="container flex-grow">
           <WalletModal />
           <CurrencyModal />
