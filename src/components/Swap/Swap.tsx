@@ -82,9 +82,22 @@ const Swap = (props: Props) => {
     }
   }
 
-  const handleSwap = () => {
+  const handleSwap = async () => {
+    if(!tokenIn || !tokenOut) return
+    const tx = await exchange?.swap(
+      tokenIn, 
+      tokenOut, 
+      state.focusDirectionIn ? state.tokenInAmount : state.tokenOutAmount,
+      swapState.slippage,
+      3434,
+      state.focusDirectionIn
+    )
+
+    if(tx === null) {
+      toast.error('Couldn\'t send your swap.')
+    }
+
     toast.info('Your swap transaction has been sent.')
-    toast.success('Swapped 4000 ZIL for 3500 STREAM.')
   }
 
   return (
