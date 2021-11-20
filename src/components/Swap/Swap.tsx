@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, Info, Maximize, Settings } from 'react-feather'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { BlockchainState, RootState, SwapState, TokenState } from 'store/types'
 import CurrencyInput from './components/CurrencyInput'
 import Link from 'next/link'
@@ -14,6 +14,7 @@ import { ZilSwap } from 'lib/exchange/zilswap/zilswap'
 import { toast } from 'react-toastify'
 import { ZIL_ADDRESS } from 'lib/constants'
 import { BIG_ONE } from 'utils/strings'
+import { openExchange } from 'store/modal/actions'
 
 interface Props {
   showFullscreen?: boolean
@@ -25,6 +26,7 @@ const Swap = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
   const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
+  const dispatch = useDispatch()
 
   const [exchange, setExchange] = useState<Exchange|null>(null)
   const [state, setState] = useState({
@@ -92,7 +94,10 @@ const Swap = (props: Props) => {
           Swap
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center text-sm border dark:border-gray-700 rounded-lg font-medium py-1 px-2">
+          <button 
+            className="flex items-center text-sm border dark:border-gray-700 rounded-lg font-medium py-1 px-2"
+            onClick={() => dispatch(openExchange(true))}
+          >
             <div className="w-4 h-4 mx-1"><TokenIcon address={`zil1p5suryq6q647usxczale29cu3336hhp376c627`} /></div>
             ZilSwap
             <ChevronDown size={16} className="ml-1" />

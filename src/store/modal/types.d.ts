@@ -1,4 +1,5 @@
 export interface ModalState {
   walletOpen: boolean,
-  currencyOpen: boolean
+  currencyOpen: boolean,
+  exchangeOpen: boolean
 }

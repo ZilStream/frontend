@@ -10,6 +10,7 @@ import CurrencyModal from './Swap/components/CurrencyModal'
 import SwapPopover from './Swap/SwapPopover'
 import Link from 'next/link'
 import { ToastContainer } from 'react-toastify'
+import ExchangeModal from './Swap/components/ExchangeModal'
 
 interface Props {
   children: React.ReactNode
@@ -77,6 +78,7 @@ export default function Layout(props: Props) {
         <div className="container flex-grow">
           <WalletModal />
           <CurrencyModal />
+          <ExchangeModal />
           <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
           {router.pathname !== '/swap' &&
             <>

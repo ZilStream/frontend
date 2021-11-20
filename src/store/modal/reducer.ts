@@ -5,7 +5,8 @@ import { ModalState } from "./types";
 
 const initialState: ModalState = {
   walletOpen: false,
-  currencyOpen: false
+  currencyOpen: false,
+  exchangeOpen: false,
 }
 
 const reducer = (state: ModalState = initialState, action: AnyAction) => {
@@ -27,6 +28,13 @@ const reducer = (state: ModalState = initialState, action: AnyAction) => {
       return {
         ...state,
         currencyOpen
+      }
+    
+    case ModalActionTypes.OPEN_EXCHANGE:
+      const exchangeOpen: boolean = payload
+      return {
+        ...state,
+        exchangeOpen
       }
 
     default:
