@@ -52,7 +52,7 @@ export abstract class Exchange {
     this.walletBalance = toBigNumber(response.result.balance)
   }
 
-  abstract swap(): any;
+  abstract swap(tokenIn: Token, tokenOut: Token, amount: BigNumber, slippage: number, deadline: number, isIn: boolean): Promise<Transaction|null>;
   abstract getExchangeRate(tokenIn: Token, tokenOut: Token, amount: BigNumber, isIn: boolean): ExchangeRate;
 
   public async tokenNeedsApproval(token: Token, amount: BigNumber): Promise<{needsApproval: boolean, allowance: BigNumber}> {
