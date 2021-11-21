@@ -40,7 +40,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const [currentList, setCurrentList] = useState<ListType>(ListType.Ranking)
   const [currentSort, setCurrentSort] = useState<SortType>(SortType.Default)
   const [currentSortDirection, setCurrentSortDirection] = useState<SortDirection>(SortDirection.Ascending)
-  const [zilRates, setZilRates] = useState({firstRate: 0, lastRate: 0, change: 0, changeRounded: 0})
 
   const tokens = useMemo(() => {
     if(!tokenState.initialized) return []
@@ -56,25 +55,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   }, 0)
 
   const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
-
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
-  
-  useEffect(() => {
-    if(tokens.length === 0) return
-
-    const zilToken = tokens.filter(token => token.symbol == 'ZIL')[0]
-    const zilRates = rates.filter(rate => rate.token_id == zilToken.id.toString())
-    const firstRate = zilRates[zilRates.length - 1].value
-    const lastRate = zilRates[0].value
-    const change = ((lastRate - firstRate) / firstRate) * 100
-
-    setZilRates({
-      firstRate: firstRate, 
-      lastRate: lastRate,
-      change: change,
-      changeRounded: Math.round(change * 100) / 100
-    })
-  }, [tokenState.initialized, rates])
 
   useInterval(async () => {
       let newRates = await getRates()
