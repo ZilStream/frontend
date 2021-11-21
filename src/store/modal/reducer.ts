@@ -7,6 +7,7 @@ const initialState: ModalState = {
   walletOpen: false,
   currencyOpen: false,
   exchangeOpen: false,
+  exportOpen: false,
 }
 
 const reducer = (state: ModalState = initialState, action: AnyAction) => {
@@ -35,6 +36,13 @@ const reducer = (state: ModalState = initialState, action: AnyAction) => {
       return {
         ...state,
         exchangeOpen
+      }
+
+    case ModalActionTypes.OPEN_EXPORT:
+      const exportOpen: boolean = payload
+      return {
+        ...state,
+        exportOpen
       }
 
     default:

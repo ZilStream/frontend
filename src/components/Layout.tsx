@@ -80,7 +80,7 @@ export default function Layout(props: Props) {
           <CurrencyModal />
           <ExchangeModal />
           <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
-          {router.pathname !== '/swap' &&
+          {/* {router.pathname !== '/swap' &&
             <>
               <SwapPopover className="hidden sm:block" />
 
@@ -96,7 +96,7 @@ export default function Layout(props: Props) {
                 </a>
               </Link>
             </>
-          }
+          } */}
         </div>
         <Footer />
       </div>
