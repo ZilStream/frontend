@@ -232,16 +232,18 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <div>
                     {token.rewards.map((reward: Reward) => {
                       const paymentDayDetail = reward.payment_day !== null ? (
-                        <div className="bg-white sdark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
+                        <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
                           Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
                         </div>
                       ) : (<></>)
+
+                      const period = reward.frequency === 604800 ? 'week' : `${reward.frequency/86400} days`
                       return (
                         <div key={reward.reward_token_address} className="flex items-center whitespace-nowrap">
                           <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
                           <span className="mr-1">{cryptoFormat(reward.amount)}</span>
                           <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
-                          <span>/ week</span>
+                          <span>/ {period}</span>
                           {reward.payment_day !== null &&
                             <Tippy content={paymentDayDetail}>
                               <button className="ml-2 focus:outline-none">
