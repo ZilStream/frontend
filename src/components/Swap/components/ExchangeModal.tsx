@@ -84,6 +84,7 @@ const ExchangeModal = () => {
               <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2">
                 {filteredExchanges.map(exchange => (
                   <div
+                    key={exchange.name}
                     className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer"
                   >
                     <div className="w-6 h-6 mr-4"><TokenIcon address={exchange.iconAddress} /></div>

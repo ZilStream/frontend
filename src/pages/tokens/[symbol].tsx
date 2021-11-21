@@ -314,15 +314,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <ChartContainer token={token} />
               </Tab.Panel>
               <Tab.Panel>
-                <MemberWrapper>
-                  <TVChartContainer 
-                    symbol={`${token.symbol}/ZIL`} 
-                    interval={'240' as ResolutionString} 
-                    autosize={true} 
-                    fullscreen={false} 
-                    theme={resolvedTheme}
-                  />
-                </MemberWrapper>
+                <TVChartContainer 
+                  symbol={`${token.symbol}/ZIL`} 
+                  interval={'240' as ResolutionString} 
+                  autosize={true} 
+                  fullscreen={false} 
+                  theme={resolvedTheme}
+                />
               </Tab.Panel>
               <Tab.Panel>
                 <MemberWrapper>
