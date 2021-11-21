@@ -103,8 +103,8 @@ const TokenLiquidity = (props: Props) => {
             <div key={holder.address} className="flex items-center text-gray-800 dark:text-gray-300 py-2 whitespace-nowrap border-b last:border-b-0 dark:border-gray-700">
               <div className="flex-grow flex items-center">
                 <div className="w-10 text-gray-500 dark:text-gray-400">{index+1}.</div>
-                <div className="hidden md:block">{holder.address}</div>
-                <div className="block md:hidden">{shortenAddress(holder.address)}</div>
+                <div className="hidden md:block"><a className="font-normal" href={`https://viewblock.io/zilliqa/address/${holder.address}`} target="_blank">{holder.address}</a></div>
+                <div className="block md:hidden"><a className="font-normal" href={`https://viewblock.io/zilliqa/address/${holder.address}`} target="_blank">{shortenAddress(holder.address)}</a></div>
                 {excludedAddresses.includes(holder.address) && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">Team Locked</span>}
                 {holder.address === zilSwapAddress && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">ZilSwap</span>}
               </div>
