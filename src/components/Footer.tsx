@@ -1,10 +1,15 @@
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { GitHub, Twitter, Send } from 'react-feather'
 
 export default function Footer() {
+  const [mounted, setMounted] = useState(false);
   const {resolvedTheme} = useTheme()
+
+  useEffect(() => setMounted(true), [])
+
+  if(!mounted) return null
 
   return (
     <div className="border-t dark:border-gray-800 mt-12 py-10">
