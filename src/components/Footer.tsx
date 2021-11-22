@@ -12,9 +12,9 @@ export default function Footer() {
   if(!mounted) return null
 
   return (
-    <div className="border-t dark:border-gray-800 mt-12 py-10">
+    <div className="border-t dark:border-gray-800 mt-12 py-10 max-w-full">
       <div className="container">
-        <div className="flex items-start px-4">
+        <div className="flex flex-col md:flex-row items-start px-4">
           <div className="flex-grow">
             <div>
               {resolvedTheme === 'dark' ? (
