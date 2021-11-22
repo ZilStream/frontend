@@ -216,14 +216,17 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <div className="py-2 border-r border-gray-300 dark:border-gray-800">
               <div className="text-gray-700 dark:text-gray-400">Market Cap</div>
               <div className="font-medium">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.market_cap_zil)} ZIL</span>
             </div>
             <div className="py-2 border-r-0 md:border-r border-gray-300 dark:border-gray-800">
               <div className="text-gray-700 dark:text-gray-400 ">Volume (24h)</div>
               <div className="font-medium">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.daily_volume_zil)} ZIL</span>
             </div>
             <div className="py-2 border-r border-gray-300 dark:border-gray-800">
               <div className="text-gray-700 dark:text-gray-400 ">Liquidity</div>
               <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.current_liquidity_zil)} ZIL</span>
               
               {token.rewards.length > 0 &&
                 <>
@@ -385,8 +388,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{cryptoFormat(token.rate)} ZIL</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="font-bold">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.rate)} ZIL</span>
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -400,6 +403,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Volume <span className="px-1 py-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">24h</span></th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.daily_volume_zil)} ZIL</span>
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -423,12 +427,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Market Cap</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.market_cap_zil)} ZIL</span>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">Fully Diluted Market Cap</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.fully_diluted_valuation_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.fully_diluted_valuation_zil)} ZIL</span>
                   </td>
                 </tr>
               </tbody>
@@ -476,6 +482,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">All Time High</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.ath)} ZIL</span>
                     <InlineChange num={athChangePercentage} bold />
                   </td>
                 </tr>
@@ -483,6 +490,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">All Time Low</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.atl)} ZIL</span>
                     <InlineChange num={atlChangePercentage} bold />
                   </td>
                 </tr>
