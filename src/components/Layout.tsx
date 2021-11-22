@@ -61,7 +61,7 @@ export default function Layout(props: Props) {
         <meta property="og:site_name" content="ZilStream" />
         <meta name="twitter:site" content="@zilstream" />
       
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" type="image/png" href="/favicon-196x196.png" sizes="196x196" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-ios.png" />
         <meta name="apple-mobile-web-app-title" content="ZilStream" />
         <meta name="mobile-web-app-capable" content="yes" />
