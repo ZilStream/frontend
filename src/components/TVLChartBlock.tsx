@@ -46,7 +46,7 @@ const TVLChartBlock = (props: Props) => {
       <div className="absolute top-0 left-0 w-full pt-2 px-3">
         <div className="flex items-center text-lg">
           <div className="flex-grow flex items-center">
-            <span className="font-semibold mr-2">TVL <span className="px-1 ml-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-400 rounded">30d</span></span>
+            <span className="font-semibold mr-2 flex items-center">TVL <span className="hidden sm:inline px-1 ml-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-400 rounded">30d</span></span>
             <span className="mr-2">{currencyFormat(liquidity * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
           {!isNaN(change) &&
