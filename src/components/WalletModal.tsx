@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { Send } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { AccountActionTypes } from 'store/account/actions';
-import { ModalActionTypes } from 'store/modal/actions';
+import { ModalActionTypes, openWallet } from 'store/modal/actions';
 import { AccountState, ConnectedWallet, ModalState, RootState } from 'store/types';
 import { AccountType } from 'types/walletType.interface';
 import TokenIcon from './TokenIcon';
@@ -28,13 +28,12 @@ const WalletModal = () => {
     if(isOpen === false) {
       clearDetail()
     }
+
+    dispatch(openWallet(isOpen))
   }, [isOpen])
 
   useEffect(() => {
-    if(modalState.walletOpen) {
-      setIsOpen(true)
-      dispatch({ type: ModalActionTypes.OPEN_WALLET, payload: false })
-    }
+    setIsOpen(modalState.walletOpen)
   }, [modalState.walletOpen])
 
   const connectZilPay = async () => {

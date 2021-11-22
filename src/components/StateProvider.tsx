@@ -6,18 +6,19 @@ import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
-import { AccountActionTypes } from 'store/account/actions'
+import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
+import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
+import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, ConnectedWallet, Operator, RootState, StakingState, Token, TokenState } from 'store/types'
+import { AccountState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { Network } from 'utils/network'
 import { bnOrZero } from 'utils/strings'
-import useBalances from 'utils/useBalances'
 
 interface Props {
   children: React.ReactNode
@@ -27,8 +28,8 @@ const StateProvider = (props: Props) => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
+  const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const dispatch = useDispatch()
-  const {membership} = useBalances()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
   async function loadTokens() {
@@ -46,6 +47,13 @@ const StateProvider = (props: Props) => {
         }})
       })
     })
+
+    if(tokens.length > 0) {
+      dispatch(updateSwap({
+        tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
+        tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
+      }))
+    }
 
     await loadRates()
   }
@@ -106,7 +114,7 @@ const StateProvider = (props: Props) => {
     stakingState.operators.forEach(operator => {
       batchRequests.push(stakingDelegatorsBatchRequest(operator, walletAddress))
     })
-    let batchResults = await sendBatchRequest(Network.MainNet, batchRequests)
+    let batchResults = await sendBatchRequest(batchRequests)
     await processBatchResults(batchResults)
   }
 
@@ -122,7 +130,7 @@ const StateProvider = (props: Props) => {
           case BatchRequestType.Balance: {
             dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
               address_bech32: token?.address_bech32,
-              balance: result.result.balance,
+              balance: bnOrZero(result.result.balance),
               isZil: true,
             }})
             return
@@ -251,6 +259,18 @@ const StateProvider = (props: Props) => {
     })
   }
 
+  async function loadSettings() {
+    const settingsStr = localStorage.getItem('settings')
+
+    if(settingsStr) {
+      const settings: SettingsState = JSON.parse(settingsStr)
+      dispatch(updateSettings({
+        ...settings,
+        initialized: true
+      }))
+    }
+  }
+
   useInterval(async () => {
     loadRates()
     loadWalletState()
@@ -258,6 +278,7 @@ const StateProvider = (props: Props) => {
   }, 30000)
 
   useEffect(() => {
+    loadSettings()
     loadTokens()
     loadZilRates()
   }, [])
@@ -281,7 +302,7 @@ const StateProvider = (props: Props) => {
   useEffect(() => {
     if(!accountState.initialized) return
     // This makes sure all account changes persist.
-    localStorage.setItem('account', JSON.stringify(accountState))
+    localStorage.setItem('account', JSON.stringify(accountState))    
   }, [accountState])
 
   useEffect(() => {
@@ -289,7 +310,14 @@ const StateProvider = (props: Props) => {
     if(accountString) {
       const account: AccountState = JSON.parse(accountString)
       account.initialized = true
+      account.wallets = account.wallets.map(a => ({...a, isConnected: false }))
+
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: account })
+
+      if(account.wallets.filter(a => a.type === AccountType.ZilPay).length > 0) {
+        // Has ZilPay wallet, try to connect
+        connectZilPay()
+      }
     } else {
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: {
         initialized: true,
@@ -300,9 +328,34 @@ const StateProvider = (props: Props) => {
     }
   }, [])
 
+  useEffect(() => {
+    if(!settingsState.initialized) return
+    localStorage.setItem('settings', JSON.stringify(settingsState))
+  }, [settingsState])
+
   if (typeof(window) !== 'undefined') {
     // @ts-ignore
     import('zeeves-auth-sdk-js');
+  }
+
+  const connectZilPay = async () => {
+    const zilPay = (window as any).zilPay
+    
+    // Check if ZilPay is installed
+    if(typeof zilPay === "undefined") {
+      console.log("ZilPay extension not installed")
+      return
+    }
+      
+    const result = await zilPay.wallet.connect()
+
+    if(result !== zilPay.wallet.isConnect) {
+      console.log("Could not connect to ZilPay")
+      return
+    }
+
+    const walletAddress = zilPay.wallet.defaultAccount.bech32
+    dispatch(updateWallet({address: walletAddress, isConnected: true}))
   }
   
   return <>{props.children}</>

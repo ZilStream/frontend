@@ -12,7 +12,6 @@ export default {
       .then((data: any) => {
         if (data.length) {
           var bars = data.map((el: any) => {
-            console.log(Date.parse(el.time))
             return {
               time: Date.parse(el.time),
               low: el.low,

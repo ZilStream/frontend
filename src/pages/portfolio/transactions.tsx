@@ -5,13 +5,15 @@ import { getTransactions } from 'lib/zilstream/getTransactions'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
 import { Transaction } from 'types/transaction.interface'
 import useBalances from 'utils/useBalances'
 import { groupBy } from 'underscore'
 import TransactionsGroup from 'components/TransactionsGroup'
-import { ArrowLeft, ArrowRight } from 'react-feather'
+import { ArrowLeft, ArrowRight, Save } from 'react-feather'
+import { openExport } from 'store/modal/actions'
+import TransactionsExportModal from 'components/TransactionsExportModal'
 
 const Transactions = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
@@ -20,6 +22,7 @@ const Transactions = () => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(1)
   const {membership} = useBalances()
+  const dispatch = useDispatch()
 
   async function setTxns() {
     if(!accountState.selectedWallet) return
@@ -33,6 +36,10 @@ const Transactions = () => {
     if(accountState.selectedWallet?.address === '') return
     setTxns()
   }, [accountState.selectedWallet, currentPage])
+
+  const exportCSV = () => {
+
+  }
 
   if(!membership.isMember) {
     return (
@@ -86,6 +93,12 @@ const Transactions = () => {
             <ArrowRight size={18} />
           </button>
         </div>
+        <div className="flex items-center h-full ml-3">
+          <button onClick={() => dispatch(openExport(true))} className="inline-flex items-center mr-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 h-8 px-3 py-1 rounded-lg text-sm font-medium">
+            <Save size={12} className="mr-1" />
+            Export CSV
+          </button>
+        </div>
       </div>
       {Object.keys(groups).map(date => {
         const day = dayjs(date)
@@ -110,6 +123,8 @@ const Transactions = () => {
           </button>
         </div>
       </div>
+
+      <TransactionsExportModal />
     </>
   )
 }

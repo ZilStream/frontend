@@ -1,3 +1,4 @@
+import { ZIL_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
 import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
@@ -6,7 +7,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   const batchRequests: any[] = [];
 
   tokens.forEach(token => {
-    if(token.address_bech32 === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz') {
+    if(token.address_bech32 === ZIL_ADDRESS) {
       batchRequests.push(balanceBatchRequest(token, walletAddress))
     } else {
       batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
@@ -25,5 +26,5 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
     })
   }
 
-  return await sendBatchRequest(Network.MainNet, batchRequests)
+  return await sendBatchRequest(batchRequests)
 }

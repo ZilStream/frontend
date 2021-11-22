@@ -3,7 +3,7 @@ html {
 }
 
 body, #__next {
-  @apply text-base bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-50 h-full;
+  @apply text-base bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 h-full;
 }
 
 @layer components {
@@ -43,12 +43,16 @@ body, #__next {
     @apply max-w-full;
   }
 
+  .max-h-screen-margin {
+    height: calc(100vh - 2rem)!important;
+  }
+
   .token-row {
     @apply flex items-center bg-white dark:bg-gray-800 pl-3 pr-1 sm:pl-4 sm:pr-2 rounded-lg shadow-md;
   }
 
   .container {
-    max-width: 1300px;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
   }
@@ -82,7 +86,7 @@ body, #__next {
   }
 
   .token-order-list {
-    @apply py-3 mt-8 mb-3 border-b border-gray-300 dark:border-gray-800 text-sm overflow-x-scroll sm:overflow-x-auto;
+    @apply py-3 mt-8 mb-3 border-b border-gray-200 dark:border-gray-800 text-sm overflow-x-scroll sm:overflow-x-auto;
     -ms-overflow-style: none;
     scrollbar-width: none; 
   }
@@ -178,5 +182,31 @@ body, #__next {
     100% {
       background-position: 468px 0; 
     }
+  }
+
+  .toggle-btn {
+    @apply inline-block text-sm bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 font-medium mr-2 mb-2 focus:outline-none transition;
+  }
+
+  .toggle-btn-selected {
+    @apply inline-flex items-center text-sm bg-primary bg-opacity-75 rounded-full px-3 py-1 font-medium mr-2 mb-2 focus:outline-none transition;
+  }
+
+  .input-arrows-hidden::-webkit-outer-spin-button,
+  .input-arrows-hidden::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .input-arrows-hidden[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .Toastify__toast {
+    @apply bg-white dark:bg-gray-900 border dark:border-black text-black dark:text-white;
+  }
+
+  .Toastify__close-button {
+    @apply text-black dark:text-white;
   }
 }

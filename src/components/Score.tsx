@@ -15,7 +15,7 @@ const Score = (props: Props) => {
   )
 
   return (
-    <div className="flex items-center bg-gray-300 dark:bg-gray-800 px-2 py-1 rounded mr-2 font-medium text-xs sm:text-sm">
+    <div className="inline-flex items-center mb-2 mr-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
       <span
         className={`
           ${props.value < 20 ? 'text-red-500' : ''}
@@ -23,6 +23,7 @@ const Score = (props: Props) => {
           ${props.value >= 35 && props.value < 50 ? 'text-yellow-500 dark:text-yellow-300' : ''}
           ${props.value >= 50 && props.value < 80 ? 'text-green-500' : ''}
           ${props.value >= 80 ? 'text-green-700' : ''}
+          font-medium
         `}
       >
         {props.value}/100

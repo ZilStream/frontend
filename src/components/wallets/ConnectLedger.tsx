@@ -25,7 +25,6 @@ const ConnectLedger = (props: Props) => {
       const transport = await ZilliqaHW.create()
       const ledger = new ZilliqaHW(transport)
       const data = await ledger.getPublicAddress(hwIndex)
-      console.log(data.pubAddr)
 
       let wallet: ConnectedWallet = {
         address: data.pubAddr,

@@ -1,15 +1,14 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { createChart, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts'
-import { Rate } from 'types/rate.interface';
+import { useTheme } from 'next-themes'
 
 interface Props {
-  data: Rate[]
-  isIncrease: boolean,
-  isUserInteractionEnabled: boolean,
-  isScalesEnabled: boolean,
+  data: {time: string, value: number}[],
+  isUserInteractionEnabled?: boolean,
+  isScalesEnabled?: boolean,
 }
 
-interface ChartDataPoint {
+export interface ChartDataPoint {
   time: Time,
   value: number,
 }
@@ -18,6 +17,7 @@ function Chart(props: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
   const [chart, setChart] = useState<IChartApi|null>(null)
   const [series, setSeries] = useState<ISeriesApi<"Area">|null>(null)
+  const {resolvedTheme} = useTheme()
 
   useEffect(() => {
     if(ref.current) {
@@ -35,7 +35,8 @@ function Chart(props: Props) {
             visible: false,
           },
           horzLines: {
-            visible: false,
+            visible: props.isScalesEnabled ? true : false,
+            color: resolvedTheme === 'dark' ? 'rgb(41, 51, 65)' : 'rgb(248, 248, 256)'
           },
         },
         leftPriceScale: {
@@ -59,9 +60,10 @@ function Chart(props: Props) {
           },
         },
       })
-      
+
       var data: ChartDataPoint[] = [];
 
+      props.data.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
       props.data.forEach(rate => {
         data.push({
           time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
@@ -69,16 +71,19 @@ function Chart(props: Props) {
         })
       })
 
+      const isIncrease = data?.[0].value < data?.[data.length-1].value
+
       const newSeries = newChart.addAreaSeries({
-        topColor: props.isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
-        bottomColor: props.isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
-        lineColor: props.isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
+        topColor: isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
+        bottomColor: isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
+        lineColor: isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
         lineWidth: 2,
         priceLineVisible: false,
+        crosshairMarkerVisible: props.isUserInteractionEnabled ? true : false,
         autoscaleInfoProvider: () => ({
           priceRange: {
-              minValue: Math.min(...data.map(item => item.value)),
-              maxValue: Math.max(...data.map(item => item.value)),
+              minValue: Math.min(...props.data.map(item => item.value)),
+              maxValue: Math.max(...props.data.map(item => item.value)),
           },
         }),
       });
@@ -100,6 +105,7 @@ function Chart(props: Props) {
         value: rate.value
       })
     })
+
     series?.setData(data)
     chart?.timeScale().fitContent()
   }, [props.data])
@@ -118,7 +124,7 @@ function Chart(props: Props) {
 
   return (
     <>
-      <div ref={ref} className="h-full" />
+      <div ref={ref} className="h-full w-full" />
     </>
   )
 }

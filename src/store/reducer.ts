@@ -5,11 +5,17 @@ import account from './account/reducer'
 import staking from './staking/reducer'
 import currency from './currency/reducer'
 import modal from './modal/reducer'
+import settings from './settings/reducer'
+import blockchain from './blockchain/reducer'
+import swap from './swap/reducer'
 
 export default combineReducers({
   token,
   account,
   staking,
   currency,
-  modal
+  modal,
+  settings,
+  blockchain,
+  swap
 })

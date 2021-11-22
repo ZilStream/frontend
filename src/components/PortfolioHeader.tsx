@@ -1,5 +1,5 @@
 import { useTheme } from 'next-themes'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 import React from 'react'
 import { Clipboard } from 'react-feather'

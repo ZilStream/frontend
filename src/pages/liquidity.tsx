@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js'
 import CopyableAddress from 'components/CopyableAddress'
 import TokenIcon from 'components/TokenIcon'
+import TVLChartBlock from 'components/TVLChartBlock'
+import VolumeChartBlock from 'components/VolumeChartBlock'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -95,12 +97,14 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h1 className="mb-1">ZilSwap Liquidity</h1>
-            <div className="flex items-center text-sm">
-              <div className="text-gray-600">Total Value Locked: <span className="font-medium">{currencyFormat(stats.tvl)}</span></div>
-            </div>
+            <h1 className="mb-1">ZilSwap</h1>
           </div>
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <TVLChartBlock className="h-48 lg:h-80" />
+
+        <VolumeChartBlock className="h-48 lg:h-80" />
       </div>
       {edit === 'true' &&
         <div className="flex items-center gap-3 mb-3">

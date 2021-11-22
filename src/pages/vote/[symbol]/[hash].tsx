@@ -1,7 +1,7 @@
 import TokenIcon from 'components/TokenIcon'
 import getGovernanceSnapshot from 'lib/zilliqa/getGovernanceSnapshot'
 import getGovernanceSpaces from 'lib/zilliqa/getGovernanceSpaces'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState, Token, TokenState } from 'store/types'

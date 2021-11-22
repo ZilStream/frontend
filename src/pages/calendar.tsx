@@ -35,14 +35,6 @@ function Calendar() {
       telegram: 'https://t.me/coraltribe'
     },
     {
-      name: 'News',
-      symbol: 'NEWS',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/news.png',
-      tags: ['Media'],
-      website: 'https://reviewcapital.org',
-      telegram: 'https://t.me/RECAPCommunity'
-    },
-    {
       name: 'FIAT',
       symbol: 'HOL',
       icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/hol.png',
@@ -92,7 +84,6 @@ function Calendar() {
           </thead>
           <tbody>
             {launches.map((launch, index) => {
-              console.log(launch.sale_date)
               return (
                 <tr key={launch.symbol} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-3 ${index === 0 ? 'rounded-tl-lg' : ''} ${index === launches.length-1 ? 'rounded-bl-lg' : ''}`}>

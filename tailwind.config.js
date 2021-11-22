@@ -1,5 +1,11 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
-  purge: ['./src/pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
+  purge: [
+    './src/pages/**/*.{js,ts,jsx,tsx}', 
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    'node_modules/react-toastify/dist/ReactToastify.css',
+  ],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
@@ -8,6 +14,7 @@ module.exports = {
         primaryDark: '#2fbab3',
       },
       spacing: {
+        '110': '26rem',
         '128': '32rem',
         '144': '36rem',
       },
@@ -19,7 +26,9 @@ module.exports = {
       borderRadius: ['first', 'last']
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
   corePlugins: {
     container: false,
   }
