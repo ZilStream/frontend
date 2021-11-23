@@ -162,25 +162,17 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           </div>
 
           <div className="sm:hidden -mt-2 mb-2 text-sm">
-            {token.website &&
-              <div className="flex items-center py-3 border-t border-b border-gray-300 dark:border-gray-800">
-                <div className="flex-grow">Website</div>
-                <div className="flex items-center gap-2">
-                  <a href={token.website} target="_blank">{new URL(token.website).hostname}</a>
-                  <ExternalLink size={14} />
-                </div>
-              </div>
-            }
-            
-            {token.telegram &&
-              <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
-                <div className="flex-grow">Telegram</div>
-                <div className="flex items-center gap-2">
-                  <a href={token.telegram} target="_blank">{new URL(token.telegram).hostname}{new URL(token.telegram).pathname}</a>
-                  <ExternalLink size={14} />
-                </div>
-              </div>
-            }
+            <div className="grid grid-cols-3 gap-3 py-3 border-t border-b border-gray-300 dark:border-gray-800">
+              {token.website &&
+                <a href={token.website} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><WebLink size={14} className="mr-1" /> Website</a>
+              }
+              
+              {token.telegram &&
+                <a href={token.telegram} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><MessageCircle size={14} className="mr-1" /> Telegram</a>
+              }
+              
+              <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><Box size={14} className="mr-1" /> ViewBlock</a>
+            </div>
             
             <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
               <div className="flex-grow">Contract</div>
