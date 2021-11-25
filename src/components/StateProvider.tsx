@@ -254,6 +254,36 @@ const StateProvider = (props: Props) => {
               decimals: 8
             }}})
           }
+
+          case BatchRequestType.PortBuoyStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'PORT: The Buoy',
+              address: '0xfdaf9ec7281e76372e75fa6f0ed430b17c7b2a1d',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'PORT',
+              decimals: 4
+            }}})
+          }
+
+          case BatchRequestType.PortDockStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'PORT: The Dock ',
+              address: '0x25c9176fc5c18ec28888f0338776b4f39e487028',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'PORT',
+              decimals: 4
+            }}})
+          }
         }
       })
     })
