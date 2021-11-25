@@ -253,6 +253,7 @@ const StateProvider = (props: Props) => {
               symbol: 'CARB',
               decimals: 8
             }}})
+            return
           }
 
           case BatchRequestType.PortBuoyStakers: {
@@ -268,6 +269,7 @@ const StateProvider = (props: Props) => {
               symbol: 'PORT',
               decimals: 4
             }}})
+            return
           }
 
           case BatchRequestType.PortDockStakers: {
@@ -283,6 +285,7 @@ const StateProvider = (props: Props) => {
               symbol: 'PORT',
               decimals: 4
             }}})
+            return
           }
         }
       })
