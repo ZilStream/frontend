@@ -32,11 +32,6 @@ const TokenRow = (props: Props) => {
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
-  const sortedRates = props.rates.sort((a,b) => (a.time < b.time) ? 1 : -1)
-  const lastRate = sortedRates.length > 0 ? sortedRates[0].value : 0
-  const firstRate = sortedRates.length > 0 ? sortedRates[sortedRates.length-1].value : 0
-  const lastRateRounded = (lastRate > 1) ? Math.round(lastRate * 100) / 100 : Math.round(lastRate * 10000) / 10000
-  const fiatRate = lastRate * selectedCurrency.rate
   const [isFavorited, setIsFavorited] = useState<boolean>(token.isFavorited)
   const dispatch = useDispatch()
   const { resolvedTheme } = useTheme()
@@ -101,11 +96,11 @@ const TokenRow = (props: Props) => {
       </td>
 
       {settingsState.columns.priceZIL &&
-        <td className="px-2 py-2 font-normal text-right"><FlashChange value={lastRateRounded}>{lastRateRounded}</FlashChange></td>
+        <td className="px-2 py-2 font-normal text-right"><FlashChange value={token.rate}>{cryptoFormat(token.rate)}</FlashChange></td>
       }
 
       {settingsState.columns.priceFiat &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(fiatRate, selectedCurrency.symbol)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.ath &&
