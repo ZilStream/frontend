@@ -63,6 +63,8 @@ function Chart(props: Props) {
 
       var data: ChartDataPoint[] = [];
 
+      if(data.length === 0) return
+
       props.data.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
       props.data.forEach(rate => {
         data.push({

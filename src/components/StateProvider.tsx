@@ -6,6 +6,7 @@ import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
+import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
@@ -314,6 +315,8 @@ const StateProvider = (props: Props) => {
     loadSettings()
     loadTokens()
     loadZilRates()
+
+    startSagas()
   }, [])
 
   useEffect(() => {
