@@ -6,7 +6,9 @@ import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
+import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
+import { BlockchainActionsTypes } from 'store/blockchain/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
@@ -127,6 +129,13 @@ const StateProvider = (props: Props) => {
         let token = result.request.token
   
         switch(result.request.type) {
+          case BatchRequestType.BlockchainInfo: {
+            dispatch({ type: BlockchainActionsTypes.BLOCKCHAIN_UPDATE, payload: {
+              blockHeight: +result.result.NumTxBlocks-1
+            }})
+            return
+          }
+
           case BatchRequestType.Balance: {
             dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
               address_bech32: token?.address_bech32,
@@ -253,6 +262,39 @@ const StateProvider = (props: Props) => {
               symbol: 'CARB',
               decimals: 8
             }}})
+            return
+          }
+
+          case BatchRequestType.PortBuoyStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'PORT: The Buoy',
+              address: '0xfdaf9ec7281e76372e75fa6f0ed430b17c7b2a1d',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'PORT',
+              decimals: 4
+            }}})
+            return
+          }
+
+          case BatchRequestType.PortDockStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'PORT: The Dock ',
+              address: '0x25c9176fc5c18ec28888f0338776b4f39e487028',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'PORT',
+              decimals: 4
+            }}})
+            return
           }
         }
       })
@@ -281,6 +323,8 @@ const StateProvider = (props: Props) => {
     loadSettings()
     loadTokens()
     loadZilRates()
+
+    startSagas()
   }, [])
 
   useEffect(() => {

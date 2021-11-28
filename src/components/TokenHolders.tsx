@@ -139,6 +139,7 @@ const TokenHolders = (props: Props) => {
                 <div className="block md:hidden"><a className="font-normal" href={`https://viewblock.io/zilliqa/address/${holder.address}`} target="_blank">{shortenAddress(holder.address)}</a></div>
                 {excludedAddresses.includes(holder.address) && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">Team Locked</span>}
                 {holder.address === zilSwapAddress && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">ZilSwap</span>}
+                {holder.address === 'zil1e9zzx762ggnvd20nfm2yrfr9pgurvn24qmzhew' && <span className="ml-3 uppercase bg-primaryDark text-gray-800 rounded text-xs font-semibold px-2 py-1">Rescued Funds</span>}
               </div>
               <div className="text-right">{cryptoFormat(holder.balance.toNumber())}</div>
               <div className="w-24 text-right">

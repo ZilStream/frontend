@@ -61,7 +61,7 @@ function Chart(props: Props) {
         },
       })
 
-      var data: ChartDataPoint[] = [];
+      var data: ChartDataPoint[] = []; 
 
       props.data.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
       props.data.forEach(rate => {
@@ -71,7 +71,7 @@ function Chart(props: Props) {
         })
       })
 
-      const isIncrease = data?.[0].value < data?.[data.length-1].value
+      const isIncrease = data.length > 0 &&  data?.[0].value < data?.[data.length-1].value
 
       const newSeries = newChart.addAreaSeries({
         topColor: isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',

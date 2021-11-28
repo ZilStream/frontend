@@ -4,6 +4,7 @@ import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
 
 export enum BatchRequestType {
+  BlockchainInfo = "blockchainInfo",
   Balance = "balance",
   TokenBalance = "tokenBalance",
   TokenAllowance = "tokenAllowance",
@@ -12,7 +13,9 @@ export enum BatchRequestType {
   TotalContributions = "totalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
-  CarbonStakers = "carbonStakers"
+  CarbonStakers = "carbonStakers",
+  PortBuoyStakers = "portBuoyStakers",
+  PortDockStakers = "portDockStakers"
 };
 
 const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
@@ -23,6 +26,12 @@ const stakingHash = fromBech32Address(stakingAddress)
 
 const carbStakingAddress = "zil18r37xks4r3rj7rzydujcckzlylftdy2qerszne"
 const carbStakingHash = fromBech32Address(carbStakingAddress)
+
+const portBuoyStakingAddress = "zil1lkhea3egremrwtn4lfhsa4psk978k2sat3cs3u"
+const portBuoyStakingHash = fromBech32Address(portBuoyStakingAddress)
+
+const portDockStakingAddress = "zil1yhy3wm79cx8v9zyg7qecwa457w0ysupgvzk5pt"
+const portDockStakingHash = fromBech32Address(portDockStakingAddress)
 
 interface BatchRequestItem {
   id: string;
@@ -40,6 +49,18 @@ interface BatchRequest {
 export interface BatchResponse {
   request: BatchRequest;
   result: any;
+}
+
+export const infoBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.BlockchainInfo,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetBlockchainInfo",
+      params: []
+    }
+  }
 }
 
 /**
@@ -249,6 +270,52 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         carbStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port buoy stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const portBuoyStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.PortBuoyStakers,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        portBuoyStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const portDockStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.PortDockStakers,
+    token: undefined,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetSmartContractSubState",
+      params: [
+        portDockStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],

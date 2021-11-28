@@ -31,9 +31,14 @@ const VolumeChartBlock = (props: Props) => {
   }, [])
 
   const fetchVolume = async () => {
-    const response = await getVolume()
-    response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
-    setTVL(response)
+    try {
+      const response = await getVolume()
+      response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
+      setTVL(response)
+    } catch(err) {
+      // console.log(err)
+    }
+    
   }
 
   const firstRate = tvl.length > 0 ? tvl[0].value : 0
@@ -46,7 +51,7 @@ const VolumeChartBlock = (props: Props) => {
       <div className="absolute top-0 left-0 w-full pt-2 px-3">
         <div className="flex items-center text-lg">
           <div className="flex-grow flex items-center">
-            <span className="font-semibold mr-2 flex items-center">Volume <span className="px-1 ml-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-400 rounded">24h</span></span>
+            <span className="font-semibold mr-2 flex items-center">Volume <span className="hidden sm:inline px-1 ml-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-400 rounded">24h</span></span>
             <span className="mr-2">{currencyFormat(volume * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
           </div>
           {!isNaN(change) &&

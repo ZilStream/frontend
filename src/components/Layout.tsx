@@ -11,6 +11,7 @@ import SwapPopover from './Swap/SwapPopover'
 import Link from 'next/link'
 import { ToastContainer } from 'react-toastify'
 import ExchangeModal from './Swap/components/ExchangeModal'
+import Notice from './Notice'
 
 interface Props {
   children: React.ReactNode
@@ -79,6 +80,9 @@ export default function Layout(props: Props) {
           <WalletModal />
           <CurrencyModal />
           <ExchangeModal />
+          <Notice title="Ongoing ZilSwap Migration">
+            ZilSwap is migrating to a new contract due to an issue found. <span className="font-bold">Liquidity has been safely stored and all funds are safe.</span> <a className="underline" href="https://twitter.com/ZilSwap">Visit ZilSwap's Twitter for the latest updates.</a>
+          </Notice>
           <div className="px-3 md:px-4 my-4 flex-grow">{children}</div>
           {/* {router.pathname !== '/swap' &&
             <>
