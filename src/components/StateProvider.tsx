@@ -40,7 +40,6 @@ const StateProvider = (props: Props) => {
 
     batch(() => {
       if(!tokenState.initialized) {
-        console.log('init tokens', tokenState.initialized)
         for (let i = 0; i < tokens.length; i++) {
           tokens[i].isZil = tokens[i].address_bech32 === ZIL_ADDRESS
           tokens[i].isStream = tokens[i].address_bech32 === STREAM_ADDRESS

@@ -43,7 +43,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   const tokens = useMemo(() => {
     if(!tokenState.initialized) return []
-    tokenState.tokens.forEach(token => console.log(token.symbol, token.apr?.toNumber()))
     return tokenState.tokens.sort(sortTokensByMarketCap)
   }, [tokenState])
 
