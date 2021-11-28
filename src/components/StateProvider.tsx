@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
+import { BlockchainActionsTypes } from 'store/blockchain/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
@@ -128,6 +129,13 @@ const StateProvider = (props: Props) => {
         let token = result.request.token
   
         switch(result.request.type) {
+          case BatchRequestType.BlockchainInfo: {
+            dispatch({ type: BlockchainActionsTypes.BLOCKCHAIN_UPDATE, payload: {
+              blockHeight: +result.result.NumTxBlocks-1
+            }})
+            return
+          }
+
           case BatchRequestType.Balance: {
             dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
               address_bech32: token?.address_bech32,

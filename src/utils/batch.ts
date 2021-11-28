@@ -4,6 +4,7 @@ import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
 
 export enum BatchRequestType {
+  BlockchainInfo = "blockchainInfo",
   Balance = "balance",
   TokenBalance = "tokenBalance",
   TokenAllowance = "tokenAllowance",
@@ -48,6 +49,18 @@ interface BatchRequest {
 export interface BatchResponse {
   request: BatchRequest;
   result: any;
+}
+
+export const infoBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.BlockchainInfo,
+    item: {
+      id: "1",
+      jsonrpc: "2.0",
+      method: "GetBlockchainInfo",
+      params: []
+    }
+  }
 }
 
 /**
