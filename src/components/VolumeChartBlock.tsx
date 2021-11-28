@@ -31,9 +31,14 @@ const VolumeChartBlock = (props: Props) => {
   }, [])
 
   const fetchVolume = async () => {
-    const response = await getVolume()
-    response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
-    setTVL(response)
+    try {
+      const response = await getVolume()
+      response.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
+      setTVL(response)
+    } catch(err) {
+      // console.log(err)
+    }
+    
   }
 
   const firstRate = tvl.length > 0 ? tvl[0].value : 0
