@@ -10,12 +10,10 @@ const blocks = (): EventChannel<number> => {
     const zilliqa = new Zilliqa(Node.ZilStream)
     const subscriber = zilliqa.subscriptionBuilder.buildNewBlockSubscriptions('wss://api-ws.zilliqa.com')
     
-
     subscriber.subscribe({ query: MessageType.NEW_BLOCK })
 
     subscriber.emitter.on(StatusType.SUBSCRIBE_NEW_BLOCK, (event) => {
-      console.log('[Socket] Subscribed to new blocks')
-      
+      // console.log('[Socket] Subscribed to new blocks')
     })
 
     subscriber.emitter.on(MessageType.NEW_BLOCK, (event) => {
@@ -24,7 +22,7 @@ const blocks = (): EventChannel<number> => {
 
     subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
       //if unsubscribe success, it will echo the unsubscription info
-      console.log('[Socket]: Unsubscribed from new events, reconnecting');
+      // console.log('[Socket]: Unsubscribed from new events, reconnecting');
       subscriber.reconnect()
     });
 
