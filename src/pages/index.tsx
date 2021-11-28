@@ -7,13 +7,13 @@ import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertCircle, ChevronDown, Sliders, Star, Tool, Triangle } from 'react-feather'
+import { Star, Triangle } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, SettingsState, Token, TokenState } from 'store/types'
 import { ListType } from 'types/list.interface'
 import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
-import { compactFormat, cryptoFormat, currencyFormat } from 'utils/format'
+import { compactFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import TokenIcon from 'components/TokenIcon'
 import TVLChartBlock from 'components/TVLChartBlock'
@@ -43,7 +43,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
   const tokens = useMemo(() => {
     if(!tokenState.initialized) return []
-    return tokenState.tokens.sort(sortTokensByMarketCap)
+    return tokenState.tokens
   }, [tokenState])
 
   const marketCap = tokenState.tokens.reduce((sum, current) => {
@@ -68,13 +68,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     },
     30000
   )
-
-  const sortTokensByMarketCap = (a: Token, b: Token) => {
-    const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
-    const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
-
-    return (priorMarketCap < nextMarketCap) ? 1 : -1
-  }
 
   const aprTokens = tokens.filter(token => token.listed === true).sort((a: Token, b: Token) => {
     if(!a.apr || !b.apr) return -1
@@ -131,13 +124,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       })
     } else if(currentSort === SortType.Default) {
       tokensToDisplay.sort((a: Token, b: Token) => {
-        const priorMarketCap = (a.current_supply ?? 0) * ((a.rate ?? 0) * tokenState.zilRate)
-        const nextMarketCap = (b.current_supply ?? 0) * ((b.rate ?? 0) * tokenState.zilRate)
-    
         if(currentSortDirection == SortDirection.Ascending) {
-          return (priorMarketCap < nextMarketCap) ? 1 : -1
+          return (a.market_data.market_cap_zil < b.market_data.market_cap_zil) ? 1 : -1
         }
-        return (priorMarketCap > nextMarketCap) ? 1 : -1
+        return (a.market_data.market_cap_zil > b.market_data.market_cap_zil) ? 1 : -1
       })
     } else if(currentSort === SortType.Token) {
       tokensToDisplay.sort((a,b) => {
