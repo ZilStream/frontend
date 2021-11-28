@@ -12,8 +12,14 @@ export interface SagaStore extends Store {
 
 export const makeStore = (context: Context) => {
   // const sagaMiddleware = createSagaMiddleware();
+  const middlewares = [sagaMiddleware]
 
-  const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+  if (process.env.NODE_ENV === `development`) {
+    const { logger } = require(`redux-logger`);
+    middlewares.push(logger);
+  }
+
+  const store = createStore(reducer, applyMiddleware(...middlewares));
 
   // (store as SagaStore).sagaTask = sagaMiddleware.run(rootSaga);
 
