@@ -31,7 +31,9 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-5 justify-end text-gray-500 dark:text-gray-400">
               {blockchainState.blockHeight &&
-                <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 mr-3"><span className="inline-block w-2 h-2 bg-green-500 rounded-full" /> Latest block <span className="font-medium">{blockchainState.blockHeight}</span></div>
+                <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 mr-3">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full" /> Latest block <a href={`https://viewblock.io/zilliqa/block/${blockchainState.blockHeight}`} target="_blank" className="font-medium">{blockchainState.blockHeight}</a>
+                </div>
               }
               <a href="https://t.me/zilstream">
                 <Send size={20} />
