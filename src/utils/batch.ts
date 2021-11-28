@@ -51,12 +51,16 @@ export interface BatchResponse {
   result: any;
 }
 
+const requestParams = {
+  id: "1",
+  jsonrpc: "2.0"
+}
+
 export const infoBatchRequest = (): BatchRequest => {
   return {
     type: BatchRequestType.BlockchainInfo,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetBlockchainInfo",
       params: []
     }
@@ -76,8 +80,7 @@ export const balanceBatchRequest = (token: Token, address: string): BatchRequest
     type: BatchRequestType.Balance,
     token: token,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetBalance",
       params: [walletAddress],
     },
@@ -98,8 +101,7 @@ export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): B
     type: BatchRequestType.TokenBalance,
     token: token,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         address.replace("0x", "").toLowerCase(),
@@ -123,8 +125,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
     type: BatchRequestType.TokenAllowance,
     token: token,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         address.replace("0x", "").toLowerCase(),
@@ -145,8 +146,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
     type: BatchRequestType.Pools,
     token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         zilSwapHash.replace("0x", "").toLowerCase(),
@@ -165,10 +165,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const totalContributionsBatchRequest = (): BatchRequest => {
   return {
     type: BatchRequestType.TotalContributions,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         zilSwapHash.replace("0x", "").toLowerCase(),
@@ -193,8 +191,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
     type: BatchRequestType.PoolBalance,
     token: token,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         zilSwapHash.replace("0x", "").toLowerCase(),
@@ -213,10 +210,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const stakingOperatorsBatchRequest = (): BatchRequest => {
   return {
     type: BatchRequestType.StakingOperators,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         stakingHash.replace("0x", "").toLowerCase(),
@@ -237,10 +232,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const stakingDelegatorsBatchRequest = (operator: Operator, walletAddress: string): BatchRequest => {
   return {
     type: BatchRequestType.StakingDelegators,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         stakingHash.replace("0x", "").toLowerCase(),
@@ -263,10 +256,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const carbonStakersBatchRequest = (walletAddress: string): BatchRequest => {
   return {
     type: BatchRequestType.CarbonStakers,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         carbStakingHash.replace("0x", "").toLowerCase(),
@@ -286,10 +277,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const portBuoyStakersBatchRequest = (walletAddress: string): BatchRequest => {
   return {
     type: BatchRequestType.PortBuoyStakers,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         portBuoyStakingHash.replace("0x", "").toLowerCase(),
@@ -309,10 +298,8 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  export const portDockStakersBatchRequest = (walletAddress: string): BatchRequest => {
   return {
     type: BatchRequestType.PortDockStakers,
-    token: undefined,
     item: {
-      id: "1",
-      jsonrpc: "2.0",
+      ...requestParams,
       method: "GetSmartContractSubState",
       params: [
         portDockStakingHash.replace("0x", "").toLowerCase(),
