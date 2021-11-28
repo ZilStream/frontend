@@ -20,6 +20,7 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
       const initProps: TokenInitProps = payload
       return {
         ...state,
+        initialized: true,
         tokens: [
           ...initProps.tokens
         ]
