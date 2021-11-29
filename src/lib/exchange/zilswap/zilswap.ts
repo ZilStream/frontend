@@ -1,6 +1,6 @@
 import { Token } from 'store/types'
 import BigNumber from 'bignumber.js'
-import { ZIL_ADDRESS } from 'lib/constants'
+import { ZILSWAP_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import { Exchange } from '../exchange'
 import { ExchangeRate } from '../types'
 import { Contract, Value, CallParams } from '@zilliqa-js/contract';
@@ -19,7 +19,7 @@ export class ZilSwap extends Exchange {
   constructor(zilliqa: Zilliqa, provider: any) {
     super(zilliqa, provider)
 
-    this.contractAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
+    this.contractAddress = ZILSWAP_ADDRESS
     this.contractHash = fromBech32Address(this.contractAddress).toLowerCase()
     this.contract = this.provider.contracts.at(this.contractAddress)
   }

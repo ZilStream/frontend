@@ -1,5 +1,6 @@
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
 import BigNumber from 'bignumber.js'
+import { ZILSWAP_ADDRESS } from 'lib/constants'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { BlockchainState, RootState, Token } from 'store/types'
@@ -25,7 +26,7 @@ const TokenLiquidity = (props: Props) => {
 
   const [holders, setHolders] = useState<Balance[]>([])
   const excludedAddresses = token.supply_skip_addresses.split(",")
-  const zilSwapAddress = 'zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w'
+  const zilSwapAddress = ZILSWAP_ADDRESS
 
   const [state, setState] = useState({
     isLoading: true,
@@ -72,7 +73,7 @@ const TokenLiquidity = (props: Props) => {
       fHolders = fHolders.filter(h => !excludedAddresses.includes(h.address))
     }
     if(!state.showZilSwap) {
-      fHolders = fHolders.filter(h => h.address !== 'zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w')
+      fHolders = fHolders.filter(h => h.address !== ZILSWAP_ADDRESS)
     }
 
     fHolders.sort((a,b) => a.balance.isGreaterThan(b.balance) ? -1 : 1)

@@ -1,7 +1,7 @@
 import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
 import BigNumber from 'bignumber.js'
 import getZilRates from 'lib/coingecko/getZilRates'
-import getLatestRates from 'lib/zilstream/getLatestRates'
+import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
 import React, { useEffect, useState } from 'react'
@@ -14,12 +14,11 @@ import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
+import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
 import { useInterval } from 'utils/interval'
-import { Network } from 'utils/network'
 import { bnOrZero } from 'utils/strings'
 
 interface Props {
@@ -27,6 +26,7 @@ interface Props {
 }
 
 const StateProvider = (props: Props) => {
+  const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
@@ -36,8 +36,35 @@ const StateProvider = (props: Props) => {
 
   async function loadTokens() {
     const tokens = await getTokens()
-    dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+    if(tokens.length === 0) return
 
+    batch(() => {
+      if(!tokenState.initialized) {
+        for (let i = 0; i < tokens.length; i++) {
+          tokens[i].isZil = tokens[i].address_bech32 === ZIL_ADDRESS
+          tokens[i].isStream = tokens[i].address_bech32 === STREAM_ADDRESS
+        }
+        dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
+      } else {
+        tokens.forEach(token => {
+          const { address_bech32, ...tokenDetails} = token
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
+            address_bech32: address_bech32,
+            ...tokenDetails
+          }})
+        })
+      }
+    })
+
+    if(tokens.length > 0) {
+      dispatch(updateSwap({
+        tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
+        tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
+      }))
+    }
+  }
+
+  async function setFavorites() {
     const favoritesString = localStorage.getItem('favorites') ?? ''
     var favorites = favoritesString.split(',')
 
@@ -48,30 +75,6 @@ const StateProvider = (props: Props) => {
           isFavorited: true
         }})
       })
-    })
-
-    if(tokens.length > 0) {
-      dispatch(updateSwap({
-        tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
-        tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
-      }))
-    }
-
-    await loadRates()
-  }
-
-  async function loadRates() {
-    const latestRates = await getLatestRates()
-    batch(() => {
-      latestRates.forEach(rate => {
-        dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-          address_bech32: rate.address,
-          rate: rate.rate,
-          isZil: rate.address === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz',
-          isStream: rate.address === 'zil1504065pp76uuxm7s9m2c4gwszhez8pu3mp6r8c'
-        }})
-      })
-      dispatch({type: TokenActionTypes.TOKEN_INITIALIZED})
     })
   }
 
@@ -314,10 +317,14 @@ const StateProvider = (props: Props) => {
   }
 
   useInterval(async () => {
-    loadRates()
-    loadWalletState()
     loadZilRates()
-  }, 30000)
+  }, 20000)
+
+  useEffect(() => {
+    if(!tokenState.initialized) return
+    loadTokens()
+    loadWalletState()
+  }, [blockchainState.blockHeight])
 
   useEffect(() => {
     loadSettings()
@@ -329,6 +336,7 @@ const StateProvider = (props: Props) => {
 
   useEffect(() => {
     if(!tokenState.initialized) return
+    setFavorites()
     setTokenAPRs()
   }, [tokenState.initialized])
 
