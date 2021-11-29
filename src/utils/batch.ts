@@ -1,4 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
+import { ZILSWAP_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
 import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
@@ -18,7 +19,7 @@ export enum BatchRequestType {
   PortDockStakers = "portDockStakers"
 };
 
-const zilSwapAddress = "zil1hgg7k77vpgpwj3av7q7vv5dl4uvunmqqjzpv2w"
+const zilSwapAddress = ZILSWAP_ADDRESS
 const zilSwapHash = fromBech32Address(zilSwapAddress)
 
 const stakingAddress = "zil15lr86jwg937urdeayvtypvhy6pnp6d7p8n5z09"
