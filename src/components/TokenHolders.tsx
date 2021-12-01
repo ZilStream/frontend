@@ -150,6 +150,10 @@ const TokenHolders = (props: Props) => {
           )
         })}
 
+        {holders.length > 50 && state.rows === 50 &&
+          <button onClick={() => setState({...state, rows: holders.length})} className="w-full py-3 font-medium">Show more</button>
+        }
+
         {state.isLoading &&
           <div className="py-6 flex items-center justify-center">
             <LoadingSpinner /> <span className="text-gray-600 dark:text-gray-300">Loading</span>
