@@ -1,17 +1,19 @@
 const colors = require('tailwindcss/colors')
 
 module.exports = {
-  purge: [
+  content: [
     './src/pages/**/*.{js,ts,jsx,tsx}', 
     './src/components/**/*.{js,ts,jsx,tsx}',
-    'node_modules/react-toastify/dist/ReactToastify.css',
   ],
-  darkMode: 'class', // or 'media' or 'class'
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: '#29ccc4',
         primaryDark: '#2fbab3',
+        green: colors.emerald,
+        yellow: colors.amber,
+        purple: colors.violet,
       },
       spacing: {
         '110': '26rem',
@@ -19,12 +21,6 @@ module.exports = {
         '144': '36rem',
       },
     },
-  },
-  variants: {
-    extend: {
-      borderWidth: ['first', 'last'],
-      borderRadius: ['first', 'last']
-    }
   },
   plugins: [
     require('@tailwindcss/forms')

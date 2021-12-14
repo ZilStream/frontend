@@ -21,6 +21,7 @@ import VolumeChartBlock from 'components/VolumeChartBlock'
 import Customize from 'components/Customization'
 import Filters from 'components/Filters'
 import HighestAPRBlock from 'components/HighestAPRBlock'
+import SponsorBlock from 'components/SponsorBlock'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -286,7 +287,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              <HighestAPRBlock tokens={aprTokens} />
+              <SponsorBlock link="https://zilswap.io/zilo/current" />
+
+              {/* <HighestAPRBlock tokens={aprTokens} /> */}
             </>
           )}
         </div>
