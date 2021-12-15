@@ -287,9 +287,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              <SponsorBlock link="https://zilswap.io/zilo/current" />
+              {/* <SponsorBlock link="https://zilswap.io/zilo/current" /> */}
 
-              {/* <HighestAPRBlock tokens={aprTokens} /> */}
+              <HighestAPRBlock tokens={aprTokens} />
             </>
           )}
         </div>
