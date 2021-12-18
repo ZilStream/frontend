@@ -1,9 +1,8 @@
 import React, { FC } from 'react'
+import '../styles/globals.css'
+import '../styles/toastify.css';
 import { wrapper } from 'store/store'
 import type { AppProps } from 'next/app'
-import '../styles/tailwind.css'
-import '../styles/styles.css'
-import 'react-toastify/dist/ReactToastify.min.css';
 import Layout from '../components/Layout'
 import { ThemeProvider } from 'next-themes'
 import StateProvider from 'components/StateProvider'
