@@ -8,6 +8,7 @@ import { CSVLink } from 'react-csv'
 import { getTransactions } from 'lib/zilstream/getTransactions'
 import { Transaction } from 'types/transaction.interface'
 import LoadingIndicator from './LoadingIndicator'
+import dayjs from 'dayjs'
 
 const TransactionsExportModal = () => {
   const modalState = useSelector<RootState, ModalState>(state => state.modal)
@@ -16,6 +17,7 @@ const TransactionsExportModal = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [{from, to}, setRange] = useState<{from: Date|undefined, to: Date|undefined}>({from: undefined, to: undefined})
 
   useEffect(() => {
     dispatch(openExport(isOpen))
@@ -33,7 +35,7 @@ const TransactionsExportModal = () => {
   const fetchTransactions = async () => {
     if(!accountState.selectedWallet) return
     
-    var totalTransactions: Transaction[] = []
+    var totalTransactions: any[] = []
 
     var hasTransactions = true
     var currentPage = 0
@@ -49,6 +51,11 @@ const TransactionsExportModal = () => {
         hasTransactions = false
       }
     }
+
+    totalTransactions.forEach(tx => {
+      delete tx["data"]
+      delete tx["receipt"]
+    })
 
     setTransactions(totalTransactions)
     setIsLoading(false)
@@ -80,9 +87,24 @@ const TransactionsExportModal = () => {
                 </div>
               }
 
-              <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2 pt-2">
-                
-              </div>
+              {/* <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2 pt-2">
+                <div className="text-sm font-medium mb-1">Range</div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <input
+                    type="date"
+                    className="bg-gray-200 dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-700 rounded py-3 px-3 text-sm"
+                    min="2019-01-31"
+                    max={dayjs().format('YYYY-MM-DD')}
+                  />
+
+                  <input
+                    type="date"
+                    className="bg-gray-200 dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-700 rounded py-3 px-3 text-sm"
+                    min="2019-01-31"
+                    max={dayjs().format('YYYY-MM-DD')}
+                  />
+                </div>
+              </div> */}
 
               <CSVLink 
                 data={transactions}
