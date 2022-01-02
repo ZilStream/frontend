@@ -13,6 +13,9 @@ const InlineChange = (props: Props) => {
   const isPositive = num > 0
   const isNeutral = num === 0
   const isNegative = num < 0
+
+  if(!isFinite(num)) return <></>
+
   return <span className={`inline-flex items-center ${props.bold && 'font-semibold'} ${isPositive && 'text-green-600 dark:text-green-500'}  ${isNegative && 'text-red-600 dark:text-red-500'} ${props.className ?? ""}`}>
     {isPositive &&
       <Triangle size={7} strokeWidth={3} className="fill-current mr-1" />
