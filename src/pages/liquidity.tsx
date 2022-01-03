@@ -155,7 +155,7 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
 
               var apr = 0
               if(zwapToken) {
-                const rewardsValue = zwapAmount * zwapToken.rate
+                const rewardsValue = zwapAmount * zwapToken.market_data.rate
                 const roiPerEpoch = rewardsValue / token.liquidity_zil
                 apr = roiPerEpoch * 52 * 100
               }

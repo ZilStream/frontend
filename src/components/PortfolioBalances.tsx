@@ -23,11 +23,11 @@ function PortfolioBalances() {
 
   filteredTokens.sort((a, b) => {
     const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
-    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.rate)
+    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.market_data.rate)
     const priorUsdRate = priorZilRate.times(zilRate)
 
     const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
-    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.rate)
+    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.market_data.rate)
     const nextUsdRate = nextZilRate.times(zilRate)
     
     return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
@@ -38,7 +38,7 @@ function PortfolioBalances() {
 
     if(current.isZil) return sum.plus(balance)
 
-    return sum.plus(balance.times(current.rate))
+    return sum.plus(balance.times(current.market_data.rate))
   }, new BigNumber(0))
 
   return (
@@ -66,7 +66,7 @@ function PortfolioBalances() {
             {filteredTokens.map((token, index) => {
               let balance = toBigNumber(token.balance, {compression: token.decimals})
 
-              let rate = token.rate
+              let rate = token.market_data.rate
               let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
               let fiatBalance = zilBalance * selectedCurrency.rate
 

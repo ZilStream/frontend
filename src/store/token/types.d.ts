@@ -22,8 +22,6 @@ export interface Token {
   last_vote_hash: string
   tags: string
   supply_skip_addresses: string
-  rate: number
-  rate_usd: number
   market_data: MarketData
   rewards: Reward[]
   isZil: boolean
@@ -59,6 +57,8 @@ export interface MarketData {
   change_percentage_7d: number
   change_percentage_14d: number
   change_percentage_30d: number
+  rate: number
+  rate_usd: number
 }
 
 export interface Reward {

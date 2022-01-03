@@ -68,8 +68,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   } = React.useMemo(() => {
     return {
       apr: getTokenAPR(token, tokenState),
-      athChangePercentage: -((token.market_data.ath / token.rate) -1) * 100,
-      atlChangePercentage: ((token.rate / token.market_data.atl) - 1) * 100
+      athChangePercentage: -((token.market_data.ath / token.market_data.rate) -1) * 100,
+      atlChangePercentage: ((token.market_data.rate / token.market_data.atl) - 1) * 100
     }
   }, [token, tokenState.tokens])
 
@@ -150,14 +150,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             
           <div className="font-medium pb-3 mb-3 sm:border-b border-gray-300 dark:border-gray-800">
             <div className="flex sm:flex-col">
-              <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.rate)} ZIL</div>
+              <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.market_data.rate)} ZIL</div>
               <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center">
-                <span className="font-medium">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                <span className="font-medium">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
                 <span className="text-base ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
               </div>
             </div>
             <div className="my-3">
-              <PriceDayRange price={token.rate} low={token.market_data.low_24h} high={token.market_data.high_24h} />
+              <PriceDayRange price={token.market_data.rate} low={token.market_data.low_24h} high={token.market_data.high_24h} />
             </div>
           </div>
 
@@ -353,7 +353,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <Tab.Panel>
                   <div className="">
                     <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
-                    <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
+                    <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
                   </div>
                 </Tab.Panel>
                 <Tab.Panel>
@@ -380,8 +380,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.rate)} ZIL</span>
+                    <span className="font-bold">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.rate)} ZIL</span>
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">

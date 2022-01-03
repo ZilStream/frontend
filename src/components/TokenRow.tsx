@@ -96,11 +96,11 @@ const TokenRow = (props: Props) => {
       </td>
 
       {settingsState.columns.priceZIL &&
-        <td className="px-2 py-2 font-normal text-right"><FlashChange value={token.rate}>{cryptoFormat(token.rate)}</FlashChange></td>
+        <td className="px-2 py-2 font-normal text-right"><FlashChange value={token.market_data.rate}>{cryptoFormat(token.market_data.rate)}</FlashChange></td>
       }
 
       {settingsState.columns.priceFiat &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.rate * selectedCurrency.rate, selectedCurrency.symbol)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.ath &&
@@ -138,7 +138,7 @@ const TokenRow = (props: Props) => {
       }
 
       {settingsState.columns.circSupply &&
-        <td className="px-2 py-2 font-normal text-right">{numberFormat(token.current_supply, 0)}</td>
+        <td className="px-2 py-2 font-normal text-right">{numberFormat(token.market_data.current_supply, 0)}</td>
       }
 
       {settingsState.columns.totalSupply &&
