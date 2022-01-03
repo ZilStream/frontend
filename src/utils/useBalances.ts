@@ -52,8 +52,8 @@ export default function useBalances() {
       }
 
       streamBalance = streamBalance.shiftedBy(-8)
-      streamBalanceUSD = streamBalance.times(streamToken.rate).times(tokenState.zilRate)
-      streamBalanceZIL = streamBalance.times(streamToken.rate)
+      streamBalanceUSD = streamBalance.times(streamToken.market_data.rate).times(tokenState.zilRate)
+      streamBalanceZIL = streamBalance.times(streamToken.market_data.rate)
     }
 
     var totalBalance = new BigNumber(0)
@@ -67,7 +67,7 @@ export default function useBalances() {
     
         if(current.isZil) return sum.plus(balance)
     
-        return sum.plus(balance.times(current.rate))
+        return sum.plus(balance.times(current.market_data.rate))
       }, new BigNumber(0))
       totalBalance = totalBalance.plus(holdingBalance)
     
@@ -90,7 +90,7 @@ export default function useBalances() {
           return sum.plus(staked)
         } else {
           let staked = toBigNumber(current.staked, {compression: current.decimals})
-          let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].rate
+          let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].market_data.rate
           return sum.plus(staked.times(rate))
         }
       }, new BigNumber(0))

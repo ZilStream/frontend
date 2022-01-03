@@ -29,7 +29,7 @@ const CurrencyInput = (props: Props) => {
   const fiatValue = (): BigNumber => {
     if(amount.isZero()) return new BigNumber(0)
     if(selectedToken?.symbol === 'ZIL') return amount.times(selectedCurrency.rate)
-    return amount.times(selectedToken?.rate ?? 1).times(selectedCurrency.rate)
+    return amount.times(selectedToken?.market_data.rate ?? 1).times(selectedCurrency.rate)
   }
 
   return (

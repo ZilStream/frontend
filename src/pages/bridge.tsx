@@ -60,7 +60,7 @@ const Bridge = () => {
   const totalValue = useMemo(() => {
     var value = 0
     bridgeTokens.forEach(token => {
-      value += supplies[token.symbol] * token.rate
+      value += supplies[token.symbol] * token.market_data.rate
     })
     return value
   }, [supplies])
@@ -101,11 +101,11 @@ const Bridge = () => {
             </thead>
             <tbody>
               {bridgeTokens.sort((a,b) => {
-                const aValue = supplies[a.symbol] * a.rate
-                const bValue = supplies[b.symbol] * b.rate
+                const aValue = supplies[a.symbol] * a.market_data.rate
+                const bValue = supplies[b.symbol] * b.market_data.rate
                 return aValue > bValue ? -1 : 1
               }).map((token, index) => {
-                const value = supplies[token.symbol] * token.rate
+                const value = supplies[token.symbol] * token.market_data.rate
                 return (
                   <tr key={token.address_bech32} className="text-lg border-b dark:border-gray-700 last:border-b-0">
                     <td className={`pl-4 pr-2 py-3 font-medium whitespace-nowrap ${index === 0 ? 'rounded-tl-lg' : ''} ${index === bridgeTokens.length-1 ? 'rounded-bl-lg' : ''}`}>

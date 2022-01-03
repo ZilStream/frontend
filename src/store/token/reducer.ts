@@ -1,3 +1,4 @@
+import { ZIL_ADDRESS } from 'lib/constants';
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux'
 import { TokenActionTypes } from "./actions";
@@ -36,7 +37,7 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
       const updateProps: TokenUpdateProps = payload
       return {
         ...state,
-        zilRate: (updateProps.address_bech32 === 'zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz' && updateProps.rate) ? updateProps.rate : state.zilRate,
+        zilRate: (updateProps.address_bech32 === ZIL_ADDRESS && updateProps.market_data?.rate) ? updateProps.market_data.rate : state.zilRate,
         tokens: state.tokens.map(token => token.address_bech32 === updateProps.address_bech32 ?
           {...token, ...updateProps} :
           token

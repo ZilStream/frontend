@@ -28,7 +28,7 @@ function PortfolioOverview() {
     let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
     let contributionShare = contributionPercentage.shiftedBy(-2)
 
-    let volume = toBigNumber(current.daily_volume)
+    let volume = toBigNumber(current.market_data.daily_volume)
     let fees = volume.times(0.003).times(contributionShare)
     return sum.plus(fees)
   }, new BigNumber(0))
@@ -39,7 +39,7 @@ function PortfolioOverview() {
     if(token.symbol === 'ZIL') {
       return sum.plus(reward.amount)
     }
-    return sum.plus(reward.amount.times(token.rate))
+    return sum.plus(reward.amount.times(token.market_data.rate))
   }, new BigNumber(0))
 
   return (

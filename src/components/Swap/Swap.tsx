@@ -66,8 +66,8 @@ const Swap = (props: Props) => {
 
   const getCurrentRate = (): BigNumber => {
     if(!tokenIn || !tokenOut) return new BigNumber(0)
-    const inRate = toBigNumber(tokenIn.symbol === 'ZIL' ? 1 : tokenIn.rate)
-    const outRate = toBigNumber(tokenOut.symbol === 'ZIL' ? 1 : tokenOut.rate)
+    const inRate = toBigNumber(tokenIn.symbol === 'ZIL' ? 1 : tokenIn.market_data.rate)
+    const outRate = toBigNumber(tokenOut.symbol === 'ZIL' ? 1 : tokenOut.market_data.rate)
     return inRate.dividedBy(outRate)
   }
 
@@ -156,7 +156,7 @@ const Swap = (props: Props) => {
         />
       </div>
       <div className="text-sm font-medium mt-2 flex items-center justify-end">
-        1 {tokenIn?.symbol} = {cryptoFormat(getCurrentRate().toNumber())} {tokenOut?.symbol} <span className="text-gray-500 dark:text-gray-400">({currencyFormat(tokenIn?.rate_usd ?? 0)})</span>
+        1 {tokenIn?.symbol} = {cryptoFormat(getCurrentRate().toNumber())} {tokenOut?.symbol} <span className="text-gray-500 dark:text-gray-400">({currencyFormat(tokenIn?.market_data.rate_usd ?? 0)})</span>
         <Tippy content={
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border w-72 flex flex-col gap-1 text-sm whitespace-nowrap">
             <div className="font-semibold border-b dark:border-gray-700 pb-1 mb-1">
