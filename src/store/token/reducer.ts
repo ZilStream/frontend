@@ -73,6 +73,25 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
         })
       }
 
+    case TokenActionTypes.TOKEN_UPDATE_XCAD_POOL:
+      const xcadPoolProps: TokenPoolUpdateProps = payload
+      return {
+        ...state,
+        tokens: state.tokens.map(token => {
+          if(token.address_bech32 === xcadPoolProps.address) {
+            return {
+              ...token,
+              xcadPool: {
+                ...token.xcadPool,
+                ...xcadPoolProps
+              }
+            }
+          } else {
+            return token
+          }
+        })
+      }
+
     default:
       return state
   }

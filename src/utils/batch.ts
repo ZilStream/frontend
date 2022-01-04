@@ -1,5 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
-import { ZILSWAP_ADDRESS } from "lib/constants";
+import { XCADDEX_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
 import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
@@ -12,6 +12,9 @@ export enum BatchRequestType {
   Pools = "pools",
   PoolBalance = "poolBalance",
   TotalContributions = "totalContributions",
+  XcadPools = "xcadPools",
+  XcadBalances = "xcadBalances",
+  XcadTotalContributions = "xcadTotalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
@@ -21,6 +24,9 @@ export enum BatchRequestType {
 
 const zilSwapAddress = ZILSWAP_ADDRESS
 const zilSwapHash = fromBech32Address(zilSwapAddress)
+
+const xcadDexAddress = XCADDEX_ADDRESS
+const xcadDexHash = fromBech32Address(xcadDexAddress)
 
 const stakingAddress = "zil15lr86jwg937urdeayvtypvhy6pnp6d7p8n5z09"
 const stakingHash = fromBech32Address(stakingAddress)
@@ -198,6 +204,72 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
         zilSwapHash.replace("0x", "").toLowerCase(),
         "balances",
         [address, walletAddr],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadPoolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadPools,
+    token: undefined,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "xpools",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadTotalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadTotalContributions,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "xtotal_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param Token The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const xcadPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.XcadBalances,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "xbalances",
+        ["0x153feaddc48871108e286de3304b9597c817b456,"+address, "0x153feaddc48871108e286de3304b9597c817b456", walletAddr],
       ],
     },
   };

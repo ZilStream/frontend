@@ -47,7 +47,15 @@ export default function useBalances() {
         let pool = streamToken.pool!
         let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
         let contributionShare = contributionPercentage.shiftedBy(-2)
-        let streamLiquidityAmount = contributionShare?.times(streamToken.pool?.tokenReserve ?? BIG_ZERO);
+        let streamLiquidityAmount = contributionShare?.times(streamToken.pool?.baseReserve ?? BIG_ZERO);
+        streamBalance = streamBalance.plus(streamLiquidityAmount)
+      }
+
+      if(streamToken.xcadPool && streamToken.xcadPool.totalContribution) {
+        let pool = streamToken.xcadPool!
+        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+        let contributionShare = contributionPercentage.shiftedBy(-2)
+        let streamLiquidityAmount = contributionShare?.times(streamToken.xcadPool?.baseReserve ?? BIG_ZERO);
         streamBalance = streamBalance.plus(streamLiquidityAmount)
       }
 
@@ -72,17 +80,27 @@ export default function useBalances() {
       totalBalance = totalBalance.plus(holdingBalance)
     
       liquidityBalance = tokenState.tokens.reduce((sum, current) => {
-        if(!current.pool || !current.pool.userContribution || !current.pool.totalContribution)  return sum 
+        var newSum = sum
         
-        let pool = current.pool!
-        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-        let contributionShare = contributionPercentage.shiftedBy(-2)
-        let zilAmount = contributionShare?.times(current.pool?.zilReserve ?? BIG_ZERO);
-        let totalZilAmount = zilAmount.times(2)
-    
-        return sum.plus(totalZilAmount)
+        if(current.pool && current.pool.userContribution && current.pool.totalContribution) {
+          let pool = current.pool
+          let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+          let contributionShare = contributionPercentage.shiftedBy(-2)
+          let zilAmount = current.pool.baseReserve.shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
+          newSum = newSum.plus(zilAmount)
+        }
+
+        if(current.xcadPool && current.xcadPool.userContribution && current.xcadPool.totalContribution) {
+          let pool = current.xcadPool
+          let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+          let contributionShare = contributionPercentage.shiftedBy(-2)
+          let zilAmount = current.xcadPool.baseReserve.shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
+          newSum = newSum.plus(zilAmount)
+        }
+        
+        return newSum
       }, new BigNumber(0))
-      totalBalance = totalBalance.plus(liquidityBalance.shiftedBy(-12))
+      totalBalance = totalBalance.plus(liquidityBalance)
       
       stakingBalance = stakingState.operators.reduce((sum, current) => {
         if(current.symbol === 'ZIL') {

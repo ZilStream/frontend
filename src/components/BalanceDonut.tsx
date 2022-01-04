@@ -42,8 +42,8 @@ function BalanceDonut(props: Props) {
     if(token.pool && token.pool.userContribution) {
       let contributionPercentage = token.pool.userContribution.dividedBy(token.pool.totalContribution).times(100)
       let contributionShare = contributionPercentage.shiftedBy(-2)
-      let zilAmount = contributionShare?.times(token.pool?.zilReserve ?? BIG_ZERO)
-      let tokenAmount = contributionShare.times(token.pool?.tokenReserve ?? BIG_ZERO)
+      let zilAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO)
+      let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
 
       total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
       zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
