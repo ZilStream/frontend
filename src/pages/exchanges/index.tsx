@@ -44,30 +44,34 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {exchanges.map(exchange => {
           return (
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10">
-                  <TokenIcon url={exchange.icon} />
+            <Link href={`/exchanges/${exchange.slug}`}>
+              <a className="font-normal">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10">
+                      <TokenIcon url={exchange.icon} />
+                    </div>
+                    <div className="font-semibold text-xl">
+                      {exchange.name}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 text-sm mt-4">
+                    <div>
+                      <div className="text-gray-500 dark:text-gray-400"># of Markets</div>
+                      <div>{exchange.pairs.length}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-500 dark:text-gray-400">Liquidity</div>
+                      <div>—</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-500 dark:text-gray-400">Volume</div>
+                      <div>—</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="font-semibold text-xl">
-                  {exchange.name}
-                </div>
-              </div>
-              <div className="grid grid-cols-3 text-sm mt-4">
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400"># of Markets</div>
-                  <div>{exchange.pairs.length}</div>
-                </div>
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400">Liquidity</div>
-                  <div>—</div>
-                </div>
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400">Volume</div>
-                  <div>—</div>
-                </div>
-              </div>
-            </div>
+              </a>
+            </Link>
           )
         })}
       </div>
