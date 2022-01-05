@@ -51,9 +51,6 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
       return token?.listed
     })
     filteredPairs.sort((a,b) => {
-      
-      const aToken = tokenState.tokens.filter(token => token.address_bech32 === a.base_address)?.[0]
-      const bToken = tokenState.tokens.filter(token => token.address_bech32 === b.base_address)?.[0]
       return (a.reserve?.quote_reserve ?? 0) > (b.reserve?.quote_reserve ?? 0) ? -1 : 1
     })
     setPairs(filteredPairs)
