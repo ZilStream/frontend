@@ -108,7 +108,8 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                     {pair.pair}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {cryptoFormat(pair.quote?.price ?? 0)} {pair.quote_symbol}
+                    <div>{cryptoFormat((pair.quote?.price ?? 0) * quoteToken.market_data.rate)} ZIL</div>
+                    <div className="text-gray-500 dark:text-gray-400">{cryptoFormat(pair.quote?.price ?? 0)} {pair.quote_symbol}</div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
@@ -116,7 +117,7 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                   {exchange.name === 'ZilSwap' ? (
                     <>
                       <td className="px-2 py-2 font-normal text-right">
-                        {currencyFormat(baseToken?.market_data.daily_volume ?? 0)}
+                        {currencyFormat((baseToken?.market_data.daily_volume_zil ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                       </td>
                       <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-br-lg' : ''}`}>
                         {numberFormat((baseToken?.market_data.daily_volume ?? 0) / totalVolume * 100)}%
@@ -132,7 +133,6 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                       </td>
                     </>
                   )}
-                  
                 </tr>
               )
             })}
