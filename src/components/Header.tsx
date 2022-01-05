@@ -64,6 +64,10 @@ const Header = () => {
                   <a className={router.pathname === '/' ? 'menu-item-active' : 'menu-item'} aria-current="page">Rankings</a>
                 </Link>
 
+                <Link href="/exchanges">
+                  <a className={router.pathname.includes('/exchanges') ? 'menu-item-active' : 'menu-item'}>Exchanges</a>
+                </Link>
+
                 <Link href="/portfolio">
                   <a className={router.pathname.includes('/portfolio') ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
@@ -109,6 +113,10 @@ const Header = () => {
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link href="/">
               <a className={router.pathname === '/' ? 'mobile-menu-item-active' : 'mobile-menu-item'} aria-current="page">Rankings</a>
+            </Link>
+
+            <Link href="/exchanges">
+              <a className={router.pathname.includes('/exchanges') ? 'mobile-menu-item-active' : 'mobile-menu-item'}>Exchanges</a>
             </Link>
 
             <Link href="/portfolio">
