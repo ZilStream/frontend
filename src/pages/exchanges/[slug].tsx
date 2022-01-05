@@ -1,19 +1,11 @@
-import BigNumber from 'bignumber.js'
-import CopyableAddress from 'components/CopyableAddress'
 import TokenIcon from 'components/TokenIcon'
-import TVLChartBlock from 'components/TVLChartBlock'
-import VolumeChartBlock from 'components/VolumeChartBlock'
-import getStats from 'lib/zilstream/getStats'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
-import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, Token, TokenState } from 'store/types'
+import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
-import useMoneyFormatter from 'utils/useMoneyFormatter'
-import getExchanges from 'lib/zilstream/getExchanges'
 import { Exchange } from 'types/exchange.interface'
 import getExchange from 'lib/zilstream/getExchange'
 import { Pair } from 'types/pair.interface'
@@ -31,6 +23,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const [pairs, setPairs] = useState<Pair[]>([])
   const [totalVolume, setTotalVolume] = useState<number>(0)
 
@@ -49,7 +43,6 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
       return aToken.market_data.daily_volume_zil > bToken.market_data.daily_volume_zil ? -1 : 1
     })
     setPairs(filteredPairs)
-    console.log(nTotalVolume)
     setTotalVolume(nTotalVolume)
   }, [tokenState])
 
@@ -90,7 +83,14 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
           </thead>
           <tbody>
             {pairs.map((pair: Pair, index: number) => {
-              const token = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
+              const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
+              const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+
+              var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+              if(!quoteToken.isZil) {
+                liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
+              }
+              console.log(selectedCurrency.rate)
               return (
                 <tr key={pair.base_address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -99,7 +99,7 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                         <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
                           <TokenIcon address={pair.base_address} />
                         </div>
-                        <span className="hidden lg:inline whitespace-nowrap">{token?.name}</span>
+                        <span className="hidden lg:inline whitespace-nowrap">{baseToken?.name}</span>
                         <span className="lg:font-normal ml-2 lg:text-gray-500 whitespace-nowrap">{pair.base_symbol}</span>
                       </a>
                     </Link>
@@ -111,15 +111,15 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                     {cryptoFormat(pair.quote?.price ?? 0)} {pair.quote_symbol}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat(token?.market_data.current_liquidity ?? 0)}
+                    {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                   </td>
                   {exchange.name === 'ZilSwap' ? (
                     <>
                       <td className="px-2 py-2 font-normal text-right">
-                        {currencyFormat(token?.market_data.daily_volume ?? 0)}
+                        {currencyFormat(baseToken?.market_data.daily_volume ?? 0)}
                       </td>
                       <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-br-lg' : ''}`}>
-                        {numberFormat((token?.market_data.daily_volume ?? 0) / totalVolume * 100)}%
+                        {numberFormat((baseToken?.market_data.daily_volume ?? 0) / totalVolume * 100)}%
                       </td>
                     </>
                   ) : (
