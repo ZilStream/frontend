@@ -70,9 +70,9 @@ function PortfolioOverview() {
       <div className="flex items-start">
         <div className="flex-grow flex items-center">
           <div className="font-medium text-xl">
-            {currencyFormat(liquidityBalance.shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+            {currencyFormat(liquidityBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
-          <div className="text-gray-500 text-md ml-2">{moneyFormat(liquidityBalance, {compression: 12, maxFractionDigits: 2})} ZIL</div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(liquidityBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
 

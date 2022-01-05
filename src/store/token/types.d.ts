@@ -29,6 +29,7 @@ export interface Token {
   isFavorited: boolean = false
   balance?: BigNumber = 0
   pool?: TokenPool
+  xcadPool?: TokenPool
   apr?: BigNumber
 }
 
@@ -76,8 +77,8 @@ export interface Reward {
 }
 
 export type TokenPool = {
-  zilReserve: BigNumber
-  tokenReserve: BigNumber
+  quoteReserve: BigNumber
+  baseReserve: BigNumber
   exchangeRate: BigNumber
   totalContribution: BigNumber
   userContribution?: BigNumber

@@ -175,8 +175,8 @@ const StateProvider = (props: Props) => {
   
               dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: toBech32Address(address),
-                zilReserve,
-                tokenReserve,
+                quoteReserve: zilReserve,
+                baseReserve: tokenReserve,
                 exchangeRate
               }})
             })
@@ -212,6 +212,61 @@ const StateProvider = (props: Props) => {
               dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: toBech32Address(address),
                 totalContribution: new BigNumber(totalContributions[address])
+              }})
+            })
+            return
+          }
+
+          case BatchRequestType.XcadPools: {
+            let pools = result.result.xpools
+            Object.keys(pools).forEach(address => {
+              let pool = pools[address]
+  
+              const [quote, base, x, y] = pool.arguments
+              const quoteReserve = new BigNumber(x)
+              const baseReserve = new BigNumber(y)
+              const exchangeRate = quoteReserve.dividedBy(baseReserve)
+  
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+                address: toBech32Address(base),
+                quoteReserve,
+                baseReserve,
+                exchangeRate
+              }})
+            })
+            return
+          }
+
+          case BatchRequestType.XcadBalances: {
+            let tokenAddress = fromBech32Address(token!.address_bech32).toLowerCase()
+            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  
+            if(result.result === null) {
+              let userContribution = new BigNumber(0)
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+                address: token?.address_bech32,
+                userContribution
+              }})
+              return
+            }
+  
+            let balances = result.result.xbalances["0x153feaddc48871108e286de3304b9597c817b456,"+tokenAddress]["0x153feaddc48871108e286de3304b9597c817b456"]
+            let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+            
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+              address: token?.address_bech32,
+              userContribution
+            }})
+            return
+          }
+
+          case BatchRequestType.XcadTotalContributions: {
+            let totalContributions = result.result.xtotal_contributions
+            Object.keys(totalContributions).forEach(address => {
+              const [quote, base] = address.split(",")
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+                address: toBech32Address(base),
+                totalContribution: new BigNumber(totalContributions[address][quote])
               }})
             })
             return

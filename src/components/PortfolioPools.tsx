@@ -21,6 +21,10 @@ function PortfolioPools() {
     return token.pool && token.pool.userContribution && !token.pool.userContribution.isZero()
   })
 
+  let xcadFilteredTokens = tokenState.tokens.filter(token => {
+    return token.xcadPool && token.xcadPool.userContribution && !token.xcadPool.userContribution.isZero()
+  })
+
   filteredTokens.sort((a,b) => {
     let beforeContribution = a.pool?.userContribution ?? new BigNumber(0)
     let afterContribution = b.pool?.userContribution ?? new BigNumber(0)
@@ -51,12 +55,81 @@ function PortfolioPools() {
             </tr>
           </thead>
           <tbody>
+          {xcadFilteredTokens.map((token, index) => {
+              let pool = token.xcadPool!
+              let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+              let contributionShare = contributionPercentage.shiftedBy(-2)
+              let baseAmount = contributionShare?.times(token.xcadPool?.baseReserve ?? BIG_ZERO);
+              let quoteAmount = contributionShare?.times(token.xcadPool?.quoteReserve ?? BIG_ZERO);
+
+              return (
+                <tr key={'xcad'+index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                  <td className={`pl-4 pr-2 py-2 font-medium whitespace-nowrap ${index === 0 ? 'rounded-tl-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-bl-lg' : ''}`}>
+                    <div className="flex items-center">
+                      <div className="flex items-center mr-3">
+                        <div className="w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-20">
+                          <TokenIcon url={token.icon} />
+                        </div>
+                        <div className="w-6 h-6 -ml-2 bg-gray-200 dark:bg-gray-600 rounded-full p-1 flex-shrink-0 flex-grow-0 z-10">
+                          <TokenIcon url={`https://meta.viewblock.io/ZIL.zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y/logo`} />
+                        </div>
+                      </div>
+                      <span className="font-semibold">{token.symbol} / XCAD</span>
+                    </div>
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right whitespace-nowrap">
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium mr-2">{token.symbol}</span>
+                      {moneyFormat(baseAmount, {
+                        symbol: token.symbol,
+                        compression: token.decimals,
+                        maxFractionDigits: 2,
+                        showCurrency: false,
+                      })}
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400 font-medium mr-2">XCAD</span>
+                      {moneyFormat(quoteAmount, {
+                        symbol: 'XCAD',
+                        compression: 18,
+                        maxFractionDigits: 2,
+                        showCurrency: false,
+                      })} 
+                    </div>
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {currencyFormat(baseAmount.shiftedBy(-token.decimals).times(token.market_data.rate).times(2).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {membership.isMember ? (
+                      <>
+                        {currencyFormat(toBigNumber(token.daily_volume).times(0.0016).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
+                      </>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-sm"><Link href="/membership">Membership</Link></span>
+                    )}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    -                      
+                  </td>
+                  <td className={`px-2 py-2 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-br-lg' : ''}`}>
+                    {moneyFormat(contributionPercentage, {
+                      symbol: '0',
+                      compression: 0,
+                      maxFractionDigits: 3,
+                      showCurrency: false,
+                    })}%
+                  </td>
+                </tr>
+              )
+            })}
+
             {filteredTokens.map((token, index) => {
               let pool = token.pool!
               let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
               let contributionShare = contributionPercentage.shiftedBy(-2)
-              let tokenAmount = contributionShare?.times(token.pool?.tokenReserve ?? BIG_ZERO);
-              let zilAmount = contributionShare?.times(token.pool?.zilReserve ?? BIG_ZERO);
+              let tokenAmount = contributionShare?.times(token.pool?.baseReserve ?? BIG_ZERO);
+              let zilAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO);
 
               return (
                 <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
@@ -120,7 +193,7 @@ function PortfolioPools() {
                           }
 
                           return (
-                            <div className="flex items-center justify-end">
+                            <div key={'reward'+reward.reward_token_symbol} className="flex items-center justify-end">
                               <span className="w-4 h-4 mr-2"><TokenIcon address={reward.reward_token_address} /></span>
                               <span className="mr-1">{moneyFormat(newReward, {compression: 0, maxFractionDigits: 2})}</span>
                               <span className="font-medium">{reward.reward_token_symbol}</span>
@@ -147,7 +220,7 @@ function PortfolioPools() {
             
           </tbody>
         </table>
-        {filteredTokens.length === 0 &&
+        {filteredTokens.length === 0 && xcadFilteredTokens.length === 0 &&
           <EmptyRow message="Currently not providing liquidity." />
         }
       </div>
