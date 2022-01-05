@@ -106,7 +106,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </div>
             </div>
           </div>
-          <div className="hidden sm:block text-gray-800 dark:text-gray-400 mt-2 text-sm">
+          <div className="hidden sm:block text-gray-800 dark:text-gray-200 mt-2 text-sm">
             <Score value={token.viewblock_score} />
 
             {token.website &&
