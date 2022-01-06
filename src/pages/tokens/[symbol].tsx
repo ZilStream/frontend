@@ -97,7 +97,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       setPairs(newPairs)
     }
     fetchPairs()
-  }, [])
+  }, [tokenState])
 
   return (
     <>
