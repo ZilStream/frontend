@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
@@ -27,6 +27,8 @@ import TVLChartContainer from 'components/TVLChartContainer'
 import MemberWrapper from 'components/MemberWrapper'
 import TokenHolders from 'components/TokenHolders'
 import TokenLiquidity from 'components/TokenLiquidity'
+import getTokenPairs from 'lib/zilstream/getTokenPairs'
+import { Pair } from 'types/pair.interface'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -60,6 +62,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+  const [pairs, setPairs] = useState<Pair[]>([])
 
   const {
     apr,
@@ -72,6 +75,29 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       atlChangePercentage: ((token.market_data.rate / token.market_data.atl) - 1) * 100
     }
   }, [token, tokenState.tokens])
+
+  useEffect(() => {
+    const fetchPairs = async () => {
+      let newPairs = await getTokenPairs(token.symbol)
+      newPairs.sort((a,b) => {
+        const aQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === a.quote_address)?.[0]
+        var aliquidity = (a.reserve?.quote_reserve ?? 0) * 2
+        if(aQuoteToken && !aQuoteToken.isZil) {
+          aliquidity = (a.reserve?.quote_reserve ?? 0) * aQuoteToken.market_data.rate * 2
+        }
+
+        const bQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === b.quote_address)?.[0]
+        var bliquidity = (b.reserve?.quote_reserve ?? 0) * 2
+        if(bQuoteToken && !bQuoteToken.isZil) {
+          bliquidity = (b.reserve?.quote_reserve ?? 0) * bQuoteToken.market_data.rate * 2
+        }
+
+        return aliquidity > bliquidity ? -1 : 1
+      })
+      setPairs(newPairs)
+    }
+    fetchPairs()
+  }, [])
 
   return (
     <>
@@ -326,6 +352,67 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
+
+          <div className="mt-8">
+            <h2 className="text-lg text-bold">{token.symbol} Markets</h2>
+            <div className="scrollable-table-container max-w-full overflow-x-scroll">
+              <table className="zilstream-table table-fixed border-collapse">
+                <colgroup>
+                  <col style={{width: '200px', minWidth: 'auto'}} />
+                  <col style={{width: '180px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                </colgroup>
+                <thead className="text-gray-500 dark:text-gray-400 text-xs">
+                  <tr>
+                    <th className="pl-3 pr-2 py-2 text-left">Exchange</th>
+                    <th className="px-2 py-2 text-left">Pair</th>
+                    <th className="px-2 py-2 text-right">Liquidity</th>
+                    <th className="px-2 py-2 text-right">Volume (24h)</th>
+                    <th className="px-2 py-2 text-right">Volume %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pairs.map((pair: Pair, index: number) => {
+                    const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      
+                    var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+                    if(quoteToken && !quoteToken.isZil) {
+                      liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
+                    }
+
+                    return (
+                      <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
+                        <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
+                        <Link href={`/exchanges/${pair.exchange?.slug}`}>
+                            <a className="flex items-center">
+                              <div className="w-5 h-5 flex-shrink-0 flex-grow-0 mr-3">
+                                <TokenIcon url={pair.exchange?.icon} />
+                              </div>
+                              <span className="">{pair.exchange?.name}</span>
+                            </a>
+                          </Link>
+                        </td>
+                        <td className="px-2 py-2 text-left font-medium">
+                          {pair.pair}
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          —
+                        </td>
+                        <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === pairs.length-1 ? 'rounded-br-lg' : ''}`}>
+                          —
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
             
           <div className="mt-8">
             <Tab.Group>
