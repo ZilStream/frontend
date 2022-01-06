@@ -346,11 +346,27 @@ const StateProvider = (props: Props) => {
             if(stakers.length === 0) return
   
             dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
-              name: 'PORT: The Dock ',
+              name: 'PORT: The Dock',
               address: '0x25c9176fc5c18ec28888f0338776b4f39e487028',
               staked: new BigNumber(stakers[0]),
               symbol: 'PORT',
               decimals: 4
+            }}})
+            return
+          }
+
+          case BatchRequestType.OkipadStaking: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'Okipad',
+              address: '0xce7b758d08b477ef4f957fd7be81bb5e0976dcbc',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'Oki',
+              decimals: 5
             }}})
             return
           }
