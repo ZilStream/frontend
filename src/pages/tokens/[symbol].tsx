@@ -380,14 +380,24 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 </thead>
                 <tbody>
                   {pairs.map((pair: Pair, index: number) => {
+                    const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
                     const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
       
                     var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
                     if(quoteToken && !quoteToken.isZil) {
                       liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
                     }
+                    
+                    let price = pair.quote?.price ?? 0
+                    var zilRate = price
 
-                    let zilRate = pair.quote_address === ZIL_ADDRESS ? (pair.quote?.price ?? 0) : (pair.quote?.price ?? 0) * (quoteToken?.market_data?.rate ?? 0)
+                    if(pair.quote_address !== ZIL_ADDRESS && price > 0) {
+                      if(pair.quote_address === token.address_bech32) {
+                        zilRate = (1 / price) * (baseToken?.market_data.rate ?? 0)
+                      } else {
+                        zilRate = price * (quoteToken?.market_data.rate ?? 0)
+                      }
+                    }
 
                     return (
                       <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
