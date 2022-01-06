@@ -387,7 +387,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                       liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
                     }
 
-                    let zilRate = pair.quote_address === ZIL_ADDRESS ? (pair.quote?.price ?? 0) : (pair.quote?.price ?? 0) * quoteToken.market_data.rate
+                    let zilRate = pair.quote_address === ZIL_ADDRESS ? (pair.quote?.price ?? 0) : (pair.quote?.price ?? 0) * (quoteToken?.market_data?.rate ?? 0)
 
                     return (
                       <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
