@@ -46,7 +46,9 @@ function BalanceDonut(props: Props) {
       let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
 
       total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
-      zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
+      if(!zilAmount.isNaN()) {
+        zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
+      }
     }
 
     props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
