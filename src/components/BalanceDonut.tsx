@@ -35,7 +35,7 @@ function BalanceDonut(props: Props) {
 
     if(token.isZil) {
       zilTotal = zilTotal.plus(balance)
-    } else {  
+    } else {
       total = total.plus(balance.times(token.market_data.rate))
     }
 
@@ -45,7 +45,9 @@ function BalanceDonut(props: Props) {
       let zilAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO)
       let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
 
-      total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
+      if(!tokenAmount.isNaN()) {
+        total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
+      }
       if(!zilAmount.isNaN()) {
         zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
       }
@@ -54,11 +56,14 @@ function BalanceDonut(props: Props) {
     props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
       if(operator.symbol !== 'ZIL') {
         let staked = toBigNumber(operator.staked, {compression: operator.decimals})
-        total = total.plus(staked.times(token.market_data.rate))
+        if(!staked.isNaN()) {
+          total = total.plus(staked.times(token.market_data.rate))
+        }        
       }
     })
 
     if(!token.isZil) {
+      console.log(token.symbol + ': ' + total.toNumber())
       tokenTotals.push({
         name: token.name,
         symbol: token.symbol,
