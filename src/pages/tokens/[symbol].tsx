@@ -29,6 +29,7 @@ import TokenHolders from 'components/TokenHolders'
 import TokenLiquidity from 'components/TokenLiquidity'
 import getTokenPairs from 'lib/zilstream/getTokenPairs'
 import { Pair } from 'types/pair.interface'
+import { ZIL_ADDRESS } from 'lib/constants'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -360,7 +361,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <colgroup>
                   <col style={{width: '24px', minWidth: 'auto'}} />
                   <col style={{width: '200px', minWidth: 'auto'}} />
-                  <col style={{width: '180px', minWidth: 'auto'}} />
+                  <col style={{width: '160px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
                   <col style={{width: '140px', minWidth: 'auto'}} />
                   <col style={{width: '140px', minWidth: 'auto'}} />
                   <col style={{width: '140px', minWidth: 'auto'}} />
@@ -370,6 +372,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     <th className="pl-5 pr-2 py-2 text-left">#</th>
                     <th className="px-2 py-2 text-left">Exchange</th>
                     <th className="px-2 py-2 text-left">Pair</th>
+                    <th className="px-2 py-2 text-right">Price</th>
                     <th className="px-2 py-2 text-right">Liquidity</th>
                     <th className="px-2 py-2 text-right">Volume (24h)</th>
                     <th className="px-2 py-2 text-right">Volume %</th>
@@ -384,10 +387,12 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                       liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
                     }
 
+                    let zilRate = pair.quote_address === ZIL_ADDRESS ? (pair.quote?.price ?? 0) : (pair.quote?.price ?? 0) * quoteToken.market_data.rate
+
                     return (
                       <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
-                        <td className={`pl-5 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
-                          {index+1}
+                        <td className={`pl-5 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
+                          <div>{index+1}</div>
                         </td>
                         <td className="px-2 py-2 text-left font-medium">
                           <Link href={`/exchanges/${pair.exchange?.slug}`}>
@@ -401,6 +406,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                         </td>
                         <td className="px-2 py-2 text-left font-medium">
                           {pair.pair}
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          <div>{cryptoFormat(zilRate)} ZIL</div>
+                          <div className="text-gray-500 dark:text-gray-400">{currencyFormat(zilRate * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                         </td>
                         <td className="px-2 py-2 font-normal text-right">
                           {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
