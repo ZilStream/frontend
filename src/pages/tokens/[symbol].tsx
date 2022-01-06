@@ -358,6 +358,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <div className="scrollable-table-container max-w-full overflow-x-scroll">
               <table className="zilstream-table table-fixed border-collapse">
                 <colgroup>
+                  <col style={{width: '24px', minWidth: 'auto'}} />
                   <col style={{width: '200px', minWidth: 'auto'}} />
                   <col style={{width: '180px', minWidth: 'auto'}} />
                   <col style={{width: '140px', minWidth: 'auto'}} />
@@ -366,7 +367,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 </colgroup>
                 <thead className="text-gray-500 dark:text-gray-400 text-xs">
                   <tr>
-                    <th className="pl-3 pr-2 py-2 text-left">Exchange</th>
+                    <th className="pl-5 pr-2 py-2 text-left">#</th>
+                    <th className="px-2 py-2 text-left">Exchange</th>
                     <th className="px-2 py-2 text-left">Pair</th>
                     <th className="px-2 py-2 text-right">Liquidity</th>
                     <th className="px-2 py-2 text-right">Volume (24h)</th>
@@ -384,8 +386,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
                     return (
                       <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
-                        <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
-                        <Link href={`/exchanges/${pair.exchange?.slug}`}>
+                        <td className={`pl-5 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
+                          {index+1}
+                        </td>
+                        <td className="px-2 py-2 text-left font-medium">
+                          <Link href={`/exchanges/${pair.exchange?.slug}`}>
                             <a className="flex items-center">
                               <div className="w-5 h-5 flex-shrink-0 flex-grow-0 mr-3">
                                 <TokenIcon url={pair.exchange?.icon} />
