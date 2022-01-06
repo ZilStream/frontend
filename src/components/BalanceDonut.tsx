@@ -63,7 +63,6 @@ function BalanceDonut(props: Props) {
     })
 
     if(!token.isZil) {
-      console.log(token.symbol + ': ' + total.toNumber())
       tokenTotals.push({
         name: token.name,
         symbol: token.symbol,
