@@ -19,7 +19,8 @@ export enum BatchRequestType {
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
   PortBuoyStakers = "portBuoyStakers",
-  PortDockStakers = "portDockStakers"
+  PortDockStakers = "portDockStakers",
+  XcadStaking = "XcadStaking",
 };
 
 const zilSwapAddress = ZILSWAP_ADDRESS
@@ -39,6 +40,12 @@ const portBuoyStakingHash = fromBech32Address(portBuoyStakingAddress)
 
 const portDockStakingAddress = "zil1yhy3wm79cx8v9zyg7qecwa457w0ysupgvzk5pt"
 const portDockStakingHash = fromBech32Address(portDockStakingAddress)
+
+export const xcadStakingAddresses: {[id: string]: string} = {
+  'zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f': '0xa397c1aa3054bdad8aecf645a2b582202eea57b9',
+  'zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk': '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386',
+  'zil18f5rlhqz9vndw4w8p60d0n7vg3n9sqvta7n6t2': '0xc6474b616fbb71fca8dcf4b09b5ea1b553231a4d'
+}
 
 interface BatchRequestItem {
   id: string;
@@ -377,6 +384,28 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       params: [
         portDockStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const xcadStakingRequest = (token: Token, contractAddress: string, walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadStaking,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        contractAddress.replace("0x", ""),
+        "stakers_total_bal",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },

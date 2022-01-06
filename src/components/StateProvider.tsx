@@ -17,7 +17,7 @@ import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
-import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
+import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest, xcadStakingAddresses } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { bnOrZero } from 'utils/strings'
 
@@ -352,6 +352,25 @@ const StateProvider = (props: Props) => {
               symbol: 'PORT',
               decimals: 4
             }}})
+            return
+          }
+
+          case BatchRequestType.XcadStaking: {
+            if(result.result === null) return
+
+            let stakers: number[]  = Object.values(result.result.stakers_total_bal)
+            if(stakers.length === 0) return
+
+            let contractAddress = xcadStakingAddresses[token?.address_bech32 ?? '']
+
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'dXCAD Staking: ' + token?.symbol,
+              address: contractAddress,
+              staked: new BigNumber(stakers[0]),
+              symbol: 'dXCAD',
+              decimals: 18
+            }}})
+
             return
           }
         }
