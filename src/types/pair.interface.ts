@@ -1,4 +1,5 @@
 import { Exchange } from "./exchange.interface";
+import { PairVolume } from "./pairVolume.interface";
 import { Quote } from "./quote.interface";
 import { Reserve } from "./reserve.interface";
 
@@ -13,4 +14,5 @@ export interface Pair {
   quote?: Quote
   reserve?: Reserve
   exchange?: Exchange
+  volume?: PairVolume
 }

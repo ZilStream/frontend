@@ -64,6 +64,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const [pairs, setPairs] = useState<Pair[]>([])
+  const [totalVolume, setTotalVolume] = useState<number>(0)
 
   const {
     apr,
@@ -80,20 +81,34 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   useEffect(() => {
     const fetchPairs = async () => {
       let newPairs = await getTokenPairs(token.symbol)
+
+      let volume = newPairs.reduce((sum, pair) => {
+        if(pair.volume && pair.volume.volume_24h_quote > 0) {
+          const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+          if(quoteToken && quoteToken.isZil) {
+            return sum + pair.volume.volume_24h_quote
+          } else {
+            return sum + (pair.volume.volume_24h_quote * quoteToken.market_data.rate)
+          }
+        }
+        return sum
+      }, 0)
+      setTotalVolume(volume)
+
       newPairs.sort((a,b) => {
         const aQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === a.quote_address)?.[0]
-        var aliquidity = (a.reserve?.quote_reserve ?? 0) * 2
+        var avolume = a.volume?.volume_24h_quote ?? 0
         if(aQuoteToken && !aQuoteToken.isZil) {
-          aliquidity = (a.reserve?.quote_reserve ?? 0) * aQuoteToken.market_data.rate * 2
+          avolume = (a.volume?.volume_24h_quote ?? 0) * aQuoteToken.market_data.rate
         }
 
         const bQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === b.quote_address)?.[0]
-        var bliquidity = (b.reserve?.quote_reserve ?? 0) * 2
+        var bvolume = b.volume?.volume_24h_quote ?? 0
         if(bQuoteToken && !bQuoteToken.isZil) {
-          bliquidity = (b.reserve?.quote_reserve ?? 0) * bQuoteToken.market_data.rate * 2
+          bvolume = (b.volume?.volume_24h_quote ?? 0) * bQuoteToken.market_data.rate
         }
 
-        return aliquidity > bliquidity ? -1 : 1
+        return avolume > bvolume ? -1 : 1
       })
       setPairs(newPairs)
     }
@@ -384,8 +399,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
       
                     var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+                    var volume = (pair.volume?.volume_24h_quote ?? 0)
                     if(quoteToken && !quoteToken.isZil) {
                       liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
+                      volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate
                     }
                     
                     let price = pair.quote?.price ?? 0
@@ -425,10 +442,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                           {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                         </td>
                         <td className="px-2 py-2 font-normal text-right">
-                          —
+                          {currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                         </td>
                         <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === pairs.length-1 ? 'rounded-br-lg' : ''}`}>
-                          —
+                          {numberFormat((volume / totalVolume) * 100)}%
                         </td>
                       </tr>
                     )
