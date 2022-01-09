@@ -11,7 +11,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import getExchanges from 'lib/zilstream/getExchanges'
-import { currencyFormat } from 'utils/format'
+import { currencyFormat, numberFormat } from 'utils/format'
 
 export const getServerSideProps = async () => {
   const exchanges = await getExchanges()
@@ -50,6 +50,18 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
     return aliquidity > bliquidity ? -1 : 1
   })
 
+  let totalLiquidity = exchanges.reduce((sum, exchange) => {
+    let exchangeLiquidity = exchange.pairs.reduce((sum, pair) => {
+      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      var pairLiquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+      if(!quoteToken?.isZil) {
+        pairLiquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+      }
+      return sum + pairLiquidity
+    }, 0)
+    return sum + exchangeLiquidity
+  }, 0)
+
   return (
     <>  
       <Head>
@@ -63,82 +75,55 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
           </div>
         </div>
       </div>      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {exchanges.map(exchange => {
-          let volume = exchange.pairs.reduce((sum, pair) => {
-            if(pair.volume && pair.volume.volume_24h_quote > 0) {
-              const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-              if(quoteToken && quoteToken.isZil) {
-                return sum + pair.volume.volume_24h_quote
-              } else {
-                return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
-              }
-            }
-            return sum
-          }, 0)
-
-          let liquidity = exchange.pairs.reduce((sum, pair) => {
-            const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-            var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-            if(!quoteToken?.isZil) {
-              liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
-            }
-            return sum + liquidity
-          }, 0)
-
-          return (
-            <Link href={`/exchanges/${exchange.slug}`}>
-              <a className="font-normal">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10">
-                      <TokenIcon url={exchange.icon} />
-                    </div>
-                    <div className="font-semibold text-xl">
-                      {exchange.name}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 text-sm mt-4">
-                    <div>
-                      <div className="text-gray-500 dark:text-gray-400"># of Markets</div>
-                      <div>{exchange.pairs.length}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-500 dark:text-gray-400">Liquidity</div>
-                      <div>{currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-500 dark:text-gray-400">Volume</div>
-                      <div>{currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}</div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </Link>
-          )
-        })}
-      </div>
-      {/* <div className="scrollable-table-container max-w-full overflow-x-scroll">
+      <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
+            <col style={{width: '24px', minWidth: 'auto'}} />
             <col style={{width: '250px', minWidth: 'auto'}} />
+            <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
-              <th className="pl-3 pr-2 py-2 text-left">Exchange</th>
+              <th className="pl-5 pr-2 py-2 text-left">#</th>
+              <th className="px-2 py-2 text-left">Exchange</th>
               <th className="px-2 py-2 text-right">Pairs</th>
-              <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">Volume (24h)</th>
+              <th className="px-2 py-2 text-right">Liquidity</th>
+              <th className="px-2 py-2 text-right">Liq. %</th>
             </tr>
           </thead>
           <tbody>
-            {exchanges.map((exchange: Exchange, index: number) => {
+            {exchanges.map((exchange, index) => {
+              let volume = exchange.pairs.reduce((sum, pair) => {
+                if(pair.volume && pair.volume.volume_24h_quote > 0) {
+                  const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+                  if(quoteToken && quoteToken.isZil) {
+                    return sum + pair.volume.volume_24h_quote
+                  } else {
+                    return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+                  }
+                }
+                return sum
+              }, 0)
+    
+              let liquidity = exchange.pairs.reduce((sum, pair) => {
+                const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+                var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+                if(!quoteToken?.isZil) {
+                  liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+                }
+                return sum + liquidity
+              }, 0)
+
               return (
                 <tr key={exchange.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
-                  <td className={`pl-4 pr-2 py-4 flex items-center font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === exchanges.length-1 ? 'rounded-bl-lg' : ''}`}>
+                  <td className={`pl-5 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === exchanges.length-1 ? 'rounded-bl-lg' : ''}`}>
+                    <div>{index+1}</div>
+                  </td>
+                  <td className="px-2 py-4 flex items-center font-medium">
                    <Link href={`/exchanges/${exchange.slug}`}>
                       <a className="flex items-center">
                         <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
@@ -152,17 +137,20 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
                     {exchange.pairs.length}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    —
+                    {currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                   </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchanges.length-1 ? 'rounded-br-lg' : ''}`}>
-                    —
+                    {numberFormat((liquidity / totalLiquidity) * 100)}%
                   </td>
                 </tr>
               )
             })}
           </tbody>
         </table>
-      </div> */}
+      </div>
     </>
   )
 }
