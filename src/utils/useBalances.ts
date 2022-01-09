@@ -28,7 +28,7 @@ export default function useBalances() {
           streamBalance: new BigNumber(0),
           streamBalanceUSD: new BigNumber(0),
           streamBalanceZIL: new BigNumber(0),
-          membershipUSD: new BigNumber(0),
+          membershipZIL: new BigNumber(0),
           isMember: false
         },
         rewards: {}
@@ -115,8 +115,8 @@ export default function useBalances() {
       totalBalance = totalBalance.plus(stakingBalance)
     }
 
-    const membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
-    const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD) && streamBalanceUSD.isGreaterThan(0)
+    const membershipZIL = totalBalance.dividedBy(200)
+    const isMember = streamBalanceZIL.isGreaterThanOrEqualTo(membershipZIL) && streamBalanceZIL.isGreaterThan(0)
 
     var rewards: {[key: string]: TokenReward} = {}
     tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
@@ -161,7 +161,7 @@ export default function useBalances() {
         streamBalance,
         streamBalanceUSD,
         streamBalanceZIL,
-        membershipUSD,
+        membershipZIL: membershipZIL,
         isMember: isMember
       },
       rewards
