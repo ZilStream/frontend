@@ -28,6 +28,28 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
+  exchanges.sort((a,b) => {
+    let aliquidity = a.pairs.reduce((sum, pair) => {
+      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+      if(!quoteToken?.isZil) {
+        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+      }
+      return sum + liquidity
+    }, 0)
+
+    let bliquidity = b.pairs.reduce((sum, pair) => {
+      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+      if(!quoteToken?.isZil) {
+        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+      }
+      return sum + liquidity
+    }, 0)
+
+    return aliquidity > bliquidity ? -1 : 1
+  })
+
   return (
     <>  
       <Head>
