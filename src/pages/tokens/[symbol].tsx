@@ -88,7 +88,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
           if(quoteToken && quoteToken.isZil) {
             return sum + pair.volume.volume_24h_quote
           } else {
-            return sum + (pair.volume.volume_24h_quote * quoteToken.market_data.rate)
+            return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
           }
         }
         return sum

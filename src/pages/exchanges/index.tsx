@@ -5,16 +5,13 @@ import TVLChartBlock from 'components/TVLChartBlock'
 import VolumeChartBlock from 'components/VolumeChartBlock'
 import getStats from 'lib/zilstream/getStats'
 import { InferGetServerSidePropsType } from 'next'
-import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, Token, TokenState } from 'store/types'
-import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
-import useMoneyFormatter from 'utils/useMoneyFormatter'
+import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import getExchanges from 'lib/zilstream/getExchanges'
-import { Exchange } from 'types/exchange.interface'
+import { currencyFormat } from 'utils/format'
 
 export const getServerSideProps = async () => {
   const exchanges = await getExchanges()
@@ -27,7 +24,10 @@ export const getServerSideProps = async () => {
 }
 
 const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+
   return (
     <>  
       <Head>
@@ -43,6 +43,27 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
       </div>      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {exchanges.map(exchange => {
+          let volume = exchange.pairs.reduce((sum, pair) => {
+            if(pair.volume && pair.volume.volume_24h_quote > 0) {
+              const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+              if(quoteToken && quoteToken.isZil) {
+                return sum + pair.volume.volume_24h_quote
+              } else {
+                return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+              }
+            }
+            return sum
+          }, 0)
+
+          let liquidity = exchange.pairs.reduce((sum, pair) => {
+            const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+            var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+            if(!quoteToken?.isZil) {
+              liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+            }
+            return sum + liquidity
+          }, 0)
+
           return (
             <Link href={`/exchanges/${exchange.slug}`}>
               <a className="font-normal">
@@ -62,11 +83,11 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
                     </div>
                     <div>
                       <div className="text-gray-500 dark:text-gray-400">Liquidity</div>
-                      <div>—</div>
+                      <div>{currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                     </div>
                     <div>
                       <div className="text-gray-500 dark:text-gray-400">Volume</div>
-                      <div>—</div>
+                      <div>{currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                     </div>
                   </div>
                 </div>
