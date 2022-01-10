@@ -15,8 +15,6 @@ function PortfolioBalances() {
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
-  let zilRate = tokenState.zilRate
-
   let filteredTokens = tokenState.tokens.filter(token => {
     return token.balance !== null && token.balance !== undefined && !toBigNumber(token.balance).isZero()
   })
@@ -24,13 +22,11 @@ function PortfolioBalances() {
   filteredTokens.sort((a, b) => {
     const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
     const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.market_data.rate)
-    const priorUsdRate = priorZilRate.times(zilRate)
 
     const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
     const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.market_data.rate)
-    const nextUsdRate = nextZilRate.times(zilRate)
     
-    return (priorUsdRate.isLessThan(nextUsdRate)) ? 1 : -1
+    return (priorZilRate.isLessThan(nextZilRate)) ? 1 : -1
   })
 
   var totalBalance = tokenState.tokens.reduce((sum, current) => {
