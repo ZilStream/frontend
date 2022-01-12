@@ -9,17 +9,6 @@ function Calendar() {
 
   const launches: TokenLaunch[] = [
     {
-      name: 'AO Sports',
-      symbol: 'ATHLETE',
-      icon: 'https://dr297zt0qngbx.cloudfront.net/calendar/aosports.png',
-      sale_type: 'Private Sale',
-      goal: new BigNumber(2160000),
-      tags: ['Media'],
-      website: 'https://aosports.tv',
-      twitter: 'https://twitter.com/AOSportsTV',
-      telegram: 'https://t.me/AthleteToken'
-    },
-    {
       name: 'GodZilliqa DeFi',
       symbol: 'GDFI',
       icon: 'https://meta.viewblock.io/zilliqa.zil1gtx89hjfagnhuhhfmr947p2g865r4dq0fmaxkt/logo',
