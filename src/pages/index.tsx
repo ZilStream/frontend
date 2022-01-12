@@ -275,13 +275,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 rates={rates.filter(rate => rate.token_id == "1")} 
               />
 
-              <Link href="/liquidity">
+              <Link href="/exchanges">
                 <a>
                   <TVLChartBlock />
                 </a>
               </Link>
 
-              <Link href="/liquidity">
+              <Link href="/exchanges">
                 <a>
                   <VolumeChartBlock />
                 </a>
