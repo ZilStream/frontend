@@ -74,6 +74,9 @@ export interface Reward {
   adjusted_total_contributed: string
   adjusted_total_contributed_share: string
   payment_day: number|null
+  current_apr: number
+  exchange_id: number
+  pair_id: number
 }
 
 export type TokenPool = {

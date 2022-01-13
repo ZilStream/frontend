@@ -8,15 +8,8 @@ export function getTokenAPR(token: Token, tokenState: TokenState): BigNumber {
 
   var totalAPR = new BigNumber(0)
   rewards.forEach(reward => {
-    const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
-    if(rewardTokens.length > 0) {
-      const rewardToken = rewardTokens[0]
-      const rewardsValue = reward.reward_token_symbol !== 'ZIL' ? toBigNumber(reward.amount).times(rewardToken.market_data.rate) : toBigNumber(reward.amount).times(rewardToken.market_data.rate)
-      const liquidity = toBigNumber(reward.adjusted_total_contributed_share).times(token.market_data.current_liquidity_zil)
-      const rewardValueSecond = rewardsValue.dividedBy(reward.frequency)
-      const roiPerEpoch = rewardValueSecond.dividedBy(liquidity)
-      const apr = bnOrZero(roiPerEpoch.times(31536000).shiftedBy(2).decimalPlaces(1))
-      totalAPR = totalAPR.plus(apr)
+    if(reward.exchange_id === 1) {
+      totalAPR = totalAPR.plus(reward.current_apr)
     }
   })
   
