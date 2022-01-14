@@ -181,7 +181,7 @@ function PortfolioPools() {
                   <td className="px-2 py-2 font-normal text-right">
                     {membership.isMember ? (
                       <>
-                        {token.rewards.map(reward => {
+                        {token.rewards.filter(reward => reward.exchange_id === 1).map(reward => {
                           let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
                             pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
                             pool.userContribution!.dividedBy(pool.totalContribution).times(100)
