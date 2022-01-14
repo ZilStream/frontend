@@ -24,7 +24,7 @@ const HighestAPRBlock = (props: Props) => {
           </div>
         </div>
         <div>
-          <span className="text-gray-400 text-sm">By providing liquidity on ZilSwap</span>
+          <span className="text-gray-400 text-sm">By providing liquidity on a DEX</span>
         </div>
       </div>
       <div className="flex flex-col gap-4 text-sm mt-1">

@@ -67,12 +67,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const [totalVolume, setTotalVolume] = useState<number>(0)
 
   const {
-    apr,
     athChangePercentage,
     atlChangePercentage
   } = React.useMemo(() => {
     return {
-      apr: getTokenAPR(token, tokenState),
       athChangePercentage: -((token.market_data.ath / token.market_data.rate) -1) * 100,
       atlChangePercentage: ((token.market_data.rate / token.market_data.atl) - 1) * 100
     }
@@ -262,12 +260,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
               <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.current_liquidity_zil)} ZIL</span>
               
-              {token.rewards.length > 0 &&
+              <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
+              {token.rewards.filter((reward: any) => reward.exchange_id === 1).length > 0 &&
                 <>
-                  <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
-                  <div className="">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
+                  <div className="">ZilSwap APR: <span className="font-semibold">
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 1).reduce((sum: number, current: any) => sum + current.current_apr, 0).toFixed(2)}%
+                  </span></div>
                   <div>
-                    {token.rewards.map((reward: Reward) => {
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 1).map((reward: Reward) => {
                       const paymentDayDetail = reward.payment_day !== null ? (
                         <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
                           Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
@@ -275,6 +275,43 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                       ) : (<></>)
 
                       const period = reward.frequency === 604800 ? 'week' : `${reward.frequency/86400} days`
+                      return (
+                        <div key={reward.reward_token_address} className="flex items-center whitespace-nowrap">
+                          <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
+                          <span className="mr-1">{cryptoFormat(reward.amount)}</span>
+                          <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
+                          <span>/ {period}</span>
+                          {reward.payment_day !== null &&
+                            <Tippy content={paymentDayDetail}>
+                              <button className="ml-2 focus:outline-none">
+                                <Info size={14} className="text-gray-500" />
+                              </button>
+                            </Tippy>
+                          }
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              }
+
+              {token.rewards.filter((reward: any) => reward.exchange_id === 2).length > 0 &&
+                <>
+                  <div className="mt-2">XCAD DEX APR: <span className="font-semibold">
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 2).reduce((sum: number, current: any) => sum + current.current_apr, 0)}%
+                  </span></div>
+                  <div>
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 2).map((reward: Reward) => {
+                      const paymentDayDetail = reward.payment_day !== null ? (
+                        <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
+                          Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
+                        </div>
+                      ) : (<></>)
+
+                      var period = reward.frequency === 604800 ? 'week' : `${reward.frequency/86400} days`
+                      if(reward.frequency === 86400) {
+                        period = 'day'
+                      }
                       return (
                         <div key={reward.reward_token_address} className="flex items-center whitespace-nowrap">
                           <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
@@ -573,12 +610,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Liquidity Providers</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{numberFormat(token.market_data.liquidity_providers, 0)}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" className="text-left font-normal py-3">LP Reward APR</th>
-                  <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{apr.toNumber()}%</span>
                   </td>
                 </tr>
               </tbody>

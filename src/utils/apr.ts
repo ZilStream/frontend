@@ -6,12 +6,22 @@ import { toBigNumber } from "./useMoneyFormatter";
 export function getTokenAPR(token: Token, tokenState: TokenState): BigNumber {
   const rewards: Reward[] = token.rewards
 
-  var totalAPR = new BigNumber(0)
-  rewards.forEach(reward => {
-    if(reward.exchange_id === 1) {
-      totalAPR = totalAPR.plus(reward.current_apr)
-    }
-  })
+  const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
+  list.reduce((previous, currentItem) => {
+    const group = getKey(currentItem);
+    if (!previous[group]) previous[group] = [];
+    previous[group].push(currentItem);
+    return previous;
+  }, {} as Record<K, T[]>);
+
+  const rewardGroups = groupBy(rewards, reward => reward.exchange_id)
+
+  var aprs: number[] = []
+  for (const [exchangeId, reward] of Object.entries(rewardGroups)) {
+    
+    const apr = reward.reduce((sum, cur) => sum + cur.current_apr, 0)
+    aprs.push(apr)
+  }
   
-  return totalAPR
+  return toBigNumber(Math.max(...aprs)).decimalPlaces(2)
 }
