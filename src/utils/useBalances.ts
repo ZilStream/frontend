@@ -122,7 +122,7 @@ export default function useBalances() {
     tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
       let pool = token.pool!
       
-      token.rewards.forEach(reward => {
+      token.rewards.filter(reward => reward.exchange_id === 1).forEach(reward => {
         let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
           pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
           pool.userContribution!.dividedBy(pool.totalContribution).times(100)
