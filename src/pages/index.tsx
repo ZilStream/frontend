@@ -183,35 +183,35 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     } else if(currentSort === SortType.Volume) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.daily_volume > b.daily_volume) ? 1 : -1
+          return (a.market_data.daily_volume > b.market_data.daily_volume) ? 1 : -1
         }
-        return (a.daily_volume < b.daily_volume) ? 1 : -1
+        return (a.market_data.daily_volume < b.market_data.daily_volume) ? 1 : -1
       })
     } else if(currentSort === SortType.Liquidity) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+          return (a.market_data.current_liquidity > b.market_data.current_liquidity) ? 1 : -1
         }
-        return (a.current_liquidity < b.current_liquidity) ? 1 : -1
+        return (a.market_data.current_liquidity < b.market_data.current_liquidity) ? 1 : -1
       })
     } else if(currentSort === SortType.CircSupply) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.current_supply < b.market_data.current_supply) ? 1 : -1
+          return (a.market_data.current_supply > b.market_data.current_supply) ? 1 : -1
         }
         return (a.market_data.current_supply < b.market_data.current_supply) ? 1 : -1
       })
     } else if(currentSort === SortType.TotalSupply) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.total_supply < b.market_data.total_supply) ? 1 : -1
+          return (a.market_data.total_supply > b.market_data.total_supply) ? 1 : -1
         }
         return (a.market_data.total_supply < b.market_data.total_supply) ? 1 : -1
       })
     } else if(currentSort === SortType.MaxSupply) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.max_supply < b.market_data.max_supply) ? 1 : -1
+          return (a.market_data.max_supply > b.market_data.max_supply) ? 1 : -1
         }
         return (a.market_data.max_supply < b.market_data.max_supply) ? 1 : -1
       })
@@ -224,13 +224,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       })
     } else {
       tokensToDisplay.sort((a: Token, b: Token) => {
-        const priorMarketCap = (a.market_data.current_supply ?? 0) * ((a.market_data.rate ?? 0) * tokenState.zilRate)
-        const nextMarketCap = (b.market_data.current_supply ?? 0) * ((b.market_data.rate ?? 0) * tokenState.zilRate)
-    
         if(currentSortDirection == SortDirection.Ascending) {
-          return (priorMarketCap > nextMarketCap) ? 1 : -1
+          return (a.market_data.market_cap > b.market_data.market_cap) ? 1 : -1
         }
-        return (priorMarketCap < nextMarketCap) ? 1 : -1
+        return (a.market_data.market_cap < b.market_data.market_cap) ? 1 : -1
       })
     }
 
