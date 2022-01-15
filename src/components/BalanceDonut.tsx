@@ -2,7 +2,8 @@ import BigNumber from 'bignumber.js'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import React from 'react'
-import { Operator, Token } from 'store/types'
+import { useSelector } from 'react-redux'
+import { Operator, RootState, Token, TokenState } from 'store/types'
 import { BIG_ZERO } from 'utils/strings'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 
@@ -18,6 +19,7 @@ interface Props {
 
 function BalanceDonut(props: Props) {
   const {theme, setTheme, resolvedTheme} = useTheme()
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
 
   interface TokenTotal {
     name: string
@@ -53,6 +55,35 @@ function BalanceDonut(props: Props) {
       }
     }
 
+    if(token.xcadPool && token.xcadPool.userContribution) {
+      let contributionPercentage = token.xcadPool.userContribution.dividedBy(token.xcadPool.totalContribution).times(100)
+      let contributionShare = contributionPercentage.shiftedBy(-2)
+      let xcadAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO)
+      let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
+
+      if(!tokenAmount.isNaN()) {
+        total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
+      }
+      if(!xcadAmount.isNaN()) {
+        const xcadToken = tokenState.tokens.filter(token => token.symbol === 'XCAD')?.[0]
+        if(xcadToken) {
+          const index = tokenTotals.findIndex(token => token.address === xcadToken.address_bech32)
+          if(index === -1) {
+            tokenTotals.push({
+              name: xcadToken.name,
+              symbol: xcadToken.symbol,
+              address: xcadToken.address_bech32,
+              isZil: false,
+              totalBalance: xcadAmount.shiftedBy(-xcadToken.decimals)
+            })
+          } else {
+            const current = tokenTotals[index]
+            tokenTotals[index].totalBalance = current.totalBalance.plus(xcadAmount.shiftedBy(-xcadToken.decimals))
+          }
+        }
+      }
+    }
+
     props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
       if(operator.symbol !== 'ZIL') {
         let staked = toBigNumber(operator.staked, {compression: operator.decimals})
@@ -63,13 +94,19 @@ function BalanceDonut(props: Props) {
     })
 
     if(!token.isZil) {
-      tokenTotals.push({
-        name: token.name,
-        symbol: token.symbol,
-        address: token.address_bech32,
-        isZil: false,
-        totalBalance: total
-      })
+      const index = tokenTotals.findIndex(t => t.address === token.address_bech32)
+      if(index === -1) {
+        tokenTotals.push({
+          name: token.name,
+          symbol: token.symbol,
+          address: token.address_bech32,
+          isZil: false,
+          totalBalance: total
+        })
+      } else {
+        const current = tokenTotals[index]
+        tokenTotals[index].totalBalance = current.totalBalance.plus(total)
+      }
     }
   })
 
