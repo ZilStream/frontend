@@ -151,6 +151,37 @@ export default function useBalances() {
         }
       })
     })
+
+    tokenState.tokens.filter(token => token.xcadPool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
+      let pool = token.xcadPool!
+      
+      token.rewards.filter(reward => reward.exchange_id === 2).forEach(reward => {
+        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+        let contributionShare = contributionPercentage.shiftedBy(-2)
+        let currentReward = rewards[reward.reward_token_address]
+        let newReward = toBigNumber(reward.amount).times(contributionShare)
+
+        if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
+          newReward = toBigNumber(reward.max_individual_amount)
+        }
+
+        if(currentReward !== undefined) {
+          rewards[reward.reward_token_address] = {
+            amount: currentReward.amount.plus(newReward),
+            address: reward.reward_token_address,
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
+          }
+        } else {
+          rewards[reward.reward_token_address] = {
+            amount: newReward,
+            address: reward.reward_token_address,
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
+          }
+        }
+      })
+    })
     
     return {
       totalBalance,
