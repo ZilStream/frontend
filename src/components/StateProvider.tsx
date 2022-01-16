@@ -379,13 +379,23 @@ const StateProvider = (props: Props) => {
 
             let contractAddress = xcadStakingAddresses[token?.address_bech32 ?? '']
 
-            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
-              name: 'dXCAD Staking: ' + token?.symbol,
-              address: contractAddress,
-              staked: new BigNumber(stakers[0]),
-              symbol: 'dXCAD',
-              decimals: 18
-            }}})
+            if(token && token.symbol === 'XCAD') {
+              dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                name: 'XCAD Staking',
+                address: contractAddress,
+                staked: new BigNumber(stakers[0]),
+                symbol: 'XCAD',
+                decimals: 18
+              }}})
+            } else {
+              dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                name: 'dXCAD Staking: ' + token?.symbol,
+                address: contractAddress,
+                staked: new BigNumber(stakers[0]),
+                symbol: 'dXCAD',
+                decimals: 18
+              }}})
+            }
 
             return
           }

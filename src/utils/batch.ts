@@ -46,9 +46,13 @@ const okipadStakingAddress = "zil1eeahtrggk3m77nu40ltmaqdmtcyhdh9ujahgf6"
 const okipadStakingHash = fromBech32Address(okipadStakingAddress)
 
 export const xcadStakingAddresses: {[id: string]: string} = {
-  'zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f': '0xa397c1aa3054bdad8aecf645a2b582202eea57b9',
-  'zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk': '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386',
-  'zil18f5rlhqz9vndw4w8p60d0n7vg3n9sqvta7n6t2': '0xc6474b616fbb71fca8dcf4b09b5ea1b553231a4d'
+  'zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f': '0xa397c1aa3054bdad8aecf645a2b582202eea57b9', // dXCAD
+  'zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk': '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386', // CARB
+  'zil18f5rlhqz9vndw4w8p60d0n7vg3n9sqvta7n6t2': '0xc6474b616fbb71fca8dcf4b09b5ea1b553231a4d', // PORT
+  'zil1504065pp76uuxm7s9m2c4gwszhez8pu3mp6r8c': '0x5b1be8e077f4f2702b4fcff93dfefc6010bd2370', // STREAM
+  'zil14jmjrkvfcz2uvj3y69kl6gas34ecuf2j5ggmye': '0xc78b6c4a7c13f1e556ee59af20c74f8c9156e6b6', // REDC
+  'zil1pqcev4ykxla0jhy3anx32lnqgv8xncd8q57ql2': '0xcf87bd87e32e059533d0b6a2c575db3a5a83792c', // SPW
+  'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y': '0x0b719d791741d3937cea5b661c5d4699740a6063', // XCAD
 }
 
 interface BatchRequestItem {
