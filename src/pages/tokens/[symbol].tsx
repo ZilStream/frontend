@@ -135,7 +135,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       }
       {token.symbol === 'GRPH' &&
-        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap">
+        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap" className="w-full mx-0">
           <p>When CarbSwap launches, GRPH's price will be set at $2.5. <span className="font-bold">Be cautious trading above this price.</span> <a className="underline" href="https://blog.carbontoken.info/launching-carbswap/" target="_blank">More information here.</a></p>
         </Notice>
       }
