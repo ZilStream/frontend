@@ -30,6 +30,7 @@ import TokenLiquidity from 'components/TokenLiquidity'
 import getTokenPairs from 'lib/zilstream/getTokenPairs'
 import { Pair } from 'types/pair.interface'
 import { ZIL_ADDRESS } from 'lib/constants'
+import Notice from 'components/Notice'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -132,6 +133,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <div className="text-sm">{token.name} is not screened or audited by ZilStream. Please verify the legitimacy of this token yourself.</div>
           </div>
         </div>
+      }
+      {token.symbol === 'GRPH' &&
+        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap">
+          <p>When CarbSwap launches, GRPH's price will be set at $2.5. <span className="font-bold">Be cautious trading above this price.</span> <a className="underline" href="https://blog.carbontoken.info/launching-carbswap/" target="_blank">More information here.</a></p>
+        </Notice>
       }
       <div className="w-full flex flex-col sm:flex-row items-start gap-6 mt-8 mb-6">
         <div className="w-96 flex-shrink-0 max-w-full">
