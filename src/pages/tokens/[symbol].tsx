@@ -135,7 +135,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       }
       {token.symbol === 'GRPH' &&
-        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap" className="w-full mx-0">
+        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap" className="w-full max-w-full">
           <p>When CarbSwap launches, GRPH's price will be set at $2.5. <span className="font-bold">Be cautious trading above this price.</span> <a className="underline" href="https://blog.carbontoken.info/launching-carbswap/" target="_blank">More information here.</a></p>
         </Notice>
       }
@@ -365,8 +365,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       </div>
       
-      <div className="flex flex-col md:flex-row items-start">
-        <div className="flex-grow">
+      <div className="max-w-full flex flex-col md:flex-row items-start">
+        <div className="max-w-full flex-grow">
           <Tab.Group>
             <Tab.List className="w-full sm:w-auto inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 dark:bg-gray-800 mb-3">
               <Tab className={({selected}) => classNames(
