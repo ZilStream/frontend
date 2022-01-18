@@ -22,19 +22,24 @@ const Supply = (props: Props) => {
         <div className="font-semibold">{numberFormat(props.token.market_data.init_supply, 0)}</div>
       </div>
 
-      {props.token.market_data.max_supply > 0 &&
-        <div className="flex items-center">
-          <div className="flex-grow">Max Supply:</div>
-          <div className="font-semibold">{numberFormat(props.token.market_data.max_supply, 0)}</div>
-        </div>
-      }
-
       {props.token.market_data.total_supply != props.token.market_data.max_supply &&
         <div className="flex items-center">
           <div className="flex-grow">Total Supply:</div>
           <div className="font-semibold">{numberFormat(props.token.market_data.total_supply, 0)}</div>
         </div>
       }
+
+      {props.token.market_data.max_supply > 0 ? (
+        <div className="flex items-center">
+          <div className="flex-grow">Max Supply:</div>
+          <div className="font-semibold">{numberFormat(props.token.market_data.max_supply, 0)}</div>
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <div className="flex-grow">Max Supply:</div>
+          <div className="font-semibold">No data</div>
+        </div>
+      )}
       
       {excludedAddresses.length > 0 &&
         <div className="mt-4 text-xs">
