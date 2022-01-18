@@ -266,7 +266,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <div className="flex-grow font-medium">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol)}</div>
               <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.current_liquidity_zil)} ZIL</span>
               
-              <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
+              {token.rewards.length > 0 &&
+                <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
+              }
+              
               {token.rewards.filter((reward: any) => reward.exchange_id === 1).length > 0 &&
                 <>
                   <div className="">ZilSwap APR: <span className="font-semibold">
