@@ -29,37 +29,15 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   exchanges.sort((a,b) => {
-    let aliquidity = a.pairs.reduce((sum, pair) => {
-      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-      var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-      if(!quoteToken?.isZil) {
-        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
-      }
-      return sum + liquidity
-    }, 0)
-
-    let bliquidity = b.pairs.reduce((sum, pair) => {
-      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-      var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-      if(!quoteToken?.isZil) {
-        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
-      }
-      return sum + liquidity
-    }, 0)
-
-    return aliquidity > bliquidity ? -1 : 1
+    return (a.stats?.liquidity ?? 0) > (b.stats?.liquidity ?? 0) ? -1 : 1
   })
 
+  let totalVolume = exchanges.reduce((sum, exchange) => {
+    return sum + (exchange.stats?.volume_24h ?? 0)
+  }, 0)
+
   let totalLiquidity = exchanges.reduce((sum, exchange) => {
-    let exchangeLiquidity = exchange.pairs.reduce((sum, pair) => {
-      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-      var pairLiquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-      if(!quoteToken?.isZil) {
-        pairLiquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
-      }
-      return sum + pairLiquidity
-    }, 0)
-    return sum + exchangeLiquidity
+    return sum + (exchange.stats?.liquidity ?? 0)
   }, 0)
 
   return (
@@ -84,6 +62,7 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
             <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{width: '140px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
@@ -91,33 +70,13 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
               <th className="px-2 py-2 text-left">Exchange</th>
               <th className="px-2 py-2 text-right">Pairs</th>
               <th className="px-2 py-2 text-right">Volume (24h)</th>
+              <th className="px-2 py-2 text-right">Vol. %</th>
               <th className="px-2 py-2 text-right">Liquidity</th>
               <th className="px-2 py-2 text-right">Liq. %</th>
             </tr>
           </thead>
           <tbody>
             {exchanges.map((exchange, index) => {
-              let volume = exchange.pairs.reduce((sum, pair) => {
-                if(pair.volume && pair.volume.volume_24h_quote > 0) {
-                  const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-                  if(quoteToken && quoteToken.isZil) {
-                    return sum + pair.volume.volume_24h_quote
-                  } else {
-                    return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
-                  }
-                }
-                return sum
-              }, 0)
-    
-              let liquidity = exchange.pairs.reduce((sum, pair) => {
-                const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
-                var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-                if(!quoteToken?.isZil) {
-                  liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
-                }
-                return sum + liquidity
-              }, 0)
-
               return (
                 <tr key={exchange.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
                   <td className={`pl-5 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === exchanges.length-1 ? 'rounded-bl-lg' : ''}`}>
@@ -137,13 +96,16 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
                     {exchange.pairs.length}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                    {currencyFormat((exchange.stats?.volume_24h ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                    {numberFormat(((exchange.stats?.volume_24h ?? 0) / totalVolume) * 100)}%
+                  </td>
+                  <td className="px-2 py-2 font-normal text-right">
+                    {currencyFormat((exchange.stats?.liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                   </td>
                   <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchanges.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {numberFormat((liquidity / totalLiquidity) * 100)}%
+                    {numberFormat(((exchange.stats?.liquidity ?? 0) / totalLiquidity) * 100)}%
                   </td>
                 </tr>
               )

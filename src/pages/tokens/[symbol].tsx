@@ -673,7 +673,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">Max Supply</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{numberFormat(token.market_data.max_supply, 0)}</span>
+                    {token.market_data.max_supply > 0 ? (
+                      <span className="font-bold">{numberFormat(token.market_data.max_supply, 0)}</span>
+                    ) : (
+                      <span className="font-bold">No data</span>
+                    )}
                   </td>
                 </tr>
               </tbody>
