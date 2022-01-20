@@ -11,7 +11,7 @@ function SwapPage() {
       </Head>
       <div className="flex items-center justify-center mt-12">
         <div className="w-128 max-w-full bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-900 py-4 px-5">
-          {/* <Swap /> */}
+          <Swap />
         </div>
       </div>
     </>

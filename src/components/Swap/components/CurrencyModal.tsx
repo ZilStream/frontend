@@ -108,17 +108,10 @@ const CurrencyModal = () => {
                   </div>
                   <div 
                     className="inline-flex items-center px-2 py-1 font-semibold border dark:border-gray-700 rounded-lg mr-2 mb-2 cursor-pointer"
-                    onClick={() => selectToken('zil19j33tapjje2xzng7svslnsjjjgge930jx0w09v')}
+                    onClick={() => selectToken('zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y')}
                   >
-                    <div className="w-5 h-5 mr-1"><TokenIcon address={`zil19j33tapjje2xzng7svslnsjjjgge930jx0w09v`} /></div>
-                    zETH
-                  </div>
-                  <div 
-                    className="inline-flex items-center px-2 py-1 font-semibold border dark:border-gray-700 rounded-lg mr-2 mb-2 cursor-pointer"
-                    onClick={() => selectToken('zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq')}
-                  >
-                    <div className="w-5 h-5 mr-1"><TokenIcon address={`zil1wha8mzaxhm22dpm5cav2tepuldnr8kwkvmqtjq`} /></div>
-                    zWBTC
+                    <div className="w-5 h-5 mr-1"><TokenIcon address={`zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y`} /></div>
+                    XCAD
                   </div>
                 </div>
               </div>

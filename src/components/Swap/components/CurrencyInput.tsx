@@ -60,7 +60,7 @@ const CurrencyInput = (props: Props) => {
           <input 
             className="bg-transparent w-full pr-0 text-2xl text-right font-semibold focus:outline-none border-none focus:ring-0 input-arrows-hidden" 
             placeholder="0.0"
-            value={amount.isZero() ? undefined : (isFocus ? amount.toNumber() : fieldFormat(amount.toNumber()))}
+            value={amount.isZero() ? undefined : (isFocus ? amount.toNumber() : fieldFormat(amount.toNumber(), selectedToken?.decimals))}
             onChange={(e) => onAmountChange(toBigNumber(e.target.value))}
             type="number"
           />

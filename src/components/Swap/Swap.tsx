@@ -84,21 +84,53 @@ const Swap = (props: Props) => {
 
   const handleSwap = async () => {
     if(!tokenIn || !tokenOut) return
-    const tx = await exchange?.swap(
-      tokenIn, 
-      tokenOut, 
-      state.focusDirectionIn ? state.tokenInAmount : state.tokenOutAmount,
-      swapState.slippage,
-      3434,
-      state.focusDirectionIn
-    )
+    // const tx = await exchange?.swap(
+    //   tokenIn, 
+    //   tokenOut, 
+    //   state.focusDirectionIn ? state.tokenInAmount : state.tokenOutAmount,
+    //   swapState.slippage,
+    //   3434,
+    //   state.focusDirectionIn
+    // )
 
-    if(tx === null) {
-      toast.error('Couldn\'t send your swap.')
-    }
+    // if(tx === null) {
+    //   toast.error('Couldn\'t send your swap.')
+    // }
 
-    toast.info('Your swap transaction has been sent.')
+    toast(<SwapNotification />, {autoClose: false})
   }
+
+  const SwapNotification = () => (
+    <div className="flex flex-col text-center text-black dark:text-white">
+      <div className="flex items-center gap-2">
+        <div className="bg-primary dark:bg-gray-700 h-6 w-6 md:w-10 md:h-10 p-1 md:p-3 rounded-full flex items-center justify-center">
+          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="transactions-type" xmlns="http://www.w3.org/2000/svg"><path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path></svg>
+        </div>
+        <div className="flex flex-col items-start">
+          <div className="inline-flex items-center gap-1 font-medium">
+            <span className="w-4 h-4 inline-block">
+              <TokenIcon url={tokenIn.icon} />
+            </span> 
+            <span className="font-medium">{cryptoFormat(state.tokenInAmount.toNumber())} {tokenIn.symbol}</span>
+          </div> 
+          <div className="inline-flex items-center gap-1 font-medium">
+            <span className="w-4 h-4 inline-block">
+              <TokenIcon url={tokenOut.icon} />
+            </span> 
+            {cryptoFormat(state.tokenOutAmount.toNumber())} {tokenOut.symbol}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 text-xs mt-2 text-gray-500 dark:text-gray-400">
+        <div className="flex-grow text-left">0x00000</div>
+        <div className="text-right">Processing</div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-xs mt-1">
+        <button className="bg-gray-100 rounded font-medium py-2">Copy hash</button>
+        <a className="bg-gray-100 rounded font-medium py-2">ViewBlock</a>
+      </div>
+    </div>
+  )
 
   return (
     <div>
@@ -125,11 +157,11 @@ const Swap = (props: Props) => {
           amount={state.tokenInAmount}
           onAmountChange={amount => {
             if(!exchange || !tokenIn || !tokenOut) return
-            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount, true)
+            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount.shiftedBy(tokenIn.decimals), true)
             setState({
               ...state,
               tokenInAmount: amount,
-              tokenOutAmount: expectedAmount,
+              tokenOutAmount: expectedAmount.shiftedBy(-tokenOut.decimals),
               expectedSlippage: expectedSlippage,
               focusDirectionIn: true,
             })
@@ -142,11 +174,11 @@ const Swap = (props: Props) => {
           amount={state.tokenOutAmount}
           onAmountChange={amount => {
             if(!exchange) return
-            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount, false)
+            const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount.shiftedBy(tokenOut.decimals), false)
             setState({
               ...state,
               tokenOutAmount: amount,
-              tokenInAmount: expectedAmount,
+              tokenInAmount: expectedAmount.shiftedBy(-tokenIn.decimals),
               expectedSlippage: expectedSlippage,
               focusDirectionIn: false,
             })
