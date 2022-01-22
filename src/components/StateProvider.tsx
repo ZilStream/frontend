@@ -377,20 +377,30 @@ const StateProvider = (props: Props) => {
             let stakers: number[]  = Object.values(result.result.stakers_total_bal)
             if(stakers.length === 0) return
 
-            let contractAddress = Object.values(xcadStakingAddresses).filter(value => value[0] === token?.address_bech32)[0]
+            let values = Object.values(xcadStakingAddresses).filter(value => value[0] === token?.address_bech32)[0]
 
             if(token && token.symbol === 'XCAD') {
-              dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
-                name: 'XCAD Staking',
-                address: contractAddress,
-                staked: new BigNumber(stakers[0]),
-                symbol: 'XCAD',
-                decimals: 18
-              }}})
+              if(token && token.symbol === 'XCAD' && values[1] === '0xb15a7cc9fc08a2c77f96b5d892ab1f1a4cf022cc') {
+                dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                  name: 'XCAD Staking: dXCAD',
+                  address: values[1],
+                  staked: new BigNumber(stakers[0]),
+                  symbol: 'XCAD',
+                  decimals: 18
+                }}})
+              } else {
+                dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                  name: 'XCAD Staking',
+                  address: values[1],
+                  staked: new BigNumber(stakers[0]),
+                  symbol: 'XCAD',
+                  decimals: 18
+                }}})
+              }
             } else {
               dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
                 name: 'dXCAD Staking: ' + token?.symbol,
-                address: contractAddress,
+                address: values[1],
                 staked: new BigNumber(stakers[0]),
                 symbol: 'dXCAD',
                 decimals: 18

@@ -264,13 +264,15 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <RatesBlock
+              {/* <RatesBlock
                 title="ZIL"
                 value={currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
                 subTitle={`MC ${compactFormat(zilToken.market_data.current_supply * selectedCurrency.rate, selectedCurrency.symbol)}`}
                 token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
                 rates={rates.filter(rate => rate.token_id == "1")} 
-              />
+              /> */}
+
+              <SponsorBlock link="https://www.beanterra.io/mint" />
 
               <Link href="/exchanges">
                 <a>
@@ -283,8 +285,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   <VolumeChartBlock />
                 </a>
               </Link>
-
-              {/* <SponsorBlock link="https://zilswap.io/zilo/current" /> */}
 
               <HighestAPRBlock tokens={aprTokens} />
             </>
