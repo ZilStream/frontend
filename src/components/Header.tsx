@@ -93,21 +93,21 @@ const Header = () => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                   
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
                       <div className="py-1" role="none">
                         <Menu.Item>
                           <Link href="/bridge">
-                            <a className={router.pathname.includes('/bridge') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm'}>Bridge</a>
+                            <a className={router.pathname.includes('/bridge') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Bridge</a>
                           </Link>
                         </Menu.Item>
                         <Menu.Item>
                           <Link href="/vote">
-                            <a className={router.pathname.includes('/vote') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm'}>Vote</a>
+                            <a className={router.pathname.includes('/vote') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Vote</a>
                           </Link>
                         </Menu.Item>
                         <Menu.Item>
                           <Link href="/calendar">
-                            <a className={router.pathname === '/calendar' ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm'}>Calendar</a>
+                            <a className={router.pathname === '/calendar' ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Calendar</a>
                           </Link>
                         </Menu.Item>
                       </div>
