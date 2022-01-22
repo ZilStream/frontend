@@ -292,7 +292,7 @@ const StateProvider = (props: Props) => {
           }
   
           case BatchRequestType.StakingDelegators: {
-            if(result.result !== null) {
+            if(result && result.result) {
               let ssnDelegators: any[] = result.result.ssn_deleg_amt
               Object.keys(ssnDelegators).forEach(ssnAddress => {
                 let address: any = ssnAddress
@@ -377,7 +377,7 @@ const StateProvider = (props: Props) => {
             let stakers: number[]  = Object.values(result.result.stakers_total_bal)
             if(stakers.length === 0) return
 
-            let contractAddress = xcadStakingAddresses[token?.address_bech32 ?? '']
+            let contractAddress = Object.values(xcadStakingAddresses).filter(value => value[0] === token?.address_bech32)[0]
 
             if(token && token.symbol === 'XCAD') {
               dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {

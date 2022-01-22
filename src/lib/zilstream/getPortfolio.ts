@@ -27,10 +27,12 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(portDockStakersBatchRequest(walletAddress))
   batchRequests.push(okipadStakingBatchRequest(walletAddress))
 
-  Object.keys(xcadStakingAddresses).forEach(tokenAddress => {
+  Object.values(xcadStakingAddresses).forEach(stakingValue => {
+    const tokenAddress = stakingValue[0]
+    const contractAddress = stakingValue[1]
     const token = tokens.filter(t => t.address_bech32 === tokenAddress)?.[0]
     if(token) {
-      batchRequests.push(xcadStakingRequest(token, xcadStakingAddresses[tokenAddress], walletAddress))
+      batchRequests.push(xcadStakingRequest(token, contractAddress, walletAddress))
     }
   })
 
