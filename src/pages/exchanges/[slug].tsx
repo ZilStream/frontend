@@ -32,7 +32,6 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
   const [totalLiquidity, setTotalLiquidity] = useState<number>(0)
 
   useEffect(() => {
-    var nTotalVolume = 0
     const liquidity = exchange.pairs.reduce((sum, pair) => {
       const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
       var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
@@ -43,18 +42,27 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
     }, 0)
     setTotalLiquidity(liquidity)
 
+    let volume = exchange.pairs.reduce((sum, pair) => {
+      if(pair.volume && pair.volume.volume_24h_quote > 0) {
+        const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+        if(quoteToken && quoteToken.isZil) {
+          return sum + pair.volume.volume_24h_quote
+        } else {
+          return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+        }
+      }
+      return sum
+    }, 0)
+    setTotalVolume(volume)
+
     const filteredPairs = exchange.pairs.filter(pair => {
       const token = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
-      if(token && exchange.name === 'ZilSwap') {
-        nTotalVolume += token?.market_data.daily_volume_zil
-      }
       return token?.listed
     })
     filteredPairs.sort((a,b) => {
-      return (a.reserve?.quote_reserve ?? 0) > (b.reserve?.quote_reserve ?? 0) ? -1 : 1
+      return (a.volume?.volume_24h_quote ?? 0) > (b.volume?.volume_24h_quote ?? 0) ? -1 : 1
     })
     setPairs(filteredPairs)
-    setTotalVolume(nTotalVolume)
   }, [tokenState])
 
   return (
@@ -124,8 +132,10 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
               const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
 
               var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+              var volume = (pair.volume?.volume_24h_quote ?? 0)
               if(!quoteToken.isZil) {
                 liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
+                volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate
               }
 
               return (
@@ -151,25 +161,12 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                   <td className="px-2 py-2 font-normal text-right">
                     {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
                   </td>
-                  {exchange.name === 'ZilSwap' ? (
-                    <>
-                      <td className="px-2 py-2 font-normal text-right">
-                        {currencyFormat((baseToken?.market_data.daily_volume_zil ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
-                      </td>
-                      <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-br-lg' : ''}`}>
-                        {numberFormat((baseToken?.market_data.daily_volume_zil ?? 0) / totalVolume * 100)}%
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="px-2 py-2 font-normal text-right">
-                      —
-                      </td>
-                      <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-br-lg' : ''}`}>
-                      —
-                      </td>
-                    </>
-                  )}
+                  <td className="px-2 py-2 font-normal text-right">
+                    {currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                  </td>
+                  <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchange.pairs.length-1 ? 'rounded-br-lg' : ''}`}>
+                    {numberFormat((volume / totalVolume) * 100)}%
+                  </td>
                 </tr>
               )
             })}

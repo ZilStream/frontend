@@ -1,6 +1,6 @@
 import { ZIL_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
-import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest } from "utils/batch";
+import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
 export default async function getPortfolioState(walletAddress: string, tokens: Token[], operators: Operator[] = []): Promise<BatchResponse[]> {
@@ -25,6 +25,16 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(carbonStakersBatchRequest(walletAddress))
   batchRequests.push(portBuoyStakersBatchRequest(walletAddress))
   batchRequests.push(portDockStakersBatchRequest(walletAddress))
+  batchRequests.push(okipadStakingBatchRequest(walletAddress))
+
+  Object.values(xcadStakingAddresses).forEach(stakingValue => {
+    const tokenAddress = stakingValue[0]
+    const contractAddress = stakingValue[1]
+    const token = tokens.filter(t => t.address_bech32 === tokenAddress)?.[0]
+    if(token) {
+      batchRequests.push(xcadStakingRequest(token, contractAddress, walletAddress))
+    }
+  })
 
   if(operators.length > 0) {
     operators.forEach(operator => {

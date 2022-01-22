@@ -8,4 +8,10 @@ export interface Exchange {
   icon: string
   website: string
   pairs: Pair[]
+  stats?: ExchangeStats
+}
+
+export interface ExchangeStats {
+  volume_24h: number
+  liquidity: number
 }

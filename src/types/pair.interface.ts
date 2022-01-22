@@ -1,7 +1,10 @@
+import { Exchange } from "./exchange.interface";
+import { PairVolume } from "./pairVolume.interface";
 import { Quote } from "./quote.interface";
 import { Reserve } from "./reserve.interface";
 
 export interface Pair {
+  id: number
   pair: string
   category: string
   base_symbol: string
@@ -10,4 +13,6 @@ export interface Pair {
   quote_address: string
   quote?: Quote
   reserve?: Reserve
+  exchange?: Exchange
+  volume?: PairVolume
 }

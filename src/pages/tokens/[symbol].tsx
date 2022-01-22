@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { currencyFormat, numberFormat, cryptoFormat } from 'utils/format'
@@ -27,6 +27,10 @@ import TVLChartContainer from 'components/TVLChartContainer'
 import MemberWrapper from 'components/MemberWrapper'
 import TokenHolders from 'components/TokenHolders'
 import TokenLiquidity from 'components/TokenLiquidity'
+import getTokenPairs from 'lib/zilstream/getTokenPairs'
+import { Pair } from 'types/pair.interface'
+import { ZIL_ADDRESS } from 'lib/constants'
+import Notice from 'components/Notice'
 
 const TVChartContainer = dynamic(
   () => import('components/TVChartContainer'),
@@ -60,18 +64,55 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+  const [pairs, setPairs] = useState<Pair[]>([])
+  const [totalVolume, setTotalVolume] = useState<number>(0)
 
   const {
-    apr,
     athChangePercentage,
     atlChangePercentage
   } = React.useMemo(() => {
     return {
-      apr: getTokenAPR(token, tokenState),
       athChangePercentage: -((token.market_data.ath / token.market_data.rate) -1) * 100,
       atlChangePercentage: ((token.market_data.rate / token.market_data.atl) - 1) * 100
     }
   }, [token, tokenState.tokens])
+
+  useEffect(() => {
+    const fetchPairs = async () => {
+      let newPairs = await getTokenPairs(token.symbol)
+
+      let volume = newPairs.reduce((sum, pair) => {
+        if(pair.volume && pair.volume.volume_24h_quote > 0) {
+          const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+          if(quoteToken && quoteToken.isZil) {
+            return sum + pair.volume.volume_24h_quote
+          } else {
+            return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+          }
+        }
+        return sum
+      }, 0)
+      setTotalVolume(volume)
+
+      newPairs.sort((a,b) => {
+        const aQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === a.quote_address)?.[0]
+        var avolume = a.volume?.volume_24h_quote ?? 0
+        if(aQuoteToken && !aQuoteToken.isZil) {
+          avolume = (a.volume?.volume_24h_quote ?? 0) * aQuoteToken.market_data.rate
+        }
+
+        const bQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === b.quote_address)?.[0]
+        var bvolume = b.volume?.volume_24h_quote ?? 0
+        if(bQuoteToken && !bQuoteToken.isZil) {
+          bvolume = (b.volume?.volume_24h_quote ?? 0) * bQuoteToken.market_data.rate
+        }
+
+        return avolume > bvolume ? -1 : 1
+      })
+      setPairs(newPairs)
+    }
+    fetchPairs()
+  }, [tokenState])
 
   return (
     <>
@@ -92,6 +133,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             <div className="text-sm">{token.name} is not screened or audited by ZilStream. Please verify the legitimacy of this token yourself.</div>
           </div>
         </div>
+      }
+      {token.symbol === 'GRPH' &&
+        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap" className="w-full max-w-full">
+          <p>When CarbSwap launches, GRPH's price will be set at $2.5. <span className="font-bold">Be cautious trading above this price.</span> <a className="underline" href="https://blog.carbontoken.info/launching-carbswap/" target="_blank">More information here.</a></p>
+        </Notice>
       }
       <div className="w-full flex flex-col sm:flex-row items-start gap-6 mt-8 mb-6">
         <div className="w-96 flex-shrink-0 max-w-full">
@@ -221,11 +267,16 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.current_liquidity_zil)} ZIL</span>
               
               {token.rewards.length > 0 &&
+                <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
+              }
+              
+              {token.rewards.filter((reward: any) => reward.exchange_id === 1).length > 0 &&
                 <>
-                  <div className="text-gray-700 dark:text-gray-400 mt-5">Rewards</div>
-                  <div className="">Combined APR: <span className="font-semibold">{apr.toNumber()}%</span></div>
+                  <div className="">ZilSwap APR: <span className="font-semibold">
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 1).reduce((sum: number, current: any) => sum + current.current_apr, 0).toFixed(2)}%
+                  </span></div>
                   <div>
-                    {token.rewards.map((reward: Reward) => {
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 1).map((reward: Reward) => {
                       const paymentDayDetail = reward.payment_day !== null ? (
                         <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
                           Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
@@ -252,12 +303,49 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   </div>
                 </>
               }
+
+              {token.rewards.filter((reward: any) => reward.exchange_id === 2).length > 0 &&
+                <>
+                  <div className="mt-2">XCAD DEX APR: <span className="font-semibold">
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 2).reduce((sum: number, current: any) => sum + current.current_apr, 0)}%
+                  </span></div>
+                  <div>
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 2).map((reward: Reward) => {
+                      const paymentDayDetail = reward.payment_day !== null ? (
+                        <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
+                          Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
+                        </div>
+                      ) : (<></>)
+
+                      var period = reward.frequency === 604800 ? 'week' : `${reward.frequency/86400} days`
+                      if(reward.frequency === 86400) {
+                        period = 'day'
+                      }
+                      return (
+                        <div key={reward.reward_token_address} className="flex items-center whitespace-nowrap">
+                          <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
+                          <span className="mr-1">{cryptoFormat(reward.amount)}</span>
+                          <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
+                          <span>/ {period}</span>
+                          {reward.payment_day !== null &&
+                            <Tippy content={paymentDayDetail}>
+                              <button className="ml-2 focus:outline-none">
+                                <Info size={14} className="text-gray-500" />
+                              </button>
+                            </Tippy>
+                          }
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              }
             </div>
             <div className="py-2">
               <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
               <Supply token={token} />
 
-              {(token.symbol === 'ZILLEX' || token.symbol === 'UNIDEX-V2' || token.symbol === 'NFTDEX') &&
+              {token.tags.includes('cft') &&
                 <>
                   <div className="text-gray-700 dark:text-gray-400 text-sm mt-6">Compound Token</div>
                   <div className="text-sm">Compound tokens consist of other ZRC-2 tokens, more information on the <a href="https://zilall.com/" className="hover:underline">ZILALL website</a>.</div>
@@ -280,8 +368,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
         </div>
       </div>
       
-      <div className="flex flex-col md:flex-row items-start">
-        <div className="flex-grow">
+      <div className="max-w-full flex flex-col md:flex-row items-start">
+        <div className="max-w-full flex-grow">
           <Tab.Group>
             <Tab.List className="w-full sm:w-auto inline-flex p-1 space-x-1 bg-blue-900/20 rounded-xl bg-gray-200 dark:bg-gray-800 mb-3">
               <Tab className={({selected}) => classNames(
@@ -326,6 +414,92 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
+
+          <div className="mt-8">
+            <h2 className="text-lg text-bold">{token.symbol} Markets</h2>
+            <div className="scrollable-table-container max-w-full overflow-x-scroll">
+              <table className="zilstream-table table-fixed border-collapse">
+                <colgroup>
+                  <col style={{width: '24px', minWidth: 'auto'}} />
+                  <col style={{width: '200px', minWidth: 'auto'}} />
+                  <col style={{width: '160px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                  <col style={{width: '140px', minWidth: 'auto'}} />
+                </colgroup>
+                <thead className="text-gray-500 dark:text-gray-400 text-xs">
+                  <tr>
+                    <th className="pl-5 pr-2 py-2 text-left">#</th>
+                    <th className="px-2 py-2 text-left">Exchange</th>
+                    <th className="px-2 py-2 text-left">Pair</th>
+                    <th className="px-2 py-2 text-right">Price</th>
+                    <th className="px-2 py-2 text-right">Liquidity</th>
+                    <th className="px-2 py-2 text-right">Volume (24h)</th>
+                    <th className="px-2 py-2 text-right">Volume %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pairs.map((pair: Pair, index: number) => {
+                    const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
+                    const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      
+                    var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
+                    var volume = (pair.volume?.volume_24h_quote ?? 0)
+                    if(quoteToken && !quoteToken.isZil) {
+                      liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
+                      volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate
+                    }
+                    
+                    let price = pair.quote?.price ?? 0
+                    var zilRate = price
+
+                    if(pair.quote_address !== ZIL_ADDRESS && price > 0) {
+                      if(pair.quote_address === token.address_bech32) {
+                        zilRate = (1 / price) * (baseToken?.market_data.rate ?? 0)
+                      } else {
+                        zilRate = price * (quoteToken?.market_data.rate ?? 0)
+                      }
+                    }
+
+                    return (
+                      <tr key={pair.id} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
+                        <td className={`pl-5 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === pairs.length-1 ? 'rounded-bl-lg' : ''}`}>
+                          <div>{index+1}</div>
+                        </td>
+                        <td className="px-2 py-2 text-left font-medium">
+                          <Link href={`/exchanges/${pair.exchange?.slug}`}>
+                            <a className="flex items-center">
+                              <div className="w-5 h-5 flex-shrink-0 flex-grow-0 mr-3">
+                                <TokenIcon url={pair.exchange?.icon} />
+                              </div>
+                              <span className="">{pair.exchange?.name}</span>
+                            </a>
+                          </Link>
+                        </td>
+                        <td className="px-2 py-2 text-left font-medium">
+                          {pair.pair}
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          <div>{cryptoFormat(zilRate)} ZIL</div>
+                          <div className="text-gray-500 dark:text-gray-400">{currencyFormat(zilRate * selectedCurrency.rate, selectedCurrency.symbol)}</div>
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          {currencyFormat((liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                        </td>
+                        <td className="px-2 py-2 font-normal text-right">
+                          {currencyFormat((volume ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                        </td>
+                        <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === pairs.length-1 ? 'rounded-br-lg' : ''}`}>
+                          {numberFormat((volume / totalVolume) * 100)}%
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
             
           <div className="mt-8">
             <Tab.Group>
@@ -438,19 +612,12 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   <th scope="row" className="text-left font-normal py-3">Liquidity</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
-                    <div className="text-xs text-gray-500 text-right"><span className="font-semibold">{cryptoFormat(token.market_data.zil_reserve)}</span> ZIL / <span className="font-semibold">{cryptoFormat(token.market_data.token_reserve)}</span> {token.symbol}</div>
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Liquidity Providers</th>
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">{numberFormat(token.market_data.liquidity_providers, 0)}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" className="text-left font-normal py-3">LP Reward APR</th>
-                  <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{apr.toNumber()}%</span>
                   </td>
                 </tr>
               </tbody>
@@ -464,12 +631,12 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     <InlineChange num={token.market_data.change_percentage_7d} bold />
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                {/* <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price Change <span className="px-1 py-1 ml-1 text-xs bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded">30d</span></th>
                   <td className="flex flex-col items-end py-3">
                     <InlineChange num={token.market_data.change_percentage_30d} bold />
                   </td>
-                </tr>
+                </tr> */}
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">All Time High</th>
                   <td className="flex flex-col items-end py-3">
@@ -506,7 +673,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">Max Supply</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{numberFormat(token.market_data.max_supply, 0)}</span>
+                    {token.market_data.max_supply > 0 ? (
+                      <span className="font-bold">{numberFormat(token.market_data.max_supply, 0)}</span>
+                    ) : (
+                      <span className="font-bold">No data</span>
+                    )}
                   </td>
                 </tr>
               </tbody>

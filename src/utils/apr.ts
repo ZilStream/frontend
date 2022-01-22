@@ -6,19 +6,22 @@ import { toBigNumber } from "./useMoneyFormatter";
 export function getTokenAPR(token: Token, tokenState: TokenState): BigNumber {
   const rewards: Reward[] = token.rewards
 
-  var totalAPR = new BigNumber(0)
-  rewards.forEach(reward => {
-    const rewardTokens = tokenState.tokens.filter(token => token.address_bech32 == reward.reward_token_address)
-    if(rewardTokens.length > 0) {
-      const rewardToken = rewardTokens[0]
-      const rewardsValue = reward.reward_token_symbol !== 'ZIL' ? toBigNumber(reward.amount).times(rewardToken.market_data.rate) : toBigNumber(reward.amount).times(rewardToken.market_data.rate)
-      const liquidity = toBigNumber(reward.adjusted_total_contributed_share).times(token.market_data.current_liquidity_zil)
-      const rewardValueSecond = rewardsValue.dividedBy(reward.frequency)
-      const roiPerEpoch = rewardValueSecond.dividedBy(liquidity)
-      const apr = bnOrZero(roiPerEpoch.times(31536000).shiftedBy(2).decimalPlaces(1))
-      totalAPR = totalAPR.plus(apr)
-    }
-  })
+  const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
+  list.reduce((previous, currentItem) => {
+    const group = getKey(currentItem);
+    if (!previous[group]) previous[group] = [];
+    previous[group].push(currentItem);
+    return previous;
+  }, {} as Record<K, T[]>);
+
+  const rewardGroups = groupBy(rewards, reward => reward.exchange_id)
+
+  var aprs: number[] = []
+  for (const [exchangeId, reward] of Object.entries(rewardGroups)) {
+    
+    const apr = reward.reduce((sum, cur) => sum + cur.current_apr, 0)
+    aprs.push(apr)
+  }
   
-  return totalAPR
+  return toBigNumber(Math.max(...aprs)).decimalPlaces(2)
 }

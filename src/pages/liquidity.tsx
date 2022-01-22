@@ -101,11 +101,6 @@ const Liquidity = ({ stats }: InferGetServerSidePropsType<typeof getServerSidePr
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <TVLChartBlock className="h-48 lg:h-80" />
-
-        <VolumeChartBlock className="h-48 lg:h-80" />
-      </div>
       {edit === 'true' &&
         <div className="flex items-center gap-3 mb-3">
           <div className="text-sm">

@@ -28,7 +28,7 @@ export default function useBalances() {
           streamBalance: new BigNumber(0),
           streamBalanceUSD: new BigNumber(0),
           streamBalanceZIL: new BigNumber(0),
-          membershipUSD: new BigNumber(0),
+          membershipZIL: new BigNumber(0),
           isMember: false
         },
         rewards: {}
@@ -115,17 +115,48 @@ export default function useBalances() {
       totalBalance = totalBalance.plus(stakingBalance)
     }
 
-    const membershipUSD = totalBalance.times(tokenState.zilRate).dividedBy(200)
-    const isMember = streamBalanceUSD.isGreaterThanOrEqualTo(membershipUSD) && streamBalanceUSD.isGreaterThan(0)
+    const membershipZIL = totalBalance.dividedBy(200)
+    const isMember = streamBalanceZIL.isGreaterThanOrEqualTo(membershipZIL) && streamBalanceZIL.isGreaterThan(0)
 
     var rewards: {[key: string]: TokenReward} = {}
     tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
       let pool = token.pool!
       
-      token.rewards.forEach(reward => {
+      token.rewards.filter(reward => reward.exchange_id === 1).forEach(reward => {
         let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
           pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
           pool.userContribution!.dividedBy(pool.totalContribution).times(100)
+        let contributionShare = contributionPercentage.shiftedBy(-2)
+        let currentReward = rewards[reward.reward_token_address]
+        let newReward = toBigNumber(reward.amount).times(contributionShare)
+
+        if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
+          newReward = toBigNumber(reward.max_individual_amount)
+        }
+
+        if(currentReward !== undefined) {
+          rewards[reward.reward_token_address] = {
+            amount: currentReward.amount.plus(newReward),
+            address: reward.reward_token_address,
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
+          }
+        } else {
+          rewards[reward.reward_token_address] = {
+            amount: newReward,
+            address: reward.reward_token_address,
+            symbol: reward.reward_token_symbol,
+            payment_day: reward.payment_day
+          }
+        }
+      })
+    })
+
+    tokenState.tokens.filter(token => token.xcadPool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
+      let pool = token.xcadPool!
+      
+      token.rewards.filter(reward => reward.exchange_id === 2).forEach(reward => {
+        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
         let contributionShare = contributionPercentage.shiftedBy(-2)
         let currentReward = rewards[reward.reward_token_address]
         let newReward = toBigNumber(reward.amount).times(contributionShare)
@@ -161,7 +192,7 @@ export default function useBalances() {
         streamBalance,
         streamBalanceUSD,
         streamBalanceZIL,
-        membershipUSD,
+        membershipZIL: membershipZIL,
         isMember: isMember
       },
       rewards

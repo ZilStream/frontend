@@ -17,7 +17,7 @@ import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
-import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
+import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest, xcadStakingAddresses } from 'utils/batch'
 import { useInterval } from 'utils/interval'
 import { bnOrZero } from 'utils/strings'
 
@@ -292,7 +292,7 @@ const StateProvider = (props: Props) => {
           }
   
           case BatchRequestType.StakingDelegators: {
-            if(result.result !== null) {
+            if(result && result.result) {
               let ssnDelegators: any[] = result.result.ssn_deleg_amt
               Object.keys(ssnDelegators).forEach(ssnAddress => {
                 let address: any = ssnAddress
@@ -346,12 +346,67 @@ const StateProvider = (props: Props) => {
             if(stakers.length === 0) return
   
             dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
-              name: 'PORT: The Dock ',
+              name: 'PORT: The Dock',
               address: '0x25c9176fc5c18ec28888f0338776b4f39e487028',
               staked: new BigNumber(stakers[0]),
               symbol: 'PORT',
               decimals: 4
             }}})
+            return
+          }
+
+          case BatchRequestType.OkipadStaking: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'Okipad',
+              address: '0xce7b758d08b477ef4f957fd7be81bb5e0976dcbc',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'Oki',
+              decimals: 5
+            }}})
+            return
+          }
+
+          case BatchRequestType.XcadStaking: {
+            if(result.result === null) return
+
+            let stakers: number[]  = Object.values(result.result.stakers_total_bal)
+            if(stakers.length === 0) return
+
+            let values = Object.values(xcadStakingAddresses).filter(value => value[0] === token?.address_bech32)[0]
+
+            if(token && token.symbol === 'XCAD') {
+              if(token && token.symbol === 'XCAD' && values[1] === '0xb15a7cc9fc08a2c77f96b5d892ab1f1a4cf022cc') {
+                dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                  name: 'XCAD Staking: dXCAD',
+                  address: values[1],
+                  staked: new BigNumber(stakers[0]),
+                  symbol: 'XCAD',
+                  decimals: 18
+                }}})
+              } else {
+                dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                  name: 'XCAD Staking',
+                  address: values[1],
+                  staked: new BigNumber(stakers[0]),
+                  symbol: 'XCAD',
+                  decimals: 18
+                }}})
+              }
+            } else {
+              dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+                name: 'dXCAD Staking: ' + token?.symbol,
+                address: values[1],
+                staked: new BigNumber(stakers[0]),
+                symbol: 'dXCAD',
+                decimals: 18
+              }}})
+            }
+
             return
           }
         }

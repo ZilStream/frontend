@@ -1,6 +1,7 @@
 import React from 'react'
 import { Token } from 'store/types'
 import TokenIcon from './TokenIcon'
+import Link from 'next/link'
 
 interface Props {
   tokens: Token[]
@@ -24,7 +25,7 @@ const HighestAPRBlock = (props: Props) => {
           </div>
         </div>
         <div>
-          <span className="text-gray-400 text-sm">By providing liquidity on ZilSwap</span>
+          <span className="text-gray-400 text-sm">By providing liquidity on a DEX</span>
         </div>
       </div>
       <div className="flex flex-col gap-4 text-sm mt-1">
@@ -34,7 +35,13 @@ const HighestAPRBlock = (props: Props) => {
             <div className="w-6 h-6">
               <TokenIcon address={token.address_bech32} />
             </div>
-            <div className="font-medium flex-grow">{token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol}</span></div>
+            <div className="font-medium flex-grow">
+              <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+                <a className="flex items-center">
+                  {token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol}</span>
+                </a>
+              </Link>
+            </div>
             <div>{token.apr?.toNumber()}%</div>
           </div>
         ))}

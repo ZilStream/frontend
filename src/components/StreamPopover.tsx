@@ -2,17 +2,17 @@ import { Popover, Transition } from '@headlessui/react'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState, TokenState } from 'store/types'
-import { cryptoFormat } from 'utils/format'
+import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
+import { cryptoFormat, currencyFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter from 'utils/useMoneyFormatter'
 
 const StreamPopover = () => {
   const moneyFormat = useMoneyFormatter({ maxFractionDigits: 5 })
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const { totalBalance, membership } = useBalances()
-
-  var totalBalanceUSD = totalBalance.times(tokenState.zilRate)
 
   return (
     <Popover>
@@ -37,7 +37,7 @@ const StreamPopover = () => {
                 <div className="font-semibold mb-3">STREAM balance</div>
                 <img className="h-12 w-12" src="/stream.svg" alt="STREAM" />
                 <div className="mt-2 font-semibold">{cryptoFormat(membership.streamBalance.toNumber())}</div>
-                <div className="text-gray-600 dark:text-gray-400 text-sm">${moneyFormat(membership.streamBalanceUSD, {maxFractionDigits: 2})}</div>
+                <div className="text-gray-600 dark:text-gray-400 text-sm">{currencyFormat(membership.streamBalanceZIL.toNumber() * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                 {membership.isMember &&
                   <div className="border-2 border-primary rounded-full text-sm font-medium text-primary px-2 mt-2">ZilStream Member</div>
                 }
@@ -47,13 +47,13 @@ const StreamPopover = () => {
                   <div className="flex-grow text-gray-600 dark:text-gray-400">
                     Wallet balance
                   </div>
-                  <div>${moneyFormat(totalBalanceUSD, {maxFractionDigits: 2})}</div>
+                  <div>{currencyFormat(totalBalance.toNumber() * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                 </div>
                 <div className="flex items-center">
                   <div className="flex-grow text-gray-600 dark:text-gray-400">
                     Membership
                   </div>
-                  <div>${moneyFormat(membership.membershipUSD, {maxFractionDigits: 2})}</div>
+                  <div>{currencyFormat(membership.membershipZIL.toNumber() * selectedCurrency.rate, selectedCurrency.symbol)}</div>
                 </div>
               </div>
 
