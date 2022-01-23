@@ -83,7 +83,7 @@ export abstract class Exchange {
             {
               vname: 'amount',
               type: 'Uint128',
-              value: new BigNumber(2).pow(128).minus(1).minus(approval.allowance).toString(),
+              value: new BigNumber(2).pow(128).minus(1).minus(approval.allowance).toFixed(0),
             },
           ],
           {

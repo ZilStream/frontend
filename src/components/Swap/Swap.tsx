@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { ChevronDown, Info, Maximize, Settings } from 'react-feather'
+import { ArrowDown, ChevronDown, Info, Maximize, Settings } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { BlockchainState, RootState, SwapState, TokenState } from 'store/types'
 import CurrencyInput from './components/CurrencyInput'
@@ -15,6 +15,8 @@ import { toast } from 'react-toastify'
 import { ZIL_ADDRESS } from 'lib/constants'
 import { BIG_ONE } from 'utils/strings'
 import { openExchange } from 'store/modal/actions'
+import { shortenAddress } from 'utils/addressShortener'
+import { updateSwap } from 'store/swap/actions'
 
 interface Props {
   showFullscreen?: boolean
@@ -71,8 +73,24 @@ const Swap = (props: Props) => {
     return inRate.dividedBy(outRate)
   }
 
+  const reverse = () => {
+    dispatch(updateSwap({
+      tokenInAddress: tokenOut.address_bech32,
+      tokenOutAddress: tokenIn.address_bech32
+    }))
+    setState(previousState => {
+      return {
+        ...previousState,
+        tokenInAmount: previousState.tokenOutAmount,
+        tokenOutAmount: previousState.tokenInAmount,
+        focusDirectionIn: !previousState.focusDirectionIn
+      }
+    })
+  }
+
   const handleApprove = async () => {
     if(!tokenIn) return
+
     const tx = await exchange?.approve(tokenIn, state.tokenInAmount.shiftedBy(tokenIn.decimals))
     if(tx === null) {
       toast.info('This token has already been approved.')
@@ -83,24 +101,24 @@ const Swap = (props: Props) => {
   }
 
   const handleSwap = async () => {
-    if(!tokenIn || !tokenOut) return
-    // const tx = await exchange?.swap(
-    //   tokenIn, 
-    //   tokenOut, 
-    //   state.focusDirectionIn ? state.tokenInAmount : state.tokenOutAmount,
-    //   swapState.slippage,
-    //   3434,
-    //   state.focusDirectionIn
-    // )
+    if(!tokenIn || !tokenOut || !blockchainState.blockHeight) return
+    const tx = await exchange?.swap(
+      tokenIn, 
+      tokenOut, 
+      state.focusDirectionIn ? state.tokenInAmount.shiftedBy(tokenIn.decimals) : state.tokenOutAmount.shiftedBy(tokenOut.decimals),
+      swapState.slippage,
+      blockchainState.blockHeight + 20,
+      state.focusDirectionIn
+    )
 
-    // if(tx === null) {
-    //   toast.error('Couldn\'t send your swap.')
-    // }
+    if(tx === null) {
+      toast.error('Couldn\'t send your swap.')
+    }
 
-    toast(<SwapNotification />, {autoClose: false})
+    toast(<SwapNotification hash={tx?.id as string} />, {autoClose: false})
   }
 
-  const SwapNotification = () => (
+  const SwapNotification = (props: {hash: string}) => (
     <div className="flex flex-col text-center text-black dark:text-white">
       <div className="flex items-center gap-2">
         <div className="bg-primary dark:bg-gray-700 h-6 w-6 md:w-10 md:h-10 p-1 md:p-3 rounded-full flex items-center justify-center">
@@ -122,12 +140,12 @@ const Swap = (props: Props) => {
         </div>
       </div>
       <div className="flex items-center gap-3 text-xs mt-2 text-gray-500 dark:text-gray-400">
-        <div className="flex-grow text-left">0x00000</div>
+        <div className="flex-grow text-left">0x{shortenAddress(props.hash)}</div>
         <div className="text-right">Processing</div>
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs mt-1">
-        <button className="bg-gray-100 rounded font-medium py-2">Copy hash</button>
-        <a className="bg-gray-100 rounded font-medium py-2">ViewBlock</a>
+        <button className="bg-gray-100 rounded font-medium py-2" onClick={() => navigator.clipboard.writeText('0x'+props.hash)}>Copy hash</button>
+        <a className="bg-gray-100 rounded font-medium py-2" href={`https://viewblock.io/zilliqa/tx/0x${props.hash}`} target="_blank">ViewBlock</a>
       </div>
     </div>
   )
@@ -151,8 +169,8 @@ const Swap = (props: Props) => {
           {showFullscreen && <Link href="/swap"><a><Maximize size={16} /></a></Link>}
         </div>
       </div>
-      <div className="mt-2">
-      <CurrencyInput 
+      <div className="mt-2 relative">
+        <CurrencyInput 
           selectedToken={tokenIn}
           amount={state.tokenInAmount}
           onAmountChange={amount => {
@@ -186,6 +204,7 @@ const Swap = (props: Props) => {
           isFocus={!state.focusDirectionIn}
           expectedSlippage={state.expectedSlippage}
         />
+        <button onClick={() => reverse()} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-900 border-4 border-white dark:border-gray-800 absolute left-1/2 top-1/2 -translate-x-5 -translate-y-5"><ArrowDown size={14} /></button>
       </div>
       <div className="text-sm font-medium mt-2 flex items-center justify-end">
         1 {tokenIn?.symbol} = {cryptoFormat(getCurrentRate().toNumber())} {tokenOut?.symbol} <span className="text-gray-500 dark:text-gray-400">({currencyFormat(tokenIn?.market_data.rate_usd ?? 0)})</span>

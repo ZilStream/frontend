@@ -14,7 +14,7 @@ import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
+import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, SwapState, TokenState } from 'store/types'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest, xcadStakingAddresses } from 'utils/batch'
@@ -31,6 +31,7 @@ const StateProvider = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
+  const swapState = useSelector<RootState, SwapState>(state => state.swap)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
@@ -56,7 +57,7 @@ const StateProvider = (props: Props) => {
       }
     })
 
-    if(tokens.length > 0) {
+    if(tokens.length > 0 && swapState.tokenInAddress === null && swapState.tokenOutAddress === null) {
       dispatch(updateSwap({
         tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
         tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32

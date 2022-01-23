@@ -33,7 +33,7 @@ export class ZilSwap extends Exchange {
 
   private async swapExactInput(tokenIn: Token, tokenOut: Token, amount: BigNumber, slippage: number, deadline: number): Promise<Transaction|null> {
     const { expectedOutput } = this.getOutputs(tokenIn, tokenOut, amount)
-    const minimumOutput = expectedOutput.minus(expectedOutput.times(slippage))
+    const minimumOutput = expectedOutput.minus(expectedOutput.times(slippage)).decimalPlaces(0)
 
     let txn: { transition: string; args: Value[]; params: CallParams }
 
