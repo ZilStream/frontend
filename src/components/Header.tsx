@@ -10,6 +10,7 @@ import AccountPopover from './AccountPopover'
 import ConnectPopover from './ConnectPopover'
 import { ModalActionTypes } from 'store/modal/actions'
 import { Menu, Transition } from '@headlessui/react'
+import NotificationsPopover from './Notifications/NotificationsPopover'
 
 const Header = () => {
   const router = useRouter()
@@ -121,6 +122,7 @@ const Header = () => {
               <div className="flex items-center">
                 {accountState.selectedWallet ? (
                   <>
+                    <NotificationsPopover />
                     <StreamPopover />
                     <AccountPopover />
                   </>
