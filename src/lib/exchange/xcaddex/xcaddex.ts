@@ -378,7 +378,7 @@ export class XCADDex extends Exchange {
       return new BigNumber('NaN')
     }
     const numerator = inputReserve.times(outputAmount).times(10000)
-    const denominator = outputReserve.minus(outputAmount).times(ZilSwap.OUTPUT_AFTER_FEE)
+    const denominator = outputReserve.minus(outputAmount).times(XCADDex.OUTPUT_AFTER_FEE)
     return numerator.dividedToIntegerBy(denominator).plus(1)
   }
 
@@ -390,7 +390,7 @@ export class XCADDex extends Exchange {
     if (inputReserve.isZero() || outputReserve.isZero()) {
       throw new Error('Reserve has 0 tokens.')
     }
-    const inputAfterFee = inputAmount.times(ZilSwap.OUTPUT_AFTER_FEE)
+    const inputAfterFee = inputAmount.times(XCADDex.OUTPUT_AFTER_FEE)
     const numerator = inputAfterFee.times(outputReserve)
     const denominator = inputReserve.times(10000).plus(inputAfterFee)
     return numerator.dividedToIntegerBy(denominator)
