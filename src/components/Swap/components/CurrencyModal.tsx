@@ -75,7 +75,7 @@ const CurrencyModal = () => {
 
               <div>
                 <input
-                  className="w-full rounded-lg py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                  className="w-full rounded-lg py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
                   type="text"
                   placeholder="Search name or paste address"
                   value={searchTerm}

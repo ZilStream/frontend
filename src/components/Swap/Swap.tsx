@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ArrowDown, ChevronDown, Info, Maximize, Settings } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
-import { BlockchainState, RootState, SwapState, TokenState } from 'store/types'
+import { BlockchainState, Currency, CurrencyState, RootState, SwapState, TokenState } from 'store/types'
 import CurrencyInput from './components/CurrencyInput'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
@@ -17,6 +17,7 @@ import { BIG_ONE } from 'utils/strings'
 import { openExchange } from 'store/modal/actions'
 import { shortenAddress } from 'utils/addressShortener'
 import { updateSwap } from 'store/swap/actions'
+import { XCADDex } from 'lib/exchange/xcaddex/xcaddex'
 
 interface Props {
   showFullscreen?: boolean
@@ -28,6 +29,8 @@ const Swap = (props: Props) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
   const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
+  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
+  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
   const dispatch = useDispatch()
 
   const [exchange, setExchange] = useState<Exchange|null>(null)
@@ -40,9 +43,22 @@ const Swap = (props: Props) => {
   })
 
   useEffect(() => {
-    let zilPay = (window as any).zilPay
-    setExchange(new ZilSwap(blockchainState.client, zilPay))
+    initiateExchange()
   }, [])
+
+  useEffect(() => {
+    initiateExchange()
+  }, [swapState.exchange])
+
+  const initiateExchange = () => {
+    let zilPay = (window as any).zilPay
+
+    if(swapState.exchange.identifier === 'zilswap') {
+      setExchange(new ZilSwap(blockchainState.client, zilPay))
+    } else if(swapState.exchange.identifier === 'xcaddex') {
+      setExchange(new XCADDex(blockchainState.client, zilPay))
+    }
+  }
 
   const { tokenIn, tokenOut } = useMemo(() => {
     return {
@@ -150,6 +166,8 @@ const Swap = (props: Props) => {
     </div>
   )
 
+  let tokenInValue = tokenIn.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate * selectedCurrency.rate
+
   return (
     <div>
       <div className="flex items-center">
@@ -161,8 +179,8 @@ const Swap = (props: Props) => {
             className="flex items-center text-sm border dark:border-gray-700 rounded-lg font-medium py-1 px-2"
             onClick={() => dispatch(openExchange(true))}
           >
-            <div className="w-4 h-4 mx-1"><TokenIcon address={`zil1p5suryq6q647usxczale29cu3336hhp376c627`} /></div>
-            ZilSwap
+            <div className="w-4 h-4 mx-1"><TokenIcon address={swapState.exchange.iconAddress} /></div>
+            {swapState.exchange.name}
             <ChevronDown size={16} className="ml-1" />
           </button>
           <button><Settings size={16} /></button>
@@ -207,7 +225,7 @@ const Swap = (props: Props) => {
         <button onClick={() => reverse()} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-900 border-4 border-white dark:border-gray-800 absolute left-1/2 top-1/2 -translate-x-5 -translate-y-5"><ArrowDown size={14} /></button>
       </div>
       <div className="text-sm font-medium mt-2 flex items-center justify-end">
-        1 {tokenIn?.symbol} = {cryptoFormat(getCurrentRate().toNumber())} {tokenOut?.symbol} <span className="text-gray-500 dark:text-gray-400">({currencyFormat(tokenIn?.market_data.rate_usd ?? 0)})</span>
+        1 {tokenIn?.symbol} = {cryptoFormat(getCurrentRate().toNumber())} {tokenOut?.symbol} <span className="text-gray-500 dark:text-gray-400">({currencyFormat(tokenInValue ?? 0, selectedCurrency.symbol)})</span>
         <Tippy content={
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border w-72 flex flex-col gap-1 text-sm whitespace-nowrap">
             <div className="font-semibold border-b dark:border-gray-700 pb-1 mb-1">
