@@ -166,7 +166,7 @@ const Swap = (props: Props) => {
     </div>
   )
 
-  let tokenInValue = tokenIn.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate * selectedCurrency.rate
+  let tokenInValue = tokenIn?.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate * selectedCurrency.rate
 
   return (
     <div>
