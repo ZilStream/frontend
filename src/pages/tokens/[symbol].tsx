@@ -72,7 +72,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
     atlChangePercentage
   } = React.useMemo(() => {
     return {
-      athChangePercentage: -((token.market_data.ath / token.market_data.rate) -1) * 100,
+      athChangePercentage: (1 - (token.market_data.rate / token.market_data.ath)) * 100 * -1,
       atlChangePercentage: ((token.market_data.rate / token.market_data.atl) - 1) * 100
     }
   }, [token, tokenState.tokens])
