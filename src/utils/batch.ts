@@ -57,6 +57,7 @@ export const xcadStakingAddresses = {
   8: ['zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v', '0xa11cf5474cd132e6f1812c3e20ba47e51818cb62'], // FEES
   9: ['zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp', '0xa7d9862dceead3bcd43811462118bff08737a03a'], // BLOX
   10: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
+  11: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
 }
 
 interface BatchRequestItem {
