@@ -46,7 +46,7 @@ export default function Layout(props: Props) {
     router.events.on('routeChangeComplete', handleRouteChangeEnd)
     router.events.on('routeChangeError', handleRouteChangeEnd)
 
-    const handleRouteChange = (url) => {
+    const handleRouteChange = (url: any) => {
       gtag.pageview(url)
     }
     router.events.on('routeChangeComplete', handleRouteChange)
