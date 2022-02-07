@@ -72,29 +72,6 @@ export default function Layout(props: Props) {
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-ios.png" />
         <meta name="apple-mobile-web-app-title" content="ZilStream" />
         <meta name="mobile-web-app-capable" content="yes" />
-
-        {process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' &&
-          <>
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
-            />
-            <Script
-              id="gtag-init"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gtag.GA_TRACKING_ID}', {
-                    page_path: window.location.pathname,
-                  });
-                `,
-              }}
-            />
-          </>
-        }
       </Head>
       <div className="flex flex-col min-h-screen">
         <PageLoading isRouteChanging={state.isRouteChanging} key={state.loadingKey} />
