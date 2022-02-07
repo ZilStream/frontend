@@ -471,7 +471,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         feesDoctoralStakingHash.replace("0x", "").toLowerCase(),
-        "stakers",
+        "removeStaker",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },
