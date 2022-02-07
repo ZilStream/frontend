@@ -20,6 +20,9 @@ export enum BatchRequestType {
   CarbonStakers = "carbonStakers",
   PortBuoyStakers = "portBuoyStakers",
   PortDockStakers = "portDockStakers",
+  FeesBachelorStakers = "feesBachelorStakers",
+  FeesMastersStakers = "feesMastersStakers",
+  FeesDoctoralStakers = "feesDoctoralStakers",
   XcadStaking = "XcadStaking",
   OkipadStaking = "OkipadStaking"
 };
@@ -44,6 +47,15 @@ const portDockStakingHash = fromBech32Address(portDockStakingAddress)
 
 const okipadStakingAddress = "zil1eeahtrggk3m77nu40ltmaqdmtcyhdh9ujahgf6"
 const okipadStakingHash = fromBech32Address(okipadStakingAddress)
+
+const feesBachelorStakingAddress = "zil19hl9kaq3ddpqlr58qy8ewn9vcyueundmx22uyp"
+const feesBachelorStakingHash = fromBech32Address(feesBachelorStakingAddress)
+
+const feesMastersStakingAddress = "zil1yvnanl43330kfw272vxgu7yucctt0sk5syejln"
+const feesMastersStakingHash = fromBech32Address(feesMastersStakingAddress)
+
+const feesDoctoralStakingAddress = "zil1t40vh32v888m9s9e9uzrhgc6kj4030urquvylt"
+const feesDoctoralStakingHash = fromBech32Address(feesDoctoralStakingAddress)
 
 export const xcadStakingAddresses = {
   0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD
@@ -396,6 +408,69 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         portDockStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesBachelorsStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesBachelorStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesBachelorStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesMastersStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesMastersStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesMastersStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesDoctoralStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesDoctoralStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesDoctoralStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],

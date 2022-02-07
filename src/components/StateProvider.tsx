@@ -355,6 +355,54 @@ const StateProvider = (props: Props) => {
             return
           }
 
+          case BatchRequestType.FeesBachelorStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'FEES: Bachelors',
+              address: '0x2dfe5b74116b420f8e87010f974cacc1399e4dbb',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'FEES',
+              decimals: 4
+            }}})
+            return
+          }
+
+          case BatchRequestType.FeesMastersStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'FEES: Masters',
+              address: '0x2327d9feb18c5f64b95e530c8e789cc616b7c2d4',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'FEES',
+              decimals: 4
+            }}})
+            return
+          }
+
+          case BatchRequestType.FeesDoctoralStakers: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'FEES: Doctoral',
+              address: '0x5d5ecbc54c39cfb2c0b92f043ba31ab4aaf8bf83',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'FEES',
+              decimals: 4
+            }}})
+            return
+          }
+
           case BatchRequestType.OkipadStaking: {
             if(result.result === null) return
   
