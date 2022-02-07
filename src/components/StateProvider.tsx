@@ -390,7 +390,7 @@ const StateProvider = (props: Props) => {
           case BatchRequestType.FeesDoctoralStakers: {
             if(result.result === null) return
   
-            let stakers: number[]  = Object.values(result.result.stakers)
+            let stakers: number[]  = Object.values(result.result.removeStaker)
             if(stakers.length === 0) return
   
             dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
