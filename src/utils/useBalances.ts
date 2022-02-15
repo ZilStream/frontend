@@ -125,6 +125,8 @@ export default function useBalances() {
           if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
             newReward = toBigNumber(reward.max_individual_amount)
           }
+
+          newReward = newReward.dividedBy(reward.frequency).times(86400)
   
           if(currentReward !== undefined) {
             rewards[reward.reward_token_address] = {

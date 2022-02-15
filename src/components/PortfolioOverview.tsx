@@ -83,7 +83,7 @@ function PortfolioOverview() {
         </div>
       </div>
 
-      <div className="text-sm text-gray-500 mt-4">Estimated rewards</div>
+      <div className="text-sm text-gray-500 mt-4">Estimated daily rewards</div>
       {membership.isMember ? (
         <>
           <div className="flex-grow flex items-center">
