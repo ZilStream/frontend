@@ -15,6 +15,7 @@ import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
 import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, TokenState } from 'store/types'
+import { DEX } from 'types/dex.interface'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
 import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest, xcadStakingAddresses } from 'utils/batch'
@@ -167,6 +168,7 @@ const StateProvider = (props: Props) => {
             let pools = result.result.pools
             Object.keys(pools).forEach(address => {
               let pool = pools[address]
+              let tokenAddress = toBech32Address(address)
   
               const [x, y] = pool.arguments
               const zilReserve = new BigNumber(x)
@@ -175,8 +177,11 @@ const StateProvider = (props: Props) => {
   
               dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: toBech32Address(address),
+                dex: DEX.ZilSwap,
                 quoteReserve: zilReserve,
+                quoteAddress: ZIL_ADDRESS,
                 baseReserve: tokenReserve,
+                baseAddress: tokenAddress,
                 exchangeRate
               }})
             })
@@ -191,6 +196,9 @@ const StateProvider = (props: Props) => {
               let userContribution = new BigNumber(0)
               dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: token?.address_bech32,
+                dex: DEX.ZilSwap,
+                quoteAddress: ZIL_ADDRESS,
+                baseAddress: token?.address_bech32,
                 userContribution
               }})
               return
@@ -201,6 +209,9 @@ const StateProvider = (props: Props) => {
             
             dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
               address: token?.address_bech32,
+              dex: DEX.ZilSwap,
+              quoteAddress: ZIL_ADDRESS,
+              baseAddress: token?.address_bech32,
               userContribution
             }})
             return
@@ -209,8 +220,12 @@ const StateProvider = (props: Props) => {
           case BatchRequestType.TotalContributions: {
             let totalContributions = result.result.total_contributions
             Object.keys(totalContributions).forEach(address => {
+              let tokenAddress = toBech32Address(address)
               dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
-                address: toBech32Address(address),
+                address: tokenAddress,
+                dex: DEX.ZilSwap,
+                quoteAddress: ZIL_ADDRESS,
+                baseAddress: tokenAddress,
                 totalContribution: new BigNumber(totalContributions[address])
               }})
             })
@@ -227,8 +242,11 @@ const StateProvider = (props: Props) => {
               const baseReserve = new BigNumber(y)
               const exchangeRate = quoteReserve.dividedBy(baseReserve)
   
-              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: toBech32Address(base),
+                dex: DEX.XCADDEX,
+                quoteAddress: toBech32Address(quote),
+                baseAddress: toBech32Address(base),
                 quoteReserve,
                 baseReserve,
                 exchangeRate
@@ -243,8 +261,11 @@ const StateProvider = (props: Props) => {
   
             if(result.result === null) {
               let userContribution = new BigNumber(0)
-              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: token?.address_bech32,
+                dex: DEX.XCADDEX,
+                quoteAddress: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+                baseAddress: token?.address_bech32,
                 userContribution
               }})
               return
@@ -253,8 +274,11 @@ const StateProvider = (props: Props) => {
             let balances = result.result.xbalances["0x153feaddc48871108e286de3304b9597c817b456,"+tokenAddress]["0x153feaddc48871108e286de3304b9597c817b456"]
             let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
             
-            dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
               address: token?.address_bech32,
+              dex: DEX.XCADDEX,
+              quoteAddress: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+              baseAddress: token?.address_bech32,
               userContribution
             }})
             return
@@ -264,9 +288,78 @@ const StateProvider = (props: Props) => {
             let totalContributions = result.result.xtotal_contributions
             Object.keys(totalContributions).forEach(address => {
               const [quote, base] = address.split(",")
-              dispatch({type: TokenActionTypes.TOKEN_UPDATE_XCAD_POOL, payload: {
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
                 address: toBech32Address(base),
+                dex: DEX.XCADDEX,
+                quoteAddress: toBech32Address(quote),
+                baseAddress: toBech32Address(base),
                 totalContribution: new BigNumber(totalContributions[address][quote])
+              }})
+            })
+            return
+          }
+
+          case BatchRequestType.XcadZilPools: {
+            let pools = result.result.pools
+            Object.keys(pools).forEach(address => {
+              let pool = pools[address]
+  
+              const [x, y] = pool.arguments
+              const zilReserve = new BigNumber(x)
+              const tokenReserve = new BigNumber(y)
+              const exchangeRate = zilReserve.dividedBy(tokenReserve)
+  
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+                address: toBech32Address(address),
+                dex: DEX.XCADDEX,
+                quoteAddress: ZIL_ADDRESS,
+                baseAddress: toBech32Address(address),
+                quoteReserve: zilReserve,
+                baseReserve: tokenReserve,
+                exchangeRate
+              }})
+            })
+            return
+          }
+
+          case BatchRequestType.XcadZilBalances: {
+            let tokenAddress = fromBech32Address(token!.address_bech32).toLowerCase()
+            let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  
+            if(result.result === null) {
+              let userContribution = new BigNumber(0)
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+                address: token?.address_bech32,
+                dex: DEX.XCADDEX,
+                quoteAddress: ZIL_ADDRESS,
+                baseAddress: token?.address_bech32,
+                userContribution
+              }})
+              return
+            }
+  
+            let balances = result.result.balances[tokenAddress]
+            let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+            
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: token?.address_bech32,
+              dex: DEX.XCADDEX,
+              quoteAddress: ZIL_ADDRESS,
+              baseAddress: token?.address_bech32,
+              userContribution
+            }})
+            return
+          }
+
+          case BatchRequestType.XcadZilTotalContributions: {
+            let totalContributions = result.result.total_contributions
+            Object.keys(totalContributions).forEach(address => {
+              dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+                address: toBech32Address(address),
+                dex: DEX.XCADDEX,
+                quoteAddress: ZIL_ADDRESS,
+                baseAddress: toBech32Address(address),
+                totalContribution: new BigNumber(totalContributions[address])
               }})
             })
             return

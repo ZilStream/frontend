@@ -15,6 +15,9 @@ export enum BatchRequestType {
   XcadPools = "xcadPools",
   XcadBalances = "xcadBalances",
   XcadTotalContributions = "xcadTotalContributions",
+  XcadZilPools = "xcadZilPools",
+  XcadZilBalances = "xcadZilBalances",
+  XcadZilTotalContributions = "xcadZilTotalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
@@ -302,6 +305,72 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
         xcadDexHash.replace("0x", "").toLowerCase(),
         "xbalances",
         ["0x153feaddc48871108e286de3304b9597c817b456,"+address, "0x153feaddc48871108e286de3304b9597c817b456", walletAddr],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadZilPoolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadZilPools,
+    token: undefined,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "pools",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadZilTotalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadZilTotalContributions,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "total_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param Token The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const xcadZilPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.XcadZilBalances,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [address, walletAddr],
       ],
     },
   };

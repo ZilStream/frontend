@@ -43,20 +43,14 @@ export default function useBalances() {
     if(streamToken) {
       streamBalance = streamToken.balance ?? new BigNumber(0)
 
-      if(streamToken.pool && streamToken.pool.totalContribution) {
-        let pool = streamToken.pool!
-        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-        let contributionShare = contributionPercentage.shiftedBy(-2)
-        let streamLiquidityAmount = contributionShare?.times(streamToken.pool?.baseReserve ?? BIG_ZERO);
-        streamBalance = streamBalance.plus(streamLiquidityAmount)
-      }
-
-      if(streamToken.xcadPool && streamToken.xcadPool.totalContribution) {
-        let pool = streamToken.xcadPool!
-        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-        let contributionShare = contributionPercentage.shiftedBy(-2)
-        let streamLiquidityAmount = contributionShare?.times(streamToken.xcadPool?.baseReserve ?? BIG_ZERO);
-        streamBalance = streamBalance.plus(streamLiquidityAmount)
+      if(streamToken.pools) {
+        streamToken.pools.forEach(pool => {
+          if(!pool.totalContribution || !pool.userContribution) return
+          let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
+          let contributionShare = contributionPercentage.shiftedBy(-2)
+          let streamLiquidityAmount = contributionShare?.times(pool.baseReserve ?? BIG_ZERO);
+          streamBalance = streamBalance.plus(streamLiquidityAmount)
+        })
       }
 
       streamBalance = streamBalance.shiftedBy(-8)
@@ -81,21 +75,15 @@ export default function useBalances() {
     
       liquidityBalance = tokenState.tokens.reduce((sum, current) => {
         var newSum = sum
-        
-        if(current.pool && current.pool.userContribution && current.pool.totalContribution) {
-          let pool = current.pool
-          let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-          let contributionShare = contributionPercentage.shiftedBy(-2)
-          let zilAmount = current.pool.baseReserve.shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
-          newSum = newSum.plus(zilAmount)
-        }
 
-        if(current.xcadPool && current.xcadPool.userContribution && current.xcadPool.totalContribution) {
-          let pool = current.xcadPool
-          let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-          let contributionShare = contributionPercentage.shiftedBy(-2)
-          let zilAmount = current.xcadPool.baseReserve.shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
-          newSum = newSum.plus(zilAmount)
+        if(current.pools) {
+          current.pools.forEach(pool => {
+            if(!pool.totalContribution || !pool.userContribution) return
+            let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
+            let contributionShare = contributionPercentage.shiftedBy(-2)
+            let zilAmount = (pool.baseReserve ?? BIG_ZERO).shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
+            newSum = newSum.plus(zilAmount)
+          })
         }
         
         return newSum
@@ -119,67 +107,41 @@ export default function useBalances() {
     const isMember = streamBalanceZIL.isGreaterThanOrEqualTo(membershipZIL) && streamBalanceZIL.isGreaterThan(0)
 
     var rewards: {[key: string]: TokenReward} = {}
-    tokenState.tokens.filter(token => token.pool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
-      let pool = token.pool!
-      
-      token.rewards.filter(reward => reward.exchange_id === 1).forEach(reward => {
-        let contributionPercentage = (reward.adjusted_total_contributed !== null) ? 
-          pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
-          pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-        let contributionShare = contributionPercentage.shiftedBy(-2)
-        let currentReward = rewards[reward.reward_token_address]
-        let newReward = toBigNumber(reward.amount).times(contributionShare)
 
-        if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
-          newReward = toBigNumber(reward.max_individual_amount)
-        }
+    tokenState.tokens.forEach(token => {
+      if(!token.pools) return
 
-        if(currentReward !== undefined) {
-          rewards[reward.reward_token_address] = {
-            amount: currentReward.amount.plus(newReward),
-            address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol,
-            payment_day: reward.payment_day
+      token.pools.forEach(pool => {
+        if(!pool.userContribution || !pool.totalContribution || pool.userContribution.isZero()) return
+
+        token.rewards.filter(reward => reward.exchange_id === pool.dex).forEach(reward => {
+          let contributionPercentage = (reward.adjusted_total_contributed !== null && reward.adjusted_total_contributed !== '1') ? 
+            pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
+            pool.userContribution!.dividedBy(pool.totalContribution ?? BIG_ZERO).times(100)
+          let contributionShare = contributionPercentage.shiftedBy(-2)
+          let currentReward = rewards[reward.reward_token_address]
+          let newReward = toBigNumber(reward.amount).times(contributionShare)
+  
+          if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
+            newReward = toBigNumber(reward.max_individual_amount)
           }
-        } else {
-          rewards[reward.reward_token_address] = {
-            amount: newReward,
-            address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol,
-            payment_day: reward.payment_day
+  
+          if(currentReward !== undefined) {
+            rewards[reward.reward_token_address] = {
+              amount: currentReward.amount.plus(newReward),
+              address: reward.reward_token_address,
+              symbol: reward.reward_token_symbol,
+              payment_day: reward.payment_day
+            }
+          } else {
+            rewards[reward.reward_token_address] = {
+              amount: newReward,
+              address: reward.reward_token_address,
+              symbol: reward.reward_token_symbol,
+              payment_day: reward.payment_day
+            }
           }
-        }
-      })
-    })
-
-    tokenState.tokens.filter(token => token.xcadPool?.userContribution?.isGreaterThan(0) && token.rewards.length > 0).forEach(token => {
-      let pool = token.xcadPool!
-      
-      token.rewards.filter(reward => reward.exchange_id === 2).forEach(reward => {
-        let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-        let contributionShare = contributionPercentage.shiftedBy(-2)
-        let currentReward = rewards[reward.reward_token_address]
-        let newReward = toBigNumber(reward.amount).times(contributionShare)
-
-        if(reward.max_individual_amount > 0 && newReward.isGreaterThan(reward.max_individual_amount)) {
-          newReward = toBigNumber(reward.max_individual_amount)
-        }
-
-        if(currentReward !== undefined) {
-          rewards[reward.reward_token_address] = {
-            amount: currentReward.amount.plus(newReward),
-            address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol,
-            payment_day: reward.payment_day
-          }
-        } else {
-          rewards[reward.reward_token_address] = {
-            amount: newReward,
-            address: reward.reward_token_address,
-            symbol: reward.reward_token_symbol,
-            payment_day: reward.payment_day
-          }
-        }
+        })
       })
     })
     
