@@ -40,7 +40,7 @@ const TransactionsExportModal = () => {
     var hasTransactions = true
     var currentPage = 1
     while (hasTransactions) {
-      const txns = await getTransactions(accountState.selectedWallet.address, currentPage, 20, range.from.format('YYYY-MM-DD'), range.to.format('YYYY-MM-DD'))
+      const txns = await getTransactions(accountState.selectedWallet.address, currentPage, 150, range.from.format('YYYY-MM-DD'), range.to.format('YYYY-MM-DD'))
       totalTransactions.push(...txns.data)
 
       if(currentPage === txns.pages || currentPage > txns.pages) {
