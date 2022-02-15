@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { ZIL_ADDRESS } from 'lib/constants'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import React from 'react'
@@ -40,48 +41,48 @@ function BalanceDonut(props: Props) {
     } else {
       total = total.plus(balance.times(token.market_data.rate))
     }
+  
+    if(token.pools) {
+      token.pools.forEach(pool => {
+        if(!pool.userContribution || !pool.totalContribution) return
+        let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
+        let contributionShare = contributionPercentage.shiftedBy(-2)
+        let quoteAmount = contributionShare?.times(pool.quoteReserve ?? BIG_ZERO)
+        let baseAmount = contributionShare.times(pool.baseReserve ?? BIG_ZERO)
 
-    if(token.pool && token.pool.userContribution) {
-      let contributionPercentage = token.pool.userContribution.dividedBy(token.pool.totalContribution).times(100)
-      let contributionShare = contributionPercentage.shiftedBy(-2)
-      let zilAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO)
-      let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
+        if(!baseAmount.isNaN() && !quoteAmount.isNaN()) {
+          const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pool.baseAddress)?.[0]
+          const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pool.quoteAddress)?.[0]
 
-      if(!tokenAmount.isNaN()) {
-        total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
-      }
-      if(!zilAmount.isNaN()) {
-        zilTotal = zilTotal.plus(zilAmount.shiftedBy(-12))
-      }
-    }
-
-    if(token.xcadPool && token.xcadPool.userContribution) {
-      let contributionPercentage = token.xcadPool.userContribution.dividedBy(token.xcadPool.totalContribution).times(100)
-      let contributionShare = contributionPercentage.shiftedBy(-2)
-      let xcadAmount = contributionShare?.times(token.pool?.quoteReserve ?? BIG_ZERO)
-      let tokenAmount = contributionShare.times(token.pool?.baseReserve ?? BIG_ZERO)
-
-      if(!tokenAmount.isNaN()) {
-        total = total.plus(tokenAmount.times(token.market_data.rate).shiftedBy(-token.decimals))
-      }
-      if(!xcadAmount.isNaN()) {
-        const xcadToken = tokenState.tokens.filter(token => token.symbol === 'XCAD')?.[0]
-        if(xcadToken) {
-          const index = tokenTotals.findIndex(token => token.address === xcadToken.address_bech32)
-          if(index === -1) {
+          const baseIndex = tokenTotals.findIndex(token => token.address === baseToken.address_bech32)
+          if(baseIndex === -1) {
             tokenTotals.push({
-              name: xcadToken.name,
-              symbol: xcadToken.symbol,
-              address: xcadToken.address_bech32,
-              isZil: false,
-              totalBalance: xcadAmount.shiftedBy(-xcadToken.decimals)
+              name: baseToken.name,
+              symbol: baseToken.symbol,
+              address: baseToken.address_bech32,
+              isZil: baseToken.isZil,
+              totalBalance: baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate)
             })
           } else {
-            const current = tokenTotals[index]
-            tokenTotals[index].totalBalance = current.totalBalance.plus(xcadAmount.shiftedBy(-xcadToken.decimals))
+            const current = tokenTotals[baseIndex]
+            tokenTotals[baseIndex].totalBalance = current.totalBalance.plus(baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate))
+          }
+
+          const quoteIndex = tokenTotals.findIndex(token => token.address === quoteToken.address_bech32)
+          if(quoteIndex === -1) {
+            tokenTotals.push({
+              name: quoteToken.name,
+              symbol: quoteToken.symbol,
+              address: quoteToken.address_bech32,
+              isZil: quoteToken.isZil,
+              totalBalance: quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate)
+            })
+          } else {
+            const current = tokenTotals[quoteIndex]
+            tokenTotals[quoteIndex].totalBalance = current.totalBalance.plus(quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate))
           }
         }
-      }
+      })
     }
 
     props.operators.filter(operator => operator.symbol === token.symbol).forEach(operator => {
@@ -117,13 +118,19 @@ function BalanceDonut(props: Props) {
     }
   })
 
-  tokenTotals.push({
-    name: "Zilliqa",
-    symbol: "ZIL",
-    address: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
-    isZil: true,
-    totalBalance: zilTotal
-  })
+  const zilIndex = tokenTotals.findIndex(token => token.address === ZIL_ADDRESS)
+  if(zilIndex === -1) {
+    tokenTotals.push({
+      name: "Zilliqa",
+      symbol: "ZIL",
+      address: "zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz",
+      isZil: true,
+      totalBalance: zilTotal
+    })
+  } else {
+    const current = tokenTotals[zilIndex]
+    tokenTotals[zilIndex].totalBalance = current.totalBalance.plus(zilTotal)
+  }
 
   let filteredTokens = tokenTotals.filter(token => {
     return token.totalBalance !== null && token.totalBalance !== undefined && !toBigNumber(token.totalBalance).isZero()
