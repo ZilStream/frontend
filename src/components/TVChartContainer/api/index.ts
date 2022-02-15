@@ -29,7 +29,7 @@ export default {
 			name: symbolName,
 			description: symbolName,
 			type: 'crypto',
-			exchange: 'ZilSwap',
+			exchange: '',
 			format: "price",
 			minmov: 1,
 			pricescale: 100,
