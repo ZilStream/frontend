@@ -91,7 +91,7 @@ function PortfolioPools() {
                     </div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat(quoteAmount.times(2).shiftedBy(-12).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+                    {currencyFormat(quoteAmount.times(2).shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {membership.isMember ? (
