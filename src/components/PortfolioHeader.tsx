@@ -42,12 +42,12 @@ const PortfolioHeader = () => {
         </div>
       </div>
       <div className="flex items-center border-b border-gray-300 dark:border-gray-700 font-medium mb-8">
-        <div className={`py-3 px-5 border-b-2 ${router.pathname === '/portfolio' ? 'border-primary' : 'text-gray-500 dark:border-gray-700 border-opacity-0'}`}>
+        <div className={`py-3 px-5 border-b -mb-px ${router.pathname === '/portfolio' ? 'border-primary' : 'text-gray-500 dark:border-gray-700 border-opacity-0'}`}>
           <Link href="/portfolio">
             <a>Dashboard</a>
           </Link>
         </div>
-        <div className={`py-3 px-5 border-b-2 ${router.pathname === '/portfolio/transactions' ? 'border-primary' : 'text-gray-500 dark:border-gray-700 border-opacity-0'}`}>
+        <div className={`py-3 px-5 border-b -mb-px ${router.pathname === '/portfolio/transactions' ? 'border-primary' : 'text-gray-500 dark:border-gray-700 border-opacity-0'}`}>
           <Link href="/portfolio/transactions">
             <a>Transactions</a>
           </Link>
