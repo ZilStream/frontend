@@ -6,6 +6,7 @@ import React from 'react'
 import { Info } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, StakingState, TokenState } from 'store/types'
+import { DEX } from 'types/dex.interface'
 import { currencyFormat } from 'utils/format'
 import useBalances from 'utils/useBalances'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
@@ -22,15 +23,21 @@ function PortfolioOverview() {
   const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useBalances()
 
   const estimatedFees = tokenState.tokens.reduce((sum, current) => {
-    if(!current.pool || !current.pool.userContribution || !current.pool.totalContribution)  return sum 
-      
-    let pool = current.pool!
-    let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution).times(100)
-    let contributionShare = contributionPercentage.shiftedBy(-2)
+    if(!current.pools) return sum
 
-    let volume = toBigNumber(current.market_data.daily_volume)
-    let fees = volume.times(0.003).times(contributionShare)
-    return sum.plus(fees)
+    let newSum = sum
+
+    current.pools.filter(pool => pool.dex === DEX.ZilSwap).forEach(pool => {
+      if(!pool.userContribution || !pool.totalContribution) return
+      let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
+      let contributionShare = contributionPercentage.shiftedBy(-2)
+
+      let volume = toBigNumber(current.market_data.daily_volume)
+      let fees = volume.times(0.003).times(contributionShare)
+      newSum = newSum.plus(fees)
+    })
+
+    return newSum
   }, new BigNumber(0))
 
   const totalRewardZil = Object.keys(rewards).reduce((sum, current) => {
@@ -76,7 +83,7 @@ function PortfolioOverview() {
         </div>
       </div>
 
-      <div className="text-sm text-gray-500 mt-4">Estimated rewards</div>
+      <div className="text-sm text-gray-500 mt-4">Estimated daily rewards</div>
       {membership.isMember ? (
         <>
           <div className="flex-grow flex items-center">

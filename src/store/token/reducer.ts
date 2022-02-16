@@ -2,7 +2,7 @@ import { ZIL_ADDRESS } from 'lib/constants';
 import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux'
 import { TokenActionTypes } from "./actions";
-import { TokenAddProps, TokenInitProps, TokenPoolUpdateProps, TokenState, TokenUpdateProps } from "./types";
+import { TokenAddProps, TokenInitProps, TokenPool, TokenPoolUpdateProps, TokenState, TokenUpdateProps } from "./types";
 
 const initialState: TokenState = {
   initialized: false,
@@ -56,16 +56,24 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
 
     case TokenActionTypes.TOKEN_UPDATE_POOL:
       const poolProps: TokenPoolUpdateProps = payload
-      return {
+      var foundPool = false
+      var newState = {
         ...state,
         tokens: state.tokens.map(token => {
           if(token.address_bech32 === poolProps.address) {
             return {
               ...token,
-              pool: {
-                ...token.pool,
-                ...poolProps
-              }
+              pools: token.pools?.map(pool => {
+                if(pool.dex == poolProps.dex && pool.baseAddress == poolProps.baseAddress && pool.quoteAddress == poolProps.quoteAddress) {
+                  foundPool = true
+                  return {
+                    ...pool,
+                    ...poolProps
+                  }
+                } else {
+                  return pool
+                }
+              })
             }
           } else {
             return token
@@ -73,24 +81,30 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
         })
       }
 
-    case TokenActionTypes.TOKEN_UPDATE_XCAD_POOL:
-      const xcadPoolProps: TokenPoolUpdateProps = payload
-      return {
-        ...state,
-        tokens: state.tokens.map(token => {
-          if(token.address_bech32 === xcadPoolProps.address) {
-            return {
-              ...token,
-              xcadPool: {
-                ...token.xcadPool,
-                ...xcadPoolProps
+      // If there's no pool to updated, insert the pool instead.
+      if(!foundPool) {
+        let tokenPool: TokenPool = {
+          ...poolProps
+        }
+        newState = {
+          ...state,
+          tokens: state.tokens.map(token => {
+            if(token.address_bech32 === poolProps.address) {
+              return {
+                ...token,
+                pools: [
+                  ...token.pools ?? [],
+                  tokenPool
+                ]
               }
+            } else {
+              return token
             }
-          } else {
-            return token
-          }
-        })
+          })
+        }
       }
+
+      return newState
 
     default:
       return state

@@ -1,6 +1,6 @@
 import { ZIL_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
-import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest } from "utils/batch";
+import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest, feesBachelorsStakersBatchRequest, feesMastersStakersBatchRequest, feesDoctoralStakersBatchRequest, xcadZilPoolsBatchRequest, xcadZilTotalContributionsBatchRequest, xcadZilPoolBalanceBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
 export default async function getPortfolioState(walletAddress: string, tokens: Token[], operators: Operator[] = []): Promise<BatchResponse[]> {
@@ -13,6 +13,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
       batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
       batchRequests.push(tokenPoolBalanceBatchRequest(token, walletAddress))
       batchRequests.push(xcadPoolBalanceBatchRequest(token, walletAddress))
+      batchRequests.push(xcadZilPoolBalanceBatchRequest(token, walletAddress))
     }
   }) 
 
@@ -21,11 +22,16 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(totalContributionsBatchRequest())
   batchRequests.push(xcadPoolsBatchRequest())
   batchRequests.push(xcadTotalContributionsBatchRequest())
+  batchRequests.push(xcadZilPoolsBatchRequest())
+  batchRequests.push(xcadZilTotalContributionsBatchRequest())
   batchRequests.push(stakingOperatorsBatchRequest())
   batchRequests.push(carbonStakersBatchRequest(walletAddress))
   batchRequests.push(portBuoyStakersBatchRequest(walletAddress))
   batchRequests.push(portDockStakersBatchRequest(walletAddress))
   batchRequests.push(okipadStakingBatchRequest(walletAddress))
+  batchRequests.push(feesBachelorsStakersBatchRequest(walletAddress))
+  batchRequests.push(feesMastersStakersBatchRequest(walletAddress))
+  batchRequests.push(feesDoctoralStakersBatchRequest(walletAddress))
 
   Object.values(xcadStakingAddresses).forEach(stakingValue => {
     const tokenAddress = stakingValue[0]

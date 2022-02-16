@@ -264,6 +264,8 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
+              {/* <SponsorBlock link="https://zilall.com/swap" /> */}
+
               <RatesBlock
                 title="ZIL"
                 value={currencyFormat(selectedCurrency.rate, selectedCurrency.symbol)}
@@ -271,8 +273,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 token={tokens.filter(token => token.symbol == 'ZIL')[0]} 
                 rates={rates.filter(rate => rate.token_id == "1")} 
               />
-
-              {/* <SponsorBlock link="https://www.beanterra.io/mint" /> */}
 
               <Link href="/exchanges">
                 <a>

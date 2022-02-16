@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { DEX } from 'types/dex.interface'
 
 export interface Token {
   id: number
@@ -28,8 +29,7 @@ export interface Token {
   isStream: boolean
   isFavorited: boolean = false
   balance?: BigNumber = 0
-  pool?: TokenPool
-  xcadPool?: TokenPool
+  pools?: TokenPool[]
   apr?: BigNumber
 }
 
@@ -80,10 +80,13 @@ export interface Reward {
 }
 
 export type TokenPool = {
-  quoteReserve: BigNumber
-  baseReserve: BigNumber
-  exchangeRate: BigNumber
-  totalContribution: BigNumber
+  dex: DEX
+  quoteAddress: string
+  quoteReserve?: BigNumber
+  baseAddress: string
+  baseReserve?: BigNumber
+  exchangeRate?: BigNumber
+  totalContribution?: BigNumber
   userContribution?: BigNumber
   contributionPercentage?: BigNumber
 }
@@ -108,4 +111,7 @@ export interface TokenAddProps {
 
 export interface TokenPoolUpdateProps extends Partial<TokenPool> {
   address: string
+  quoteAddress: string
+  baseAddress: string
+  dex: DEX
 }

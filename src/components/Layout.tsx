@@ -7,11 +7,11 @@ import PageLoading from './PageLoading'
 import MarketBar from './MarketBar'
 import WalletModal from './WalletModal'
 import CurrencyModal from './Swap/components/CurrencyModal'
-import SwapPopover from './Swap/SwapPopover'
-import Link from 'next/link'
 import { ToastContainer } from 'react-toastify'
 import ExchangeModal from './Swap/components/ExchangeModal'
 import Notice from './Notice'
+import Script from 'next/script'
+import * as gtag from 'lib/gtag'
 
 interface Props {
   children: React.ReactNode
@@ -46,10 +46,16 @@ export default function Layout(props: Props) {
     router.events.on('routeChangeComplete', handleRouteChangeEnd)
     router.events.on('routeChangeError', handleRouteChangeEnd)
 
+    const handleRouteChange = (url: any) => {
+      gtag.pageview(url)
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+
     return () => {
       router.events.off('routeChangeStart', handleRouteChangeStart)
       router.events.off('routeChangeComplete', handleRouteChangeEnd)
       router.events.off('routeChangeError', handleRouteChangeEnd)
+      router.events.off('routeChangeComplete', handleRouteChange)
     }
   }, [router.events])
 
@@ -66,10 +72,6 @@ export default function Layout(props: Props) {
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-ios.png" />
         <meta name="apple-mobile-web-app-title" content="ZilStream" />
         <meta name="mobile-web-app-capable" content="yes" />
-
-        {process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' &&
-          <script async defer data-domain="zilstream.com" src="https://plausible.zilstream.com/js/plausible.js"></script>
-        }
       </Head>
       <div className="flex flex-col min-h-screen">
         <PageLoading isRouteChanging={state.isRouteChanging} key={state.loadingKey} />

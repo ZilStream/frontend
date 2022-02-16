@@ -15,11 +15,17 @@ export enum BatchRequestType {
   XcadPools = "xcadPools",
   XcadBalances = "xcadBalances",
   XcadTotalContributions = "xcadTotalContributions",
+  XcadZilPools = "xcadZilPools",
+  XcadZilBalances = "xcadZilBalances",
+  XcadZilTotalContributions = "xcadZilTotalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
   PortBuoyStakers = "portBuoyStakers",
   PortDockStakers = "portDockStakers",
+  FeesBachelorStakers = "feesBachelorStakers",
+  FeesMastersStakers = "feesMastersStakers",
+  FeesDoctoralStakers = "feesDoctoralStakers",
   XcadStaking = "XcadStaking",
   OkipadStaking = "OkipadStaking"
 };
@@ -45,6 +51,15 @@ const portDockStakingHash = fromBech32Address(portDockStakingAddress)
 const okipadStakingAddress = "zil1eeahtrggk3m77nu40ltmaqdmtcyhdh9ujahgf6"
 const okipadStakingHash = fromBech32Address(okipadStakingAddress)
 
+const feesBachelorStakingAddress = "zil19hl9kaq3ddpqlr58qy8ewn9vcyueundmx22uyp"
+const feesBachelorStakingHash = fromBech32Address(feesBachelorStakingAddress)
+
+const feesMastersStakingAddress = "zil1yvnanl43330kfw272vxgu7yucctt0sk5syejln"
+const feesMastersStakingHash = fromBech32Address(feesMastersStakingAddress)
+
+const feesDoctoralStakingAddress = "zil1t40vh32v888m9s9e9uzrhgc6kj4030urquvylt"
+const feesDoctoralStakingHash = fromBech32Address(feesDoctoralStakingAddress)
+
 export const xcadStakingAddresses = {
   0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD
   1: ['zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk', '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386'], // CARB
@@ -54,6 +69,10 @@ export const xcadStakingAddresses = {
   5: ['zil1pqcev4ykxla0jhy3anx32lnqgv8xncd8q57ql2', '0xcf87bd87e32e059533d0b6a2c575db3a5a83792c'], // SPW
   6: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x0b719d791741d3937cea5b661c5d4699740a6063'], // XCAD
   7: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0xb15a7cc9fc08a2c77f96b5d892ab1f1a4cf022cc'], // XCAD -> dXCAD
+  8: ['zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v', '0xa11cf5474cd132e6f1812c3e20ba47e51818cb62'], // FEES
+  9: ['zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp', '0xa7d9862dceead3bcd43811462118bff08737a03a'], // BLOX
+  10: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
+  11: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
 }
 
 interface BatchRequestItem {
@@ -292,6 +311,72 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
 }
 
 /**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadZilPoolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadZilPools,
+    token: undefined,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "pools",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @returns BatchRequest
+ */
+ export const xcadZilTotalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.XcadZilTotalContributions,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "total_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param Token The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const xcadZilPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.XcadZilBalances,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        xcadDexHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [address, walletAddr],
+      ],
+    },
+  };
+}
+
+/**
  * Create a `GetSmartContractSubState` request for the staking operators.
  *
  * @returns BatchRequest
@@ -393,6 +478,69 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       params: [
         portDockStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesBachelorsStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesBachelorStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesBachelorStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesMastersStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesMastersStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesMastersStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const feesDoctoralStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.FeesDoctoralStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        feesDoctoralStakingHash.replace("0x", "").toLowerCase(),
+        "removeStaker",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },
