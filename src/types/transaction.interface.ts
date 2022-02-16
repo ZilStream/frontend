@@ -17,4 +17,5 @@ export interface Transaction {
   nonce: number
   gas_price: number
   gas_limit: number
+  data: string
 }
