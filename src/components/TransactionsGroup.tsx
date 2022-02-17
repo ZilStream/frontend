@@ -10,7 +10,7 @@ const TransactionsGroup = (props: Props) => {
   return (
     <>
       {props.transactions.map(transaction => {
-        return <TransactionRow transaction={transaction} />
+        return <TransactionRow key={transaction.hash} transaction={transaction} />
       })}
     </>
   )
