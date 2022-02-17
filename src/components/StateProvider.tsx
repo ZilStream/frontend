@@ -512,6 +512,22 @@ const StateProvider = (props: Props) => {
             return
           }
 
+          case BatchRequestType.BloxStaking: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'BLOX',
+              address: '0xbe6f5317f70ab1cdf4b338183e84efe98af7c0af',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'BLOX',
+              decimals: 2
+            }}})
+            return
+          }
+
           case BatchRequestType.XcadStaking: {
             if(result.result === null) return
 
