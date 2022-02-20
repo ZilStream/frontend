@@ -1,5 +1,5 @@
 export enum Metric {
-  Price,
+  Price = 0,
   PriceZIL,
   // MarketCap,
   // Liquidity
@@ -22,7 +22,7 @@ export function labelForMetric(metric: Metric): string {
 }
 
 export enum Indicator {
-  Above,
+  Above = 0,
   Below
 }
 

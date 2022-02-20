@@ -1,5 +1,3 @@
-import { fromBech32Address, toBech32Address } from '@zilliqa-js/crypto'
-import BigNumber from 'bignumber.js'
 import getZilRates from 'lib/coingecko/getZilRates'
 import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
@@ -8,21 +6,19 @@ import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector, useStore } from 'react-redux'
 import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
-import { setAlertState } from 'store/alert/actions'
-import { BlockchainActionsTypes } from 'store/blockchain/actions'
+import { setAlertState, updateAlert } from 'store/alert/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
-import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, AlertState, BlockchainState, Operator, RootState, SettingsState, StakingState, SwapState, TokenState } from 'store/types'
-import { DEX } from 'types/dex.interface'
+import { AccountState, AlertState, BlockchainState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
+import { Indicator, Metric } from 'types/metric.interface'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
-import { BatchRequestType, BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest, xcadStakingAddresses } from 'utils/batch'
+import { BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
+import { cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import { processBatch } from 'utils/processBatch'
-import { bnOrZero } from 'utils/strings'
 
 interface Props {
   children: React.ReactNode
@@ -67,6 +63,8 @@ const StateProvider = (props: Props) => {
         tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
       }))
     }
+
+    processAlerts()
   }
 
   async function setFavorites() {
@@ -156,6 +154,47 @@ const StateProvider = (props: Props) => {
         ...alerts,
         initialized: true
       }))
+    }
+  }
+
+  async function processAlerts() {
+    // Return early if the notification permission isn't granted.
+    if(Notification.permission !== 'granted') return
+
+    let alerts = alertState.alerts
+    alerts.forEach(alert => {
+      // Check if the alert has already been triggered, if the case skip it immediately.
+      if(alert.triggered) return
+
+      let token = tokenState.tokens.filter(token => token.address_bech32 === alert.token_address)?.[0]
+      let currentRate = alert.metric === Metric.PriceZIL ? token.market_data.rate : token.market_data.rate_usd
+      let targetRate = alert.value
+
+      if(alert.indicator === Indicator.Above) {
+        if(currentRate >= targetRate) {
+          dispatch(updateAlert({
+            previous: alert,
+            triggered: true
+          }))
+          sendPriceNotificationForToken(token)
+        }
+      } else if(alert.indicator === Indicator.Below) {
+        dispatch(updateAlert({
+          previous: alert,
+          triggered: true
+        }))
+
+        if(currentRate <= targetRate) {
+          sendPriceNotificationForToken(token)
+        }
+      }
+    })
+
+    function sendPriceNotificationForToken(token: Token) {
+      new Notification(`${token.symbol}: ${cryptoFormat(token.market_data.rate)} ZIL (${currencyFormat(token.market_data.rate_usd)})`, {
+        body: `${token.name}'s (${token.symbol}) current price is ${cryptoFormat(token.market_data.rate)} ZIL (${currencyFormat(token.market_data.rate_usd)}).`,
+        icon: token.icon
+      })
     }
   }
 

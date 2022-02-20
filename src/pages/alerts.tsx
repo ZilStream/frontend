@@ -76,7 +76,7 @@ function Alerts() {
               let difference  = (1 - (currentRate / targetRate)) * 100
 
               return (
-                <tr role="row" className="border-b dark:border-gray-700 last:border-b-0">
+                <tr key={alert.token_address+alert.indicator+alert.metric+alert.value} role="row" className="border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-3 text-left ${index === 0 ? 'rounded-tl-lg' : ''} ${index === alertState.alerts.length-1 ? 'rounded-bl-lg' : ''}`}>
                     <div className="flex items-center">
                       <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
