@@ -8,6 +8,8 @@ import { fromBech32Address } from '@zilliqa-js/crypto'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { Transaction } from '@zilliqa-js/account'
 import { BN, Long, units } from '@zilliqa-js/util'
+import { DEX } from 'types/dex.interface'
+import { BIG_ZERO } from 'utils/strings'
 
 export class ZilSwap extends Exchange {
   readonly contractAddress: string;
@@ -397,7 +399,7 @@ export class ZilSwap extends Exchange {
   }
 
   private getReserves(token: Token) {
-    const pool = token.pool
+    const pool = token.pools?.filter(pool => pool.baseAddress === token.address_bech32 && pool.dex === DEX.ZilSwap)?.[0]
     if(!pool) {
       return {
         baseReserve: new BigNumber(0),
@@ -405,8 +407,8 @@ export class ZilSwap extends Exchange {
       }
     }
     var { baseReserve, quoteReserve } = pool
-    baseReserve = baseReserve
-    quoteReserve = quoteReserve
+    baseReserve = baseReserve ?? BIG_ZERO
+    quoteReserve = quoteReserve ?? BIG_ZERO
     return { baseReserve, quoteReserve }
   }
 }
