@@ -8,13 +8,14 @@ import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
 import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
+import { setAlertState } from 'store/alert/actions'
 import { BlockchainActionsTypes } from 'store/blockchain/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { updateSettings } from 'store/settings/actions'
 import { StakingActionTypes } from 'store/staking/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, BlockchainState, Operator, RootState, SettingsState, StakingState, SwapState, TokenState } from 'store/types'
+import { AccountState, AlertState, BlockchainState, Operator, RootState, SettingsState, StakingState, SwapState, TokenState } from 'store/types'
 import { DEX } from 'types/dex.interface'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
@@ -33,6 +34,7 @@ const StateProvider = (props: Props) => {
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
+  const alertState = useSelector<RootState, AlertState>(state => state.alert)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
@@ -584,6 +586,18 @@ const StateProvider = (props: Props) => {
     }
   }
 
+  async function loadAlerts() {
+    const alertsStr = localStorage.getItem('alerts')
+
+    if(alertsStr) {
+      const alerts: AlertState = JSON.parse(alertsStr)
+      dispatch(setAlertState({
+        ...alerts,
+        initialized: true
+      }))
+    }
+  }
+
   useInterval(async () => {
     loadZilRates()
   }, 20000)
@@ -596,6 +610,7 @@ const StateProvider = (props: Props) => {
 
   useEffect(() => {
     loadSettings()
+    loadAlerts()
     loadTokens()
     loadZilRates()
 
@@ -624,6 +639,12 @@ const StateProvider = (props: Props) => {
     // This makes sure all account changes persist.
     localStorage.setItem('account', JSON.stringify(accountState))    
   }, [accountState])
+
+  useEffect(() => {
+    if(!alertState.initialized) return
+    let json = JSON.stringify(alertState)
+    localStorage.setItem('alerts', json)
+  }, [alertState])
 
   useEffect(() => {
     const accountString = localStorage.getItem('account')

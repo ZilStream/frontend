@@ -4,6 +4,7 @@ import { Bell } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
 import useBalances from 'utils/useBalances'
+import Link from 'next/link'
 
 const NotificationsPopover = () => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
@@ -29,8 +30,14 @@ const NotificationsPopover = () => {
           >
             <Popover.Panel className="origin-top-right absolute mt-1 right-0 z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-900 rounded-lg p-4 w-72">
               <div className="flex flex-col">
-                <div className="font-semibold mb-2 text-gray-600 dark:text-gray-300">Notifications</div>
+                <div className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Notifications</div>
                 <div className="text-sm italic text-gray-500 dark:text-gray-400">You currently don't have any notifications.</div>
+              </div>
+
+              <div className="mt-3 border-t dark:border-gray-700 pt-3">
+                <Link href="/alerts">
+                  <a className="block bg-gray-200 dark:bg-gray-700 text-center text-sm font-medium py-2 px-3 rounded">Manage alerts</a>
+                </Link>
               </div>
             </Popover.Panel>
           </Transition>

@@ -6,6 +6,7 @@ import * as Modal from './modal/actions'
 import * as Settings from './settings/actions'
 import * as Blockchain from './blockchain/actions'
 import * as Swap from './swap/actions'
+import * as Alert from './alert/actions'
 
 export default { 
   Token, 
@@ -15,5 +16,6 @@ export default {
   Modal, 
   Settings, 
   Blockchain, 
-  Swap 
+  Swap,
+  Alert
 }
