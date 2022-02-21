@@ -8,10 +8,11 @@ import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { setAlertState, updateAlert } from 'store/alert/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
+import { setNotificationState } from 'store/notification/actions'
 import { updateSettings } from 'store/settings/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, AlertState, BlockchainState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
+import { AccountState, AlertState, BlockchainState, NotificationState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
 import { Indicator, Metric } from 'types/metric.interface'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
@@ -32,6 +33,7 @@ const StateProvider = (props: Props) => {
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
   const alertState = useSelector<RootState, AlertState>(state => state.alert)
+  const notificationState = useSelector<RootState, NotificationState>(state => state.notification)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
 
@@ -157,6 +159,18 @@ const StateProvider = (props: Props) => {
     }
   }
 
+  async function loadNotifications() {
+    const notificationsStr = localStorage.getItem('notifications')
+
+    if(notificationsStr) {
+      const notifications: NotificationState = JSON.parse(notificationsStr)
+      dispatch(setNotificationState({
+        ...notifications,
+        initialized: true
+      }))
+    }
+  }
+
   async function processAlerts() {
     // Return early if the notification permission isn't granted.
     if(Notification.permission !== 'granted') return
@@ -211,6 +225,7 @@ const StateProvider = (props: Props) => {
   useEffect(() => {
     loadSettings()
     loadAlerts()
+    loadNotifications()
     loadTokens()
     loadZilRates()
 
@@ -242,9 +257,13 @@ const StateProvider = (props: Props) => {
 
   useEffect(() => {
     if(!alertState.initialized) return
-    let json = JSON.stringify(alertState)
-    localStorage.setItem('alerts', json)
+    localStorage.setItem('alerts', JSON.stringify(alertState))
   }, [alertState])
+
+  useEffect(() => {
+    if(!notificationState.initialized) return
+    localStorage.setItem('notifications', JSON.stringify(notificationState))
+  }, [notificationState])
 
   useEffect(() => {
     const accountString = localStorage.getItem('account')

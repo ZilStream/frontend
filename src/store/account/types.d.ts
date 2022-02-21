@@ -26,6 +26,10 @@ export interface UpdateWalletProps extends Partial<ConnectedWallet> {
   address: string
 }
 
+export interface DeleteWalletProps {
+  address: string
+}
+
 export interface SelectWalletProps {
   wallet: ConnectedWallet
 }

@@ -3,7 +3,7 @@ import {HYDRATE} from 'next-redux-wrapper';
 import { AnyAction } from 'redux';
 import { SelectWalletProps, UpdateWalletProps } from 'store/types';
 import { AccountActionTypes } from './actions';
-import { AccountState, AddWalletProps } from './types';
+import { AccountState, AddWalletProps, DeleteWalletProps } from './types';
 
 export const Network = {
   MAIN_NET: "mainnet",
@@ -50,11 +50,18 @@ const reducer = (state: AccountState = initialState, action: AnyAction) => {
       const updateProps: UpdateWalletProps = payload
       return {
         ...state,
-        tokens: state.wallets.map(wallet => wallet.address === updateProps.address ?
+        wallets: state.wallets.map(wallet => wallet.address === updateProps.address ?
           {...wallet, ...updateProps} :
           wallet
           ),
         selectedWallet: updateProps.address === state.selectedWallet?.address ? {...state.selectedWallet, ...updateProps} : state.selectedWallet
+      }
+
+    case AccountActionTypes.DELETE_WALLET:
+      const deleteProps: DeleteWalletProps = payload
+      return {
+        ...state,
+        wallets: state.wallets.filter(wallet => wallet.address !== deleteProps.address)
       }
 
     case AccountActionTypes.SELECT_WALLET:

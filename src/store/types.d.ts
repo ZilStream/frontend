@@ -7,6 +7,7 @@ import { SettingsState } from './settings/types'
 import { BlockchainState } from './blockchain/types'
 import { SwapState } from './swap/types'
 import { AlertState } from './alert/types'
+import { NotificationState } from './notification/types'
 
 export * from './token/types'
 export * from './account/types'
@@ -17,6 +18,7 @@ export * from './settings/types'
 export * from './blockchain/types'
 export * from './swap/types'
 export * from './alert/types'
+export * from './notification/types'
 
 export interface RootState {
   token: TokenState
@@ -28,4 +30,5 @@ export interface RootState {
   blockchain: BlockchainState
   swap: SwapState
   alert: AlertState
+  notification: NotificationState
 }

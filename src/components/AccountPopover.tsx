@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ChevronDown, Copy, Edit2, ExternalLink, LogOut, Plus } from 'react-feather'
+import { ChevronDown, Copy, Edit2, ExternalLink, LogOut, Plus, Settings } from 'react-feather'
 import React, { Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountState, ConnectedWallet, RootState } from 'store/types'
@@ -7,6 +7,7 @@ import { AccountActionTypes } from 'store/account/actions'
 import { shortenAddress } from 'utils/addressShortener'
 import { ModalActionTypes } from 'store/modal/actions'
 import useBalances from 'utils/useBalances'
+import Link from 'next/link'
 
 const AccountPopover = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
@@ -31,7 +32,7 @@ const AccountPopover = () => {
         <>
           <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Open account menu</span>
-            {shortenAddress(accountState.selectedWallet!.address)}
+            {accountState.selectedWallet!.label ?? shortenAddress(accountState.selectedWallet!.address)}
             <ChevronDown size={14} className="ml-2" />
           </Popover.Button>
           <Transition
@@ -51,7 +52,7 @@ const AccountPopover = () => {
                 <div className="flex items-center">
                   <div className="flex-grow flex flex-col">
                     <div className="text-sm flex items-center">
-                      {shortenAddress(accountState.selectedWallet!.address)}
+                      {accountState.selectedWallet!.label ?? shortenAddress(accountState.selectedWallet!.address)}
                       {membership.isMember &&
                         <div className="bg-primary h-4 px-1 rounded flex items-center justify-center text-xs font-bold ml-2">Premium</div>
                       }
@@ -90,7 +91,7 @@ const AccountPopover = () => {
                   {accountState.wallets.filter(wallet => wallet.address !== accountState.selectedWallet?.address).map(wallet => (
                     <button key={wallet.address} className="px-2 mb-1 hover:bg-gray-900 rounded focus:outline-none" onClick={() => handleSelectWallet(wallet)}>
                       <div className="flex items-center justify-start py-2 border-b dark:border-gray-900 last:border-b-0">
-                        <span className="mr-2">{shortenAddress(wallet.address)}</span>
+                        <span className="mr-2">{wallet.label ? wallet.label : shortenAddress(wallet.address)}</span>
                         <span className="text-gray-500">{shortenAddress(wallet.address)}</span>
                       </div>
                     </button>
@@ -109,6 +110,15 @@ const AccountPopover = () => {
                     Add another wallet
                   </button>
                 }
+
+                <Link href="/wallets">
+                  <a className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none">
+                    <div className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
+                      <Settings size={12} />
+                    </div>
+                    Manage alerts
+                  </a>
+                </Link>
                 
                 <button
                   className="py-2 text-left flex items-center gap-3 rounded-full font-medium text-sm focus:outline-none"

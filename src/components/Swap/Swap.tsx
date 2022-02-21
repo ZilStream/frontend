@@ -18,6 +18,7 @@ import { openExchange } from 'store/modal/actions'
 import { shortenAddress } from 'utils/addressShortener'
 import { updateSwap } from 'store/swap/actions'
 import { XCADDex } from 'lib/exchange/xcaddex/xcaddex'
+import { addNotification } from 'store/notification/actions'
 
 interface Props {
   showFullscreen?: boolean
@@ -41,6 +42,7 @@ const Swap = (props: Props) => {
     focusDirectionIn: true,
     needsApproval: false
   })
+  const limitTokensToDirectPairs = swapState.exchange.identifier === 'xcaddex' ? true : false
 
   useEffect(() => {
     initiateExchange()
@@ -108,11 +110,17 @@ const Swap = (props: Props) => {
     if(!tokenIn) return
 
     const tx = await exchange?.approve(tokenIn, state.tokenInAmount.shiftedBy(tokenIn.decimals))
-    if(tx === null) {
-      toast.info('This token has already been approved.')
+    if(tx === null || tx === undefined) {
       setState({...state, needsApproval: false})
     } else {
-      toast.info('Approval transaction has been sent.')
+      dispatch(addNotification({
+        notification: {
+          timestamp: + new Date(),
+          title: `Approve ${tokenIn.symbol} for ${swapState.exchange.name}`,
+          hash: tx.hash,
+          status: "pending",
+        }
+      }))
     }
   }
 
@@ -127,44 +135,20 @@ const Swap = (props: Props) => {
       state.focusDirectionIn
     )
 
-    if(tx === null) {
-      toast.error('Couldn\'t send your swap.')
+    if(tx === null || tx === undefined) {
+      console.log('Couldn\'t send your swap.')
+      return
     }
 
-    toast(<SwapNotification hash={tx?.id as string} />, {autoClose: false})
+    dispatch(addNotification({
+      notification: {
+        timestamp: + new Date(),
+        title: `Swap ${cryptoFormat(state.tokenInAmount.toNumber())} ${tokenIn.symbol} to ${cryptoFormat(state.tokenOutAmount.toNumber())} ${tokenOut.symbol}`,
+        hash: tx.hash,
+        status: "pending",
+      }
+    }))
   }
-
-  const SwapNotification = (props: {hash: string}) => (
-    <div className="flex flex-col text-center text-black dark:text-white">
-      <div className="flex items-center gap-2">
-        <div className="bg-primary dark:bg-gray-700 h-6 w-6 md:w-10 md:h-10 p-1 md:p-3 rounded-full flex items-center justify-center">
-          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="transactions-type" xmlns="http://www.w3.org/2000/svg"><path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path></svg>
-        </div>
-        <div className="flex flex-col items-start">
-          <div className="inline-flex items-center gap-1 font-medium">
-            <span className="w-4 h-4 inline-block">
-              <TokenIcon url={tokenIn.icon} />
-            </span> 
-            <span className="font-medium">{cryptoFormat(state.tokenInAmount.toNumber())} {tokenIn.symbol}</span>
-          </div> 
-          <div className="inline-flex items-center gap-1 font-medium">
-            <span className="w-4 h-4 inline-block">
-              <TokenIcon url={tokenOut.icon} />
-            </span> 
-            {cryptoFormat(state.tokenOutAmount.toNumber())} {tokenOut.symbol}
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center gap-3 text-xs mt-2 text-gray-500 dark:text-gray-400">
-        <div className="flex-grow text-left">0x{shortenAddress(props.hash)}</div>
-        <div className="text-right">Processing</div>
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-xs mt-1">
-        <button className="bg-gray-100 rounded font-medium py-2" onClick={() => navigator.clipboard.writeText('0x'+props.hash)}>Copy hash</button>
-        <a className="bg-gray-100 rounded font-medium py-2" href={`https://viewblock.io/zilliqa/tx/0x${props.hash}`} target="_blank">ViewBlock</a>
-      </div>
-    </div>
-  )
 
   let tokenInValue = tokenIn?.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate * selectedCurrency.rate
 
