@@ -32,7 +32,7 @@ const AccountPopover = () => {
         <>
           <Popover.Button className="menu-item-active focus:outline-none flex items-center">
             <span className="sr-only">Open account menu</span>
-            {accountState.selectedWallet!.label ?? shortenAddress(accountState.selectedWallet!.address)}
+            {accountState.selectedWallet!.label ? accountState.selectedWallet!.label : shortenAddress(accountState.selectedWallet!.address)}
             <ChevronDown size={14} className="ml-2" />
           </Popover.Button>
           <Transition
@@ -52,7 +52,7 @@ const AccountPopover = () => {
                 <div className="flex items-center">
                   <div className="flex-grow flex flex-col">
                     <div className="text-sm flex items-center">
-                      {accountState.selectedWallet!.label ?? shortenAddress(accountState.selectedWallet!.address)}
+                      {accountState.selectedWallet!.label ? accountState.selectedWallet!.label : shortenAddress(accountState.selectedWallet!.address)}
                       {membership.isMember &&
                         <div className="bg-primary h-4 px-1 rounded flex items-center justify-center text-xs font-bold ml-2">Premium</div>
                       }
