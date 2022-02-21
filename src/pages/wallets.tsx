@@ -18,7 +18,7 @@ function Wallets() {
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
             <h2 className="mb-1">Manage wallets</h2>
-            <div className="text-gray-500 dark:text-gray-400 text-lg">Managed your wallets</div>
+            <div className="text-gray-500 dark:text-gray-400 text-lg">Manage your wallets</div>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { AccountActionTypes } from 'store/account/actions';
 import { ModalActionTypes, openWallet } from 'store/modal/actions';
 import { AccountState, ConnectedWallet, ModalState, RootState } from 'store/types';
 import { AccountType } from 'types/walletType.interface';
+import useBalances from 'utils/useBalances';
 import TokenIcon from './TokenIcon';
 import ConnectAvatar from './wallets/ConnectAvatar';
 import ConnectLedger from './wallets/ConnectLedger';
@@ -18,6 +19,7 @@ const WalletModal = () => {
   const [isOpen, setIsOpen] = useState(false)
   const zilPayButtonRef = useRef(null)
   const [address, setAddress] = useState('')
+  const { membership } = useBalances()
 
   // Pages
   const [showDetail, setShowDetail] = useState(false)
@@ -180,10 +182,12 @@ const WalletModal = () => {
                     </button>
                   </div>
 
-                  <div className="flex flex-col items-stretch mt-4">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Or enter an address</div>
-                    <input type="text" placeholder="zil123.." autoCapitalize="off" autoCorrect="off" className="bg-gray-200 dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-700 rounded py-3 px-3 text-sm" value={address} onChange={handleAddressChange} onKeyDown={handleAddressKeyDown} />
-                  </div>
+                  {membership.isMember &&
+                    <div className="flex flex-col items-stretch mt-4">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Or enter an address</div>
+                      <input type="text" placeholder="zil123.." autoCapitalize="off" autoCorrect="off" className="bg-gray-200 dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-700 rounded py-3 px-3 text-sm" value={address} onChange={handleAddressChange} onKeyDown={handleAddressKeyDown} />
+                    </div>
+                  }
                 </>
               )}
 
