@@ -44,6 +44,9 @@ function Wallets() {
               <tr key={index} role="row" className="border-b dark:border-gray-700 last:border-b-0">
                 <td className={`pl-4 pr-2 py-3 text-left ${index === 0 ? 'rounded-tl-lg' : ''} ${index === accountState.wallets.length-1 ? 'rounded-bl-lg' : ''}`}>
                   {wallet.label ? wallet.label : wallet.address} <span className="text-sm text-gray-500 dark:text-gray-400">{shortenAddress(wallet.address)}</span>
+                  {wallet.isMember &&
+                    <span className="bg-primary h-4 px-1 rounded flex items-center justify-center text-xs font-bold ml-2">Premium</span>
+                  }
                 </td>
                 <td className="px-2 py-3 text-right">
                   {AccountType[wallet.type]}

@@ -18,7 +18,7 @@ const WalletFormModal = (props: Props) => {
 
   useEffect(() => {
     setLabel(wallet?.label ?? '')
-  }, [alert])
+  }, [wallet])
 
   function save() {
     dispatch(updateWallet({
