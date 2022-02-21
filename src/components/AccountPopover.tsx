@@ -116,7 +116,7 @@ const AccountPopover = () => {
                     <div className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center">
                       <Settings size={12} />
                     </div>
-                    Manage alerts
+                    Manage wallets
                   </a>
                 </Link>
                 
