@@ -28,7 +28,8 @@ export enum BatchRequestType {
   FeesDoctoralStakers = "feesDoctoralStakers",
   XcadStaking = "XcadStaking",
   OkipadStaking = "OkipadStaking",
-  BloxStaking = "BloxStaking"
+  BloxStaking = "BloxStaking",
+  DmzStaking = "DmzStaking"
 };
 
 const zilSwapAddress = ZILSWAP_ADDRESS
@@ -63,6 +64,9 @@ const feesDoctoralStakingHash = fromBech32Address(feesDoctoralStakingAddress)
 
 const bloxStakingAddress = "zil1heh4x9lhp2cuma9n8qvrap80ax900s9024dmlc"
 const bloxStakingHash = fromBech32Address(bloxStakingAddress)
+
+const dmzStakingAddress = "zil1n93rsttd44ryckftu8900ketkdz0ky3eu2ljqe"
+const dmzStakingHash = fromBech32Address(dmzStakingAddress)
 
 export const xcadStakingAddresses = {
   0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD
@@ -610,6 +614,27 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       params: [
         bloxStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the port dock stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const dmzStakingBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.DmzStaking,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        dmzStakingHash.replace("0x", "").toLowerCase(),
+        "stakers_total_bal",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },
