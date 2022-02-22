@@ -528,6 +528,22 @@ const StateProvider = (props: Props) => {
             return
           }
 
+          case BatchRequestType.DmzStaking: {
+            if(result.result === null) return
+  
+            let stakers: number[]  = Object.values(result.result.stakers_total_bal)
+            if(stakers.length === 0) return
+  
+            dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+              name: 'DeMons',
+              address: '0x9962382d6dad464c592be1caf7db2bb344fb1239',
+              staked: new BigNumber(stakers[0]),
+              symbol: 'DMZ',
+              decimals: 18
+            }}})
+            return
+          }
+
           case BatchRequestType.XcadStaking: {
             if(result.result === null) return
 
