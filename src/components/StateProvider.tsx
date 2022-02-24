@@ -553,7 +553,7 @@ const StateProvider = (props: Props) => {
             let values = Object.values(xcadStakingAddresses).filter(value => value[0] === token?.address_bech32)[0]
 
             if(token && token.symbol === 'XCAD') {
-              if(token && token.symbol === 'XCAD' && values[1] === '0x8d24baae9877d735900873834448373b8917da1f') {
+              if(token && token.symbol === 'XCAD' && (values[1] === '0x8d24baae9877d735900873834448373b8917da1f' || values[1] === '0x4522c41f5e60ec47a3e8bb2f8e73ca6cfc2be0b4')) {
                 dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
                   name: 'XCAD Staking: dXCAD',
                   address: values[1],

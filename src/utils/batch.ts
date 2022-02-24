@@ -76,13 +76,14 @@ export const xcadStakingAddresses = {
   4: ['zil14jmjrkvfcz2uvj3y69kl6gas34ecuf2j5ggmye', '0xc78b6c4a7c13f1e556ee59af20c74f8c9156e6b6'], // REDC
   5: ['zil1pqcev4ykxla0jhy3anx32lnqgv8xncd8q57ql2', '0xcf87bd87e32e059533d0b6a2c575db3a5a83792c'], // SPW
   6: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x0b719d791741d3937cea5b661c5d4699740a6063'], // XCAD
-  7: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0xb15a7cc9fc08a2c77f96b5d892ab1f1a4cf022cc'], // XCAD -> dXCAD
-  8: ['zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v', '0xa11cf5474cd132e6f1812c3e20ba47e51818cb62'], // FEES
-  9: ['zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp', '0xa7d9862dceead3bcd43811462118bff08737a03a'], // BLOX
-  10: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
-  11: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
-  12: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a'], // DMZ
-  13: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'] // DUCK
+  7: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x4522c41f5e60ec47a3e8bb2f8e73ca6cfc2be0b4'], // XCAD -> dXCAD
+  8: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x8d24baae9877d735900873834448373b8917da1f'], // XCAD -> dXCAD
+  9: ['zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v', '0xa11cf5474cd132e6f1812c3e20ba47e51818cb62'], // FEES
+  10: ['zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp', '0xa7d9862dceead3bcd43811462118bff08737a03a'], // BLOX
+  11: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
+  12: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
+  13: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a'], // DMZ
+  14: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'] // DUCK
 }
 
 interface BatchRequestItem {
