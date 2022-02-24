@@ -82,6 +82,7 @@ export const xcadStakingAddresses = {
   10: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
   11: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
   12: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a'], // DMZ
+  13: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'] // DUCK
 }
 
 interface BatchRequestItem {
