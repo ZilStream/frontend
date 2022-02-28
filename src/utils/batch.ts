@@ -83,7 +83,10 @@ export const xcadStakingAddresses = {
   11: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
   12: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
   13: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a'], // DMZ
-  14: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'] // DUCK
+  14: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'], // DUCK
+  15: ['zil1kwfu3x9n6fsuxc4ynp72uk5rxge25enw7zsf9z', '0x62ceedfa70a34fcbeacebb6d76bcbf339ed47648'], // SCO
+  16: ['zil1yqwyfdpxmp0m9suz2c6gx9qgyh7crwd42jz9j4', '0x0bf04c6ae283c9a054aa15dba4996f9246351929'], // zOPUL
+  17: ['zil1xgeelgph77hpmlljtcfuv3g6sq5f6c05rl3wdn', '0x9695a2c7fa5ae141f1ed994d4fe04d1162c44427'], // zBRKL
 }
 
 interface BatchRequestItem {
