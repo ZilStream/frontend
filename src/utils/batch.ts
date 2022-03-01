@@ -69,7 +69,7 @@ const dmzStakingAddress = "zil1n93rsttd44ryckftu8900ketkdz0ky3eu2ljqe"
 const dmzStakingHash = fromBech32Address(dmzStakingAddress)
 
 export const xcadStakingAddresses = {
-  0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD
+  0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD #1
   1: ['zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk', '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386'], // CARB
   2: ['zil18f5rlhqz9vndw4w8p60d0n7vg3n9sqvta7n6t2', '0xc6474b616fbb71fca8dcf4b09b5ea1b553231a4d'], // PORT
   3: ['zil1504065pp76uuxm7s9m2c4gwszhez8pu3mp6r8c', '0x5b1be8e077f4f2702b4fcff93dfefc6010bd2370'], // STREAM
@@ -87,6 +87,7 @@ export const xcadStakingAddresses = {
   15: ['zil1kwfu3x9n6fsuxc4ynp72uk5rxge25enw7zsf9z', '0x62ceedfa70a34fcbeacebb6d76bcbf339ed47648'], // SCO
   16: ['zil1yqwyfdpxmp0m9suz2c6gx9qgyh7crwd42jz9j4', '0x0bf04c6ae283c9a054aa15dba4996f9246351929'], // zOPUL
   17: ['zil1xgeelgph77hpmlljtcfuv3g6sq5f6c05rl3wdn', '0x9695a2c7fa5ae141f1ed994d4fe04d1162c44427'], // zBRKL
+  18: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xda12fa83a9ce290eb5e1bbea6e51f5fca2955ae1'], // dXCAD #2
 }
 
 interface BatchRequestItem {
