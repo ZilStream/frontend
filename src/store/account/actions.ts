@@ -1,11 +1,12 @@
 import { SelectWalletProps, UpdateWalletProps } from "store/types"
-import { AddWalletProps } from "./types"
+import { AddWalletProps, DeleteWalletProps } from "./types"
 
 export const AccountActionTypes = {
   INIT_ACCOUNT: "INIT_ACCOUNT",
   NETWORK_UPDATE: "NETWORK_UPDATE",
   ADD_WALLET: "ADD_WALLET",
   UPDATE_WALLET: "UPDATE_WALLET",
+  DELETE_WALLET: "DELETE_WALLET",
   SELECT_WALLET: "SELECT_WALLET",
   LOGOUT: "LOGOUT"
 }
@@ -27,6 +28,13 @@ export function addWallet(payload: AddWalletProps) {
 export function updateWallet(payload: UpdateWalletProps) {
   return {
     type: AccountActionTypes.UPDATE_WALLET,
+    payload
+  }
+}
+
+export function deleteWallet(payload: DeleteWalletProps) {
+  return {
+    type: AccountActionTypes.DELETE_WALLET,
     payload
   }
 }

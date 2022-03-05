@@ -2,19 +2,22 @@ import { Dialog, Transition } from '@headlessui/react'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { openExport } from 'store/modal/actions'
-import { AccountState, ModalState, RootState } from 'store/types'
+import { AccountState, ModalState, RootState, Token, TokenState } from 'store/types'
 import { CSVLink } from 'react-csv'
 import { getTransactions } from 'lib/zilstream/getTransactions'
 import { Transaction } from 'types/transaction.interface'
 import LoadingIndicator from './LoadingIndicator'
 import dayjs from 'dayjs'
+import { ExportTransaction } from 'types/ExportTransaction'
+import { toBigNumber } from 'utils/useMoneyFormatter'
 
 const TransactionsExportModal = () => {
   const modalState = useSelector<RootState, ModalState>(state => state.modal)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
+  const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [transactions, setTransactions] = useState<ExportTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [range, setRange] = useState<{from: dayjs.Dayjs, to: dayjs.Dayjs}>({from: dayjs().startOf('month'), to: dayjs().endOf('day')})
 
@@ -30,6 +33,14 @@ const TransactionsExportModal = () => {
   const handleGetTransactions = () => {
     setIsLoading(true)
     fetchTransactions()
+  }
+
+  const findToken = (address: string): Token|null => {
+    const tokens = tokenState.tokens.filter(token => token.address_bech32 === address)
+    if(tokens.length > 0) {
+      return tokens[0]
+    }
+    return null
   }
 
   const fetchTransactions = async () => {
@@ -50,15 +61,68 @@ const TransactionsExportModal = () => {
       }
     }
 
+    var processedTransactions: ExportTransaction[] = []
+
     totalTransactions.forEach(tx => {
-      delete tx["data"]
-      delete tx["receipt"]
+      let incoming = tx.to_address === accountState.selectedWallet?.address ? true : false
+
+      var gasCost = toBigNumber(0)
+      var data: any = null
+      var receipt: any = null
+
+      try {
+        data = JSON.parse(tx.data)
+      } catch(e) {}  
+
+      try {
+        receipt = JSON.parse(tx.receipt)
+        gasCost = toBigNumber(tx.gas_price).shiftedBy(-12).times(receipt.cumulative_gas)
+      } catch(e) {}
+
+      const inToken = findToken(tx.token_in_address)
+      const outToken = findToken(tx.token_out_address)
+
+      let feeAmount = gasCost.toNumber()
+
+      var type = 'Deposit'
+      var buyAmount = 0
+      var buyCurrency = ''
+      var sellAmount = 0
+      var sellCurrency = ''
+      var exchange = ''
+
+      if(!incoming) {
+        type = 'Withdrawal'
+      }
+
+      if(tx.sub_type === 'swap') {
+        type = 'Trade'
+        exchange = 'ZilSwap'
+        buyAmount = toBigNumber(tx.token_in_amount).shiftedBy(-(inToken?.decimals ?? 0)).toNumber()
+        buyCurrency = inToken?.symbol ?? ''
+        sellAmount = toBigNumber(tx.token_out_amount).shiftedBy(-(outToken?.decimals ?? 0)).toNumber()
+        sellCurrency = outToken?.symbol ?? ''
+      }
+
+      processedTransactions.push({
+        Type: type,
+        BuyAmount: buyAmount,
+        BuyCurrency: buyCurrency,
+        SellAmount: sellAmount,
+        SellCurrency: sellCurrency,
+        FeeAmount: feeAmount,
+        FeeCurrency: 'ZIL',
+        Exchange: exchange,
+        Group: '',
+        Comment: '0x'+tx.hash,
+        Date: dayjs(tx.timestamp).format('MM/DD/YY HH:MM')
+      })
     })
 
-    setTransactions(totalTransactions)
+    setTransactions(processedTransactions)
     setIsLoading(false)
 
-    console.log(`Found transactions: ${totalTransactions.length}`)
+    console.log(`Found transactions: ${processedTransactions.length}`)
   }
 
   return (

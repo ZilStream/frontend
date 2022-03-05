@@ -31,7 +31,7 @@ const ConnectAvatar = (props: Props) => {
 
         let wallet: ConnectedWallet = {
           address: toBech32Address(address),
-          label: '',
+          label: avatarName,
           isDefault: accountState.wallets.length === 0,
           isConnected: false,
           isMember: false,

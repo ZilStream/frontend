@@ -8,6 +8,8 @@ import modal from './modal/reducer'
 import settings from './settings/reducer'
 import blockchain from './blockchain/reducer'
 import swap from './swap/reducer'
+import alert from './alert/reducer'
+import notification from './notification/reducer'
 
 export default combineReducers({
   token,
@@ -17,5 +19,7 @@ export default combineReducers({
   modal,
   settings,
   blockchain,
-  swap
+  swap,
+  alert,
+  notification
 })

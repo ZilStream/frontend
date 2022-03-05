@@ -1,9 +1,11 @@
 import { HYDRATE } from 'next-redux-wrapper';
 import { AnyAction } from 'redux'
+import { swapExchanges } from 'types/swapExchange.interface';
 import { SwapActionTypes } from './actions';
 import { SwapState, SwapUpdateProps } from './types';
 
 const initialState: SwapState = {
+  exchange: swapExchanges[0],
   tokenInAddress: null,
   tokenOutAddress: null,
   slippage: 0.01,

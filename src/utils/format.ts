@@ -1,3 +1,5 @@
+import exp from "constants"
+
 export function currencyFormat(num: number, symbol: string = "$", decimals: number = 2): string {
   if(num === undefined) return ''
   if(symbol === '₿') {
@@ -35,13 +37,19 @@ export function compactFormat(num: number, symbol: string = "$"): string {
   return symbol + formatter.format(num)
 }
 
-export function fieldFormat(num: number, decimals: number = 2): string {
+export function fieldFormat(num: number, decimals: number = 8): string {
   if(num % 1 === 0) {
     return num.toFixed(0)
   } else if(num < 0.1) {
     return num.toFixed(5)
-  } else if(num > 10000) {
-    decimals = 0
+  } else if(num < 1000) {
+    return num.toFixed(4)
+  } else if(num < 10000) {
+    return num.toFixed(2)
+  } else if(num < 100000) {
+    return num.toFixed(1)
+  } else if(num < 10000000) {
+    return num.toFixed(0)
   }
   return num.toFixed(decimals)
 }

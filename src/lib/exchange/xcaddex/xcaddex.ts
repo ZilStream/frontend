@@ -7,11 +7,11 @@ import { Contract, Value, CallParams } from '@zilliqa-js/contract';
 import { fromBech32Address } from '@zilliqa-js/crypto'
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import { Transaction } from '@zilliqa-js/account'
-import { BN, Long, units } from '@zilliqa-js/util'
+import { BN } from '@zilliqa-js/util'
 import { DEX } from 'types/dex.interface'
 import { BIG_ZERO } from 'utils/strings'
 
-export class ZilSwap extends Exchange {
+export class XCADDex extends Exchange {
   readonly contractAddress: string;
   readonly contractHash: string;
   readonly contract: Contract;
@@ -309,7 +309,7 @@ export class ZilSwap extends Exchange {
     tokenOut: Token, 
     tokenOutAmount: BigNumber
   ): { epsilonInput: BigNumber; expectedInput: BigNumber } {
-    let expectedInput: BigNumber // the expected amount after slippage and fees
+  let expectedInput: BigNumber // the expected amount after slippage and fees
     let epsilonInput: BigNumber // the zero slippage input
   
     if (tokenIn.address_bech32 === ZIL_ADDRESS) {
@@ -380,7 +380,7 @@ export class ZilSwap extends Exchange {
       return new BigNumber('NaN')
     }
     const numerator = inputReserve.times(outputAmount).times(10000)
-    const denominator = outputReserve.minus(outputAmount).times(ZilSwap.OUTPUT_AFTER_FEE)
+    const denominator = outputReserve.minus(outputAmount).times(XCADDex.OUTPUT_AFTER_FEE)
     return numerator.dividedToIntegerBy(denominator).plus(1)
   }
 
@@ -392,14 +392,14 @@ export class ZilSwap extends Exchange {
     if (inputReserve.isZero() || outputReserve.isZero()) {
       throw new Error('Reserve has 0 tokens.')
     }
-    const inputAfterFee = inputAmount.times(ZilSwap.OUTPUT_AFTER_FEE)
+    const inputAfterFee = inputAmount.times(XCADDex.OUTPUT_AFTER_FEE)
     const numerator = inputAfterFee.times(outputReserve)
     const denominator = inputReserve.times(10000).plus(inputAfterFee)
     return numerator.dividedToIntegerBy(denominator)
   }
 
   private getReserves(token: Token) {
-    const pool = token.pools?.filter(pool => pool.baseAddress === token.address_bech32 && pool.dex === DEX.ZilSwap)?.[0]
+    const pool = token.pools?.filter(pool => pool.baseAddress === token.address_bech32 && pool.dex === DEX.XCADDEX)?.[0]
     if(!pool) {
       return {
         baseReserve: new BigNumber(0),

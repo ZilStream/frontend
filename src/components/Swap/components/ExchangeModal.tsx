@@ -4,25 +4,9 @@ import TokenIcon from 'components/TokenIcon'
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { openCurrency, openExchange } from 'store/modal/actions'
+import { updateSwap } from 'store/swap/actions'
 import { ModalState, RootState, SwapState } from 'store/types'
-
-const exchanges = [
-  {
-    name: 'ZilSwap',
-    iconAddress: 'zil1p5suryq6q647usxczale29cu3336hhp376c627',
-    active: true
-  },
-  {
-    name: 'CarbSwap',
-    iconAddress: 'zil1hau7z6rjltvjc95pphwj57umdpvv0d6kh2t8zk',
-    active: false
-  },
-  {
-    name: 'XCAD Dex',
-    iconAddress: 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y',
-    active: false
-  },
-]
+import { swapExchanges } from 'types/swapExchange.interface'
 
 const ExchangeModal = () => {
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
@@ -44,7 +28,7 @@ const ExchangeModal = () => {
   }, [modalState.exchangeOpen])
 
   const filteredExchanges = useMemo(() => {
-    var newExchanges = exchanges
+    var newExchanges = swapExchanges
 
     if(searchTerm !== '') {
       newExchanges = newExchanges.filter(e => e.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -74,21 +58,25 @@ const ExchangeModal = () => {
 
               <div>
                 <input
-                  className="w-full rounded-lg py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                  className="w-full rounded-lg py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
                   type="text"
                   placeholder="Search name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2">
+              <div className="flex-grow flex flex-col items-stretch overflow-y-scroll border-t dark:border-gray-700 mt-2">
                 {filteredExchanges.map(exchange => (
-                  <div
+                  <button
                     key={exchange.name}
                     className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer"
+                    onClick={() => {
+                      dispatch(updateSwap({exchange: exchange}))
+                      setIsOpen(false)
+                    }}
                   >
                     <div className="w-6 h-6 mr-4"><TokenIcon address={exchange.iconAddress} /></div>
-                    <div className="flex-grow">
+                    <div className="flex-grow text-left">
                       <div className="font-semibold">{exchange.name}</div>
                       {exchange.active ? (
                         <div className="text-gray-500 dark:text-gray-400 text-sm">Available</div>
@@ -96,7 +84,7 @@ const ExchangeModal = () => {
                         <div className="text-gray-500 dark:text-gray-400 text-sm">Coming soon</div>
                       )}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import Link from 'next/link'
-import { Moon } from 'react-feather'
+import { ChevronDown, Moon } from 'react-feather'
 import { useTheme } from 'next-themes'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
@@ -9,11 +9,14 @@ import StreamPopover from './StreamPopover'
 import AccountPopover from './AccountPopover'
 import ConnectPopover from './ConnectPopover'
 import { ModalActionTypes } from 'store/modal/actions'
+import { Menu, Transition } from '@headlessui/react'
+import NotificationsPopover from './Notifications/NotificationsPopover'
 
 const Header = () => {
   const router = useRouter()
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const {theme, setTheme, resolvedTheme} = useTheme()
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const dispatch = useDispatch()
@@ -72,17 +75,45 @@ const Header = () => {
                   <a className={router.pathname.includes('/portfolio') ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
 
-                <Link href="/vote">
-                  <a className={router.pathname.includes('/vote') ? 'menu-item-active' : 'menu-item'}>Vote</a>
-                </Link>
+                {/* <Link href="/swap">
+                  <a className={router.pathname === '/swap' ? 'menu-item-active' : 'menu-item'}>Swap <span className="bg-primary dark:bg-primaryDark dark:text-black text-xs py-1 px-2 rounded font-semibold ml-1">New</span></a>
+                </Link> */}
 
-                <Link href="/calendar">
-                  <a className={router.pathname === '/calendar' ? 'menu-item-active' : 'menu-item'}>Calendar</a>
-                </Link>
-
-                <Link href="/bridge">
-                  <a className={router.pathname === '/bridge' ? 'menu-item-active' : 'menu-item'}>Bridge</a>
-                </Link>
+                <Menu as="div" className="inline-block relative">
+                  <div>
+                    <Menu.Button className="menu-item inline-flex items-center gap-1" onClick={() => setMoreOpen(!moreOpen)}>More <ChevronDown size={14} /></Menu.Button>
+                  </div>
+                  
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-opacity-20 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex={-1}>
+                      <div className="py-1" role="none">
+                        <Menu.Item>
+                          <Link href="/bridge">
+                            <a className={router.pathname.includes('/bridge') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Bridge</a>
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link href="/vote">
+                            <a className={router.pathname.includes('/vote') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Vote</a>
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link href="/calendar">
+                            <a className={router.pathname === '/calendar' ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Calendar</a>
+                          </Link>
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
               </div>
             </div>
           </div>
@@ -91,6 +122,7 @@ const Header = () => {
               <div className="flex items-center">
                 {accountState.selectedWallet ? (
                   <>
+                    {/* <NotificationsPopover /> */}
                     <StreamPopover />
                     <AccountPopover />
                   </>
