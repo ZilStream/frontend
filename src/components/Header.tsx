@@ -75,9 +75,9 @@ const Header = () => {
                   <a className={router.pathname.includes('/portfolio') ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
 
-                <Link href="/swap">
+                {/* <Link href="/swap">
                   <a className={router.pathname === '/swap' ? 'menu-item-active' : 'menu-item'}>Swap <span className="bg-primary dark:bg-primaryDark dark:text-black text-xs py-1 px-2 rounded font-semibold ml-1">New</span></a>
-                </Link>
+                </Link> */}
 
                 <Menu as="div" className="inline-block relative">
                   <div>
@@ -93,21 +93,21 @@ const Header = () => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex={-1}>
+                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-opacity-20 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex={-1}>
                       <div className="py-1" role="none">
                         <Menu.Item>
                           <Link href="/bridge">
-                            <a className={router.pathname.includes('/bridge') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Bridge</a>
+                            <a className={router.pathname.includes('/bridge') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Bridge</a>
                           </Link>
                         </Menu.Item>
                         <Menu.Item>
                           <Link href="/vote">
-                            <a className={router.pathname.includes('/vote') ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Vote</a>
+                            <a className={router.pathname.includes('/vote') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Vote</a>
                           </Link>
                         </Menu.Item>
                         <Menu.Item>
                           <Link href="/calendar">
-                            <a className={router.pathname === '/calendar' ? 'bg-gray-100 text-gray-900 block px-4 py-2 text-sm' : 'text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Calendar</a>
+                            <a className={router.pathname === '/calendar' ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm' : 'text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700'}>Calendar</a>
                           </Link>
                         </Menu.Item>
                       </div>
@@ -122,7 +122,7 @@ const Header = () => {
               <div className="flex items-center">
                 {accountState.selectedWallet ? (
                   <>
-                    <NotificationsPopover />
+                    {/* <NotificationsPopover /> */}
                     <StreamPopover />
                     <AccountPopover />
                   </>
