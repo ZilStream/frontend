@@ -185,6 +185,7 @@ const TransactionsExportModal = () => {
               {transactions.length > 0 &&
                 <CSVLink 
                   data={transactions}
+                  enclosingCharacter={''}
                   filename={'transactions.csv'}
                   className="bg-primary rounded-lg px-3 py-2 text-center"
                 >
