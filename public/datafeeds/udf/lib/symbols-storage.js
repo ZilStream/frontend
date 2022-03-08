@@ -1,17 +1,17 @@
 import { getErrorMessage, logMessage, } from './helpers';
 function extractField(data, field, arrayIndex, valueIsArray) {
-    const value = data[field];
+    var value = data[field];
     if (Array.isArray(value) && (!valueIsArray || Array.isArray(value[0]))) {
         return value[arrayIndex];
     }
     return value;
 }
-function symbolKey(symbol, currency, unit) {
+function symbolWithCurrencyKey(symbol, currency) {
     // here we're using a separator that quite possible shouldn't be in a real symbol name
-    return symbol + (currency !== undefined ? '_%|#|%_' + currency : '') + (unit !== undefined ? '_%|#|%_' + unit : '');
+    return symbol + (currency !== undefined ? '_%|#|%_' + currency : '');
 }
-export class SymbolsStorage {
-    constructor(datafeedUrl, datafeedSupportedResolutions, requester) {
+var SymbolsStorage = /** @class */ (function () {
+    function SymbolsStorage(datafeedUrl, datafeedSupportedResolutions, requester) {
         this._exchangesList = ['NYSE', 'FOREX', 'AMEX'];
         this._symbolsInfo = {};
         this._symbolsList = [];
@@ -19,53 +19,59 @@ export class SymbolsStorage {
         this._datafeedSupportedResolutions = datafeedSupportedResolutions;
         this._requester = requester;
         this._readyPromise = this._init();
-        this._readyPromise.catch((error) => {
+        this._readyPromise.catch(function (error) {
             // seems it is impossible
             // tslint:disable-next-line:no-console
-            console.error(`SymbolsStorage: Cannot init, error=${error.toString()}`);
+            console.error("SymbolsStorage: Cannot init, error=" + error.toString());
         });
     }
     // BEWARE: this function does not consider symbol's exchange
-    resolveSymbol(symbolName, currencyCode, unitId) {
-        return this._readyPromise.then(() => {
-            const symbolInfo = this._symbolsInfo[symbolKey(symbolName, currencyCode, unitId)];
+    SymbolsStorage.prototype.resolveSymbol = function (symbolName, currencyCode) {
+        var _this = this;
+        return this._readyPromise.then(function () {
+            var symbolInfo = _this._symbolsInfo[symbolWithCurrencyKey(symbolName, currencyCode)];
             if (symbolInfo === undefined) {
                 return Promise.reject('invalid symbol');
             }
             return Promise.resolve(symbolInfo);
         });
-    }
-    searchSymbols(searchString, exchange, symbolType, maxSearchResults) {
-        return this._readyPromise.then(() => {
-            const weightedResult = [];
-            const queryIsEmpty = searchString.length === 0;
+    };
+    SymbolsStorage.prototype.searchSymbols = function (searchString, exchange, symbolType, maxSearchResults) {
+        var _this = this;
+        return this._readyPromise.then(function () {
+            var weightedResult = [];
+            var queryIsEmpty = searchString.length === 0;
             searchString = searchString.toUpperCase();
-            for (const symbolName of this._symbolsList) {
-                const symbolInfo = this._symbolsInfo[symbolName];
+            var _loop_1 = function (symbolName) {
+                var symbolInfo = _this._symbolsInfo[symbolName];
                 if (symbolInfo === undefined) {
-                    continue;
+                    return "continue";
                 }
                 if (symbolType.length > 0 && symbolInfo.type !== symbolType) {
-                    continue;
+                    return "continue";
                 }
                 if (exchange && exchange.length > 0 && symbolInfo.exchange !== exchange) {
-                    continue;
+                    return "continue";
                 }
-                const positionInName = symbolInfo.name.toUpperCase().indexOf(searchString);
-                const positionInDescription = symbolInfo.description.toUpperCase().indexOf(searchString);
+                var positionInName = symbolInfo.name.toUpperCase().indexOf(searchString);
+                var positionInDescription = symbolInfo.description.toUpperCase().indexOf(searchString);
                 if (queryIsEmpty || positionInName >= 0 || positionInDescription >= 0) {
-                    const alreadyExists = weightedResult.some((item) => item.symbolInfo === symbolInfo);
+                    var alreadyExists = weightedResult.some(function (item) { return item.symbolInfo === symbolInfo; });
                     if (!alreadyExists) {
-                        const weight = positionInName >= 0 ? positionInName : 8000 + positionInDescription;
+                        var weight = positionInName >= 0 ? positionInName : 8000 + positionInDescription;
                         weightedResult.push({ symbolInfo: symbolInfo, weight: weight });
                     }
                 }
+            };
+            for (var _i = 0, _a = _this._symbolsList; _i < _a.length; _i++) {
+                var symbolName = _a[_i];
+                _loop_1(symbolName);
             }
-            const result = weightedResult
-                .sort((item1, item2) => item1.weight - item2.weight)
+            var result = weightedResult
+                .sort(function (item1, item2) { return item1.weight - item2.weight; })
                 .slice(0, maxSearchResults)
-                .map((item) => {
-                const symbolInfo = item.symbolInfo;
+                .map(function (item) {
+                var symbolInfo = item.symbolInfo;
                 return {
                     symbol: symbolInfo.name,
                     full_name: symbolInfo.full_name,
@@ -78,11 +84,13 @@ export class SymbolsStorage {
             });
             return Promise.resolve(result);
         });
-    }
-    _init() {
-        const promises = [];
-        const alreadyRequestedExchanges = {};
-        for (const exchange of this._exchangesList) {
+    };
+    SymbolsStorage.prototype._init = function () {
+        var _this = this;
+        var promises = [];
+        var alreadyRequestedExchanges = {};
+        for (var _i = 0, _a = this._exchangesList; _i < _a.length; _i++) {
+            var exchange = _a[_i];
             if (alreadyRequestedExchanges[exchange]) {
                 continue;
             }
@@ -90,17 +98,18 @@ export class SymbolsStorage {
             promises.push(this._requestExchangeData(exchange));
         }
         return Promise.all(promises)
-            .then(() => {
-            this._symbolsList.sort();
+            .then(function () {
+            _this._symbolsList.sort();
             logMessage('SymbolsStorage: All exchanges data loaded');
         });
-    }
-    _requestExchangeData(exchange) {
-        return new Promise((resolve, reject) => {
-            this._requester.sendRequest(this._datafeedUrl, 'symbol_info', { group: exchange })
-                .then((response) => {
+    };
+    SymbolsStorage.prototype._requestExchangeData = function (exchange) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this._requester.sendRequest(_this._datafeedUrl, 'symbol_info', { group: exchange })
+                .then(function (response) {
                 try {
-                    this._onExchangeDataReceived(exchange, response);
+                    _this._onExchangeDataReceived(exchange, response);
                 }
                 catch (error) {
                     reject(error);
@@ -108,26 +117,25 @@ export class SymbolsStorage {
                 }
                 resolve();
             })
-                .catch((reason) => {
-                logMessage(`SymbolsStorage: Request data for exchange '${exchange}' failed, reason=${getErrorMessage(reason)}`);
+                .catch(function (reason) {
+                logMessage("SymbolsStorage: Request data for exchange '" + exchange + "' failed, reason=" + getErrorMessage(reason));
                 resolve();
             });
         });
-    }
-    _onExchangeDataReceived(exchange, data) {
-        let symbolIndex = 0;
+    };
+    SymbolsStorage.prototype._onExchangeDataReceived = function (exchange, data) {
+        var symbolIndex = 0;
         try {
-            const symbolsCount = data.symbol.length;
-            const tickerPresent = data.ticker !== undefined;
+            var symbolsCount = data.symbol.length;
+            var tickerPresent = data.ticker !== undefined;
             for (; symbolIndex < symbolsCount; ++symbolIndex) {
-                const symbolName = data.symbol[symbolIndex];
-                const listedExchange = extractField(data, 'exchange-listed', symbolIndex);
-                const tradedExchange = extractField(data, 'exchange-traded', symbolIndex);
-                const fullName = tradedExchange + ':' + symbolName;
-                const currencyCode = extractField(data, 'currency-code', symbolIndex);
-                const unitId = extractField(data, 'unit-id', symbolIndex);
-                const ticker = tickerPresent ? extractField(data, 'ticker', symbolIndex) : symbolName;
-                const symbolInfo = {
+                var symbolName = data.symbol[symbolIndex];
+                var listedExchange = extractField(data, 'exchange-listed', symbolIndex);
+                var tradedExchange = extractField(data, 'exchange-traded', symbolIndex);
+                var fullName = tradedExchange + ':' + symbolName;
+                var currencyCode = extractField(data, 'currency-code', symbolIndex);
+                var ticker = tickerPresent ? extractField(data, 'ticker', symbolIndex) : symbolName;
+                var symbolInfo = {
                     ticker: ticker,
                     name: symbolName,
                     base_name: [listedExchange + ':' + symbolName],
@@ -136,9 +144,6 @@ export class SymbolsStorage {
                     exchange: tradedExchange,
                     currency_code: currencyCode,
                     original_currency_code: extractField(data, 'original-currency-code', symbolIndex),
-                    unit_id: unitId,
-                    original_unit_id: extractField(data, 'original-unit-id', symbolIndex),
-                    unit_conversion_types: extractField(data, 'unit-conversion-types', symbolIndex, true),
                     description: extractField(data, 'description', symbolIndex),
                     has_intraday: definedValueOrDefault(extractField(data, 'has-intraday', symbolIndex), false),
                     has_no_volume: definedValueOrDefault(extractField(data, 'has-no-volume', symbolIndex), false),
@@ -150,6 +155,7 @@ export class SymbolsStorage {
                     session: extractField(data, 'session-regular', symbolIndex),
                     timezone: extractField(data, 'timezone', symbolIndex),
                     supported_resolutions: definedValueOrDefault(extractField(data, 'supported-resolutions', symbolIndex, true), this._datafeedSupportedResolutions),
+                    force_session_rebuild: extractField(data, 'force-session-rebuild', symbolIndex),
                     has_daily: definedValueOrDefault(extractField(data, 'has-daily', symbolIndex), true),
                     intraday_multipliers: definedValueOrDefault(extractField(data, 'intraday-multipliers', symbolIndex, true), ['1', '5', '15', '30', '60']),
                     has_weekly_and_monthly: extractField(data, 'has-weekly-and-monthly', symbolIndex),
@@ -160,19 +166,21 @@ export class SymbolsStorage {
                 this._symbolsInfo[ticker] = symbolInfo;
                 this._symbolsInfo[symbolName] = symbolInfo;
                 this._symbolsInfo[fullName] = symbolInfo;
-                if (currencyCode !== undefined || unitId !== undefined) {
-                    this._symbolsInfo[symbolKey(ticker, currencyCode, unitId)] = symbolInfo;
-                    this._symbolsInfo[symbolKey(symbolName, currencyCode, unitId)] = symbolInfo;
-                    this._symbolsInfo[symbolKey(fullName, currencyCode, unitId)] = symbolInfo;
+                if (currencyCode !== undefined) {
+                    this._symbolsInfo[symbolWithCurrencyKey(ticker, currencyCode)] = symbolInfo;
+                    this._symbolsInfo[symbolWithCurrencyKey(symbolName, currencyCode)] = symbolInfo;
+                    this._symbolsInfo[symbolWithCurrencyKey(fullName, currencyCode)] = symbolInfo;
                 }
                 this._symbolsList.push(symbolName);
             }
         }
         catch (error) {
-            throw new Error(`SymbolsStorage: API error when processing exchange ${exchange} symbol #${symbolIndex} (${data.symbol[symbolIndex]}): ${error.message}`);
+            throw new Error("SymbolsStorage: API error when processing exchange " + exchange + " symbol #" + symbolIndex + " (" + data.symbol[symbolIndex] + "): " + error.message);
         }
-    }
-}
+    };
+    return SymbolsStorage;
+}());
+export { SymbolsStorage };
 function definedValueOrDefault(value, defaultValue) {
     return value !== undefined ? value : defaultValue;
 }

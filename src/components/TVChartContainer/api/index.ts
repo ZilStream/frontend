@@ -14,7 +14,7 @@ const config: UdfCompatibleConfiguration = {
     '1D' as ResolutionString
   ],
   supports_marks: false,
-  supports_timescale_marks: false,
+  supports_timescale_marks: false
 }; 
 
 export default {

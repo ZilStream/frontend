@@ -38,22 +38,6 @@ function getLanguageFromURL(): LanguageCode | null {
 }
 
 export default class TVChartContainer extends React.PureComponent<Partial<ChartContainerProps>, ChartContainerState> {
-	public static defaultProps: ChartContainerProps = {
-		symbol: 'AAPL',
-		interval: 'D' as ResolutionString,
-		containerId: 'tv_chart_container',
-		datafeedUrl: 'https://demo_feed.tradingview.com',
-		libraryPath: '/charting_library/',
-		chartsStorageUrl: 'https://saveload.tradingview.com',
-		chartsStorageApiVersion: '1.1',
-		clientId: 'tradingview.com',
-		userId: 'public_user_id',
-		fullscreen: false,
-		autosize: true,
-		studiesOverrides: {},
-		theme: 'Light'
-	};
-
 	private tvWidget: IChartingLibraryWidget | null = null;
 
 	public componentDidMount(): void {
@@ -64,9 +48,9 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			// BEWARE: no trailing slash is expected in feed URL
 			// tslint:disable-next-line:no-any
 			datafeed: DataFeed as IBasicDataFeed,
-			timeframe: '1M',
+			timeframe: '14D',
 			interval: this.props.interval as ChartingLibraryWidgetOptions['interval'],
-			container: this.props.containerId ?? '',
+			container_id: this.props.containerId as ChartingLibraryWidgetOptions['container_id'],
 			library_path: this.props.libraryPath as string,
 			locale: getLanguageFromURL() || 'en',
 			disabled_features: ['create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],

@@ -3,6 +3,7 @@ import {
 	ErrorCallback,
 	GetMarksCallback,
 	HistoryCallback,
+	HistoryDepth,
 	IDatafeedChartApi,
 	IDatafeedQuotesApi,
 	IExternalDatafeed,
@@ -10,6 +11,7 @@ import {
 	Mark,
 	OnReadyCallback,
 	QuotesCallback,
+	ResolutionBackValues,
 	ResolutionString,
 	ResolveCallback,
 	SearchSymbolResultItem,
@@ -30,7 +32,6 @@ import {
 import {
 	GetBarsResult,
 	HistoryProvider,
-	PeriodParamsWithOptionalCountback,
 } from './history-provider';
 
 import { IQuotesProvider } from './iquotes-provider';
@@ -129,6 +130,10 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 
 	public unsubscribeQuotes(listenerGuid: string): void {
 		this._quotesPulseProvider.unsubscribeQuotes(listenerGuid);
+	}
+
+	public calculateHistoryDepth(resolution: ResolutionString, resolutionBack: ResolutionBackValues, intervalBack: number): HistoryDepth | undefined {
+		return undefined;
 	}
 
 	public getMarks(symbolInfo: LibrarySymbolInfo, from: number, to: number, onDataCallback: GetMarksCallback<Mark>, resolution: ResolutionString): void {
@@ -262,7 +267,6 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 		logMessage('Resolve requested');
 
 		const currencyCode = extension && extension.currencyCode;
-		const unitId = extension && extension.unitId;
 
 		const resolveRequestStartTime = Date.now();
 		function onResultReady(symbolInfo: LibrarySymbolInfo): void {
@@ -276,9 +280,6 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 			};
 			if (currencyCode !== undefined) {
 				params.currencyCode = currencyCode;
-			}
-			if (unitId !== undefined) {
-				params.unitId = unitId;
 			}
 
 			this._send<ResolveSymbolResponse | UdfErrorResponse>('symbols', params)
@@ -298,12 +299,12 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 				throw new Error('UdfCompatibleDatafeed: inconsistent configuration (symbols storage)');
 			}
 
-			this._symbolsStorage.resolveSymbol(symbolName, currencyCode, unitId).then(onResultReady).catch(onError);
+			this._symbolsStorage.resolveSymbol(symbolName, currencyCode).then(onResultReady).catch(onError);
 		}
 	}
 
-	public getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParamsWithOptionalCountback, onResult: HistoryCallback, onError: ErrorCallback): void {
-		this._historyProvider.getBars(symbolInfo, resolution, periodParams)
+	public getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, rangeStartDate: number, rangeEndDate: number, onResult: HistoryCallback, onError: ErrorCallback): void {
+		this._historyProvider.getBars(symbolInfo, resolution, rangeStartDate, rangeEndDate)
 			.then((result: GetBarsResult) => {
 				onResult(result.bars, result.meta);
 			})

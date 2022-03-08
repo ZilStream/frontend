@@ -2,7 +2,6 @@ import {
 	Bar,
 	HistoryMetadata,
 	LibrarySymbolInfo,
-	PeriodParams,
 } from '../../../charting_library/datafeed-api';
 
 import {
@@ -40,8 +39,6 @@ interface HistoryNoDataResponse extends UdfResponse {
 
 type HistoryResponse = HistoryFullDataResponse | HistoryPartialDataResponse | HistoryNoDataResponse;
 
-export type PeriodParamsWithOptionalCountback = Omit<PeriodParams, 'countBack'> & { countBack?: number };
-
 export interface GetBarsResult {
 	bars: Bar[];
 	meta: HistoryMetadata;
@@ -56,23 +53,16 @@ export class HistoryProvider {
 		this._requester = requester;
 	}
 
-	public getBars(symbolInfo: LibrarySymbolInfo, resolution: string, periodParams: PeriodParamsWithOptionalCountback): Promise<GetBarsResult> {
+	public getBars(symbolInfo: LibrarySymbolInfo, resolution: string, rangeStartDate: number, rangeEndDate: number): Promise<GetBarsResult> {
 		const requestParams: RequestParams = {
 			symbol: symbolInfo.ticker || '',
 			resolution: resolution,
-			from: periodParams.from,
-			to: periodParams.to,
+			from: rangeStartDate,
+			to: rangeEndDate,
 		};
-		if (periodParams.countBack !== undefined) {
-			requestParams.countback = periodParams.countBack;
-		}
 
 		if (symbolInfo.currency_code !== undefined) {
 			requestParams.currencyCode = symbolInfo.currency_code;
-		}
-
-		if (symbolInfo.unit_id !== undefined) {
-			requestParams.unitId = symbolInfo.unit_id;
 		}
 
 		return new Promise((resolve: (result: GetBarsResult) => void, reject: (reason: string) => void) => {
