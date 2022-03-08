@@ -59,15 +59,16 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 	public componentDidMount(): void {
 		const saveLoadAdapter = new SaveLoadAdapter()
 		const widgetOptions: ChartingLibraryWidgetOptions = {
-      debug: process.env.NODE_ENV === `development` ? true : false,
+      // debug: true,
 			symbol: this.props.symbol as string,
 			// BEWARE: no trailing slash is expected in feed URL
 			// tslint:disable-next-line:no-any
 			datafeed: DataFeed as IBasicDataFeed,
-			timeframe: '1M',
 			interval: this.props.interval as ChartingLibraryWidgetOptions['interval'],
-			container: this.props.containerId ?? '',
+			timeframe: '21D',
+			container_id: this.props.containerId as ChartingLibraryWidgetOptions['container_id'],
 			library_path: this.props.libraryPath as string,
+
 			locale: getLanguageFromURL() || 'en',
 			disabled_features: ['create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode', 'use_localstorage_for_settings'],

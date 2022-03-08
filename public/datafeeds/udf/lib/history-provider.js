@@ -1,34 +1,29 @@
 import { getErrorMessage, } from './helpers';
-export class HistoryProvider {
-    constructor(datafeedUrl, requester) {
+var HistoryProvider = /** @class */ (function () {
+    function HistoryProvider(datafeedUrl, requester) {
         this._datafeedUrl = datafeedUrl;
         this._requester = requester;
     }
-    getBars(symbolInfo, resolution, periodParams) {
-        const requestParams = {
+    HistoryProvider.prototype.getBars = function (symbolInfo, resolution, rangeStartDate, rangeEndDate) {
+        var _this = this;
+        var requestParams = {
             symbol: symbolInfo.ticker || '',
             resolution: resolution,
-            from: periodParams.from,
-            to: periodParams.to,
+            from: rangeStartDate,
+            to: rangeEndDate,
         };
-        if (periodParams.countBack !== undefined) {
-            requestParams.countback = periodParams.countBack;
-        }
         if (symbolInfo.currency_code !== undefined) {
             requestParams.currencyCode = symbolInfo.currency_code;
         }
-        if (symbolInfo.unit_id !== undefined) {
-            requestParams.unitId = symbolInfo.unit_id;
-        }
-        return new Promise((resolve, reject) => {
-            this._requester.sendRequest(this._datafeedUrl, 'history', requestParams)
-                .then((response) => {
+        return new Promise(function (resolve, reject) {
+            _this._requester.sendRequest(_this._datafeedUrl, 'history', requestParams)
+                .then(function (response) {
                 if (response.s !== 'ok' && response.s !== 'no_data') {
                     reject(response.errmsg);
                     return;
                 }
-                const bars = [];
-                const meta = {
+                var bars = [];
+                var meta = {
                     noData: false,
                 };
                 if (response.s === 'no_data') {
@@ -36,10 +31,10 @@ export class HistoryProvider {
                     meta.nextTime = response.nextTime;
                 }
                 else {
-                    const volumePresent = response.v !== undefined;
-                    const ohlPresent = response.o !== undefined;
-                    for (let i = 0; i < response.t.length; ++i) {
-                        const barValue = {
+                    var volumePresent = response.v !== undefined;
+                    var ohlPresent = response.o !== undefined;
+                    for (var i = 0; i < response.t.length; ++i) {
+                        var barValue = {
                             time: response.t[i] * 1000,
                             close: parseFloat(response.c[i]),
                             open: parseFloat(response.c[i]),
@@ -62,12 +57,14 @@ export class HistoryProvider {
                     meta: meta,
                 });
             })
-                .catch((reason) => {
-                const reasonString = getErrorMessage(reason);
+                .catch(function (reason) {
+                var reasonString = getErrorMessage(reason);
                 // tslint:disable-next-line:no-console
-                console.warn(`HistoryProvider: getBars() failed, error=${reasonString}`);
+                console.warn("HistoryProvider: getBars() failed, error=" + reasonString);
                 reject(reasonString);
             });
         });
-    }
-}
+    };
+    return HistoryProvider;
+}());
+export { HistoryProvider };

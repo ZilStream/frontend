@@ -29,7 +29,7 @@ export default {
 			name: symbolName,
 			description: symbolName,
 			type: 'crypto',
-			exchange: '',
+			exchange: 'ZilSwap',
 			format: "price",
 			minmov: 1,
 			pricescale: 100,
@@ -48,8 +48,7 @@ export default {
 		// onResolveErrorCallback('Not feeling it today')
 
 	},
-	getBars: function(symbolInfo: LibrarySymbolInfo, resolution: string, periodParams: any, onHistoryCallback: any, onErrorCallback: any) {
-		let { from, to } = periodParams
+	getBars: function(symbolInfo: LibrarySymbolInfo, resolution: string, from: any, to: any, onHistoryCallback: any, onErrorCallback: any, firstDataRequest: any) {
 		var res = resolution
 		if(resolution === '5') {
 			res = '5m'
