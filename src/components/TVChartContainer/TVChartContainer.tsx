@@ -65,7 +65,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			// tslint:disable-next-line:no-any
 			datafeed: DataFeed as IBasicDataFeed,
 			interval: this.props.interval as ChartingLibraryWidgetOptions['interval'],
-			timeframe: '14D',
+			timeframe: '21D',
 			container_id: this.props.containerId as ChartingLibraryWidgetOptions['container_id'],
 			library_path: this.props.libraryPath as string,
 
