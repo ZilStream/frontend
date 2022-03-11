@@ -15,10 +15,11 @@ import { toast } from 'react-toastify'
 import { ZIL_ADDRESS } from 'lib/constants'
 import { BIG_ONE } from 'utils/strings'
 import { openExchange } from 'store/modal/actions'
-import { shortenAddress } from 'utils/addressShortener'
+import { shortenAddress } from 'utils/shorten'
 import { updateSwap } from 'store/swap/actions'
 import { XCADDex } from 'lib/exchange/xcaddex/xcaddex'
 import { addNotification } from 'store/notification/actions'
+import dayjs from 'dayjs'
 
 interface Props {
   showFullscreen?: boolean
@@ -115,7 +116,7 @@ const Swap = (props: Props) => {
     } else {
       dispatch(addNotification({
         notification: {
-          timestamp: + new Date(),
+          timestamp: dayjs().unix(),
           title: `Approve ${tokenIn.symbol} for ${swapState.exchange.name}`,
           hash: tx.hash,
           status: "pending",
@@ -142,7 +143,7 @@ const Swap = (props: Props) => {
 
     dispatch(addNotification({
       notification: {
-        timestamp: + new Date(),
+        timestamp: dayjs().unix(),
         title: `Swap ${cryptoFormat(state.tokenInAmount.toNumber())} ${tokenIn.symbol} to ${cryptoFormat(state.tokenOutAmount.toNumber())} ${tokenOut.symbol}`,
         hash: tx.hash,
         status: "pending",

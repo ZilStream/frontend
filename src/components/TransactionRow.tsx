@@ -6,7 +6,7 @@ import TokenIcon from './TokenIcon'
 import useMoneyFormatter, { toBigNumber } from 'utils/useMoneyFormatter'
 import { AccountState, RootState, Token, TokenState } from 'store/types'
 import { useSelector } from 'react-redux'
-import { shortenAddress } from 'utils/addressShortener'
+import { shortenAddress } from 'utils/shorten'
 import { ZIL_ADDRESS } from 'lib/constants'
 
 interface Props {

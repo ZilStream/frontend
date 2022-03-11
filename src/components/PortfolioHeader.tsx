@@ -5,7 +5,7 @@ import React from 'react'
 import { Clipboard } from 'react-feather'
 import { useSelector } from 'react-redux'
 import { AccountState, RootState } from 'store/types'
-import { shortenAddress } from 'utils/addressShortener'
+import { shortenAddress } from 'utils/shorten'
 
 const PortfolioHeader = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)

@@ -1,3 +1,4 @@
+import { Zilliqa } from '@zilliqa-js/zilliqa'
 import getZilRates from 'lib/coingecko/getZilRates'
 import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
@@ -8,7 +9,7 @@ import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { setAlertState, updateAlert } from 'store/alert/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
-import { setNotificationState } from 'store/notification/actions'
+import { setNotificationState, updateNotification } from 'store/notification/actions'
 import { updateSettings } from 'store/settings/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
@@ -36,6 +37,7 @@ const StateProvider = (props: Props) => {
   const notificationState = useSelector<RootState, NotificationState>(state => state.notification)
   const dispatch = useDispatch()
   const [stakingLoaded, setStakingLoaded] = useState(false)
+  const zilliqa = new Zilliqa('https://api.zilliqa.com')
 
   async function loadTokens() {
     const tokens = await getTokens()
@@ -168,7 +170,33 @@ const StateProvider = (props: Props) => {
         ...notifications,
         initialized: true
       }))
+    } else {
+      dispatch(setNotificationState({
+        notifications: [],
+        initialized: true
+      }))
     }
+  }
+
+  async function checkPendingNotifications() {
+    let pendingNotifications = notificationState.notifications.filter(notification => notification.status === "pending")
+
+    pendingNotifications.forEach(async notification => {
+      let tx = await zilliqa.blockchain.getTransactionStatus(notification.hash)
+      if(tx.status === 3) {
+        // Tx confirmed
+        dispatch(updateNotification({
+          hash: notification.hash,
+          status: "confirmed"
+        }))
+      } else if(tx.status >= 10) {
+        // Tx rejected
+        dispatch(updateNotification({
+          hash: notification.hash,
+          status: "rejected"
+        }))
+      }
+    })
   }
 
   async function processAlerts() {
@@ -220,6 +248,7 @@ const StateProvider = (props: Props) => {
     if(!tokenState.initialized) return
     loadTokens()
     loadWalletState()
+    checkPendingNotifications()
   }, [blockchainState.blockHeight])
 
   useEffect(() => {

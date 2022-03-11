@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteWallet } from "store/account/actions";
 import { AccountState, ConnectedWallet, RootState } from "store/types";
 import { AccountType } from "types/walletType.interface";
-import { shortenAddress } from "utils/addressShortener";
+import { shortenAddress } from "utils/shorten";
 
 function Wallets() {
   let accountState = useSelector<RootState, AccountState>(state => state.account)

@@ -122,7 +122,7 @@ const Header = () => {
               <div className="flex items-center">
                 {accountState.selectedWallet ? (
                   <>
-                    {/* <NotificationsPopover /> */}
+                    <NotificationsPopover />
                     <StreamPopover />
                     <AccountPopover />
                   </>
