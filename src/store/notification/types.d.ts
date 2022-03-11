@@ -15,3 +15,7 @@ export interface NotificationStateProps extends Partial<NotificationState> {}
 export interface NotificationAddProps {
   notification: Notification
 }
+
+export interface NotificationRemoveProps {
+  notification: Notification
+}
