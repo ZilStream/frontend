@@ -12,7 +12,7 @@ import TokenIcon from 'components/TokenIcon'
 import { Exchange } from 'lib/exchange/exchange'
 import { ZilSwap } from 'lib/exchange/zilswap/zilswap'
 import { toast } from 'react-toastify'
-import { ZIL_ADDRESS } from 'lib/constants'
+import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import { BIG_ONE } from 'utils/strings'
 import { openExchange } from 'store/modal/actions'
 import { shortenAddress } from 'utils/shorten'
@@ -43,10 +43,16 @@ const Swap = (props: Props) => {
     focusDirectionIn: true,
     needsApproval: false
   })
-  const limitTokensToDirectPairs = swapState.exchange.identifier === 'xcaddex' ? true : false
 
   useEffect(() => {
     initiateExchange()
+
+    if(swapState.tokenInAddress === null || swapState.tokenOutAddress === null) {
+      dispatch(updateSwap({
+        tokenInAddress: swapState.exchange.baseTokenAddress,
+        tokenOutAddress: STREAM_ADDRESS
+      }))
+    }
   }, [])
 
   useEffect(() => {
@@ -58,7 +64,7 @@ const Swap = (props: Props) => {
 
     if(swapState.exchange.identifier === 'zilswap') {
       setExchange(new ZilSwap(blockchainState.client, zilPay))
-    } else if(swapState.exchange.identifier === 'xcaddex') {
+    } else if(swapState.exchange.identifier === 'xcad-dex') {
       setExchange(new XCADDex(blockchainState.client, zilPay))
     }
   }
@@ -69,6 +75,15 @@ const Swap = (props: Props) => {
       tokenOut: tokenState.tokens.filter(t => t.address_bech32 === tokenOutAddress)?.[0]
     }
   }, [tokenState, swapState])
+
+  useEffect(() => {
+    if(!tokenState.initialized) return
+
+    dispatch(updateSwap({
+      tokenInAddress: swapState.exchange.baseTokenAddress,
+      tokenOutAddress: STREAM_ADDRESS
+    }))
+  }, [swapState.exchange])
 
   useEffect(() => {
     if(!exchange || !tokenIn) return

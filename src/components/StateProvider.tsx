@@ -61,13 +61,6 @@ const StateProvider = (props: Props) => {
       }
     })
 
-    if(tokens.length > 0 && swapState.tokenInAddress === null && swapState.tokenOutAddress === null) {
-      dispatch(updateSwap({
-        tokenInAddress: tokens.filter(t => t.symbol === 'ZIL')[0].address_bech32,
-        tokenOutAddress: tokens.filter(t => t.symbol === 'STREAM')[0].address_bech32
-      }))
-    }
-
     processAlerts()
   }
 
@@ -304,7 +297,7 @@ const StateProvider = (props: Props) => {
       dispatch({ type: AccountActionTypes.INIT_ACCOUNT, payload: account })
 
       if(account.wallets.filter(a => a.type === AccountType.ZilPay).length > 0) {
-        // Has ZilPay wallet, try to connect
+        // Has Zil Pay wallet, try to connect
         connectZilPay()
       }
     } else {
