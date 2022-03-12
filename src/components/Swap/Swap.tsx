@@ -20,6 +20,8 @@ import { updateSwap } from 'store/swap/actions'
 import { XCADDex } from 'lib/exchange/xcaddex/xcaddex'
 import { addNotification } from 'store/notification/actions'
 import dayjs from 'dayjs'
+import getExchange from 'lib/zilstream/getExchange'
+import { Pair } from 'types/pair.interface'
 
 interface Props {
   showFullscreen?: boolean
@@ -53,6 +55,8 @@ const Swap = (props: Props) => {
         tokenOutAddress: STREAM_ADDRESS
       }))
     }
+
+    getPairsForExchange()
   }, [])
 
   useEffect(() => {
@@ -69,6 +73,59 @@ const Swap = (props: Props) => {
     }
   }
 
+  useEffect(() => {
+    // When a token gets set, check if the current routing is available. If not
+    // make an educated guess.
+    if(swapState.exchange.hasRouting) {
+      // Check if the same token has been entered
+      if(swapState.tokenInAddress === swapState.tokenOutAddress) {
+        if(swapState.selectedDirection === "in") {
+          dispatch(updateSwap({
+            tokenOutAddress: swapState.tokenInAddress === ZIL_ADDRESS ? STREAM_ADDRESS : ZIL_ADDRESS
+          }))
+        } else {
+          dispatch(updateSwap({
+            tokenInAddress: swapState.tokenOutAddress === ZIL_ADDRESS ? STREAM_ADDRESS : ZIL_ADDRESS
+          }))
+        }
+      }      
+    } else {
+      if(swapState.selectedDirection === "in") {
+        let quoteTokens = [...new Set(swapState.availablePairs.filter(pair => pair.base_address === swapState.tokenInAddress).map(pair => pair.quote_address))] 
+        let baseTokens = [...new Set(swapState.availablePairs.filter(pair => pair.quote_address === swapState.tokenInAddress).map(pair => pair.base_address))]
+        let availableTokens = quoteTokens.concat(baseTokens)
+
+        if(swapState.tokenOutAddress && availableTokens.includes(swapState.tokenOutAddress)) return
+ 
+        if(quoteTokens.length > 0) {
+          dispatch(updateSwap({
+            tokenOutAddress: quoteTokens[0]
+          }))
+        } else {
+          dispatch(updateSwap({
+            tokenOutAddress: baseTokens[0]
+          }))
+        }
+      } else {
+        let quoteTokens = [...new Set(swapState.availablePairs.filter(pair => pair.base_address === swapState.tokenOutAddress).map(pair => pair.quote_address))] 
+        let baseTokens = [...new Set(swapState.availablePairs.filter(pair => pair.quote_address === swapState.tokenOutAddress).map(pair => pair.base_address))]
+        let availableTokens = quoteTokens.concat(baseTokens)
+
+        if(swapState.tokenInAddress && availableTokens.includes(swapState.tokenInAddress)) return
+
+        if(quoteTokens.length > 0) {
+          dispatch(updateSwap({
+            tokenInAddress: quoteTokens[0]
+          }))
+        } else {
+          dispatch(updateSwap({
+            tokenInAddress: baseTokens[0]
+          }))
+        }
+      }      
+    }
+  }, [swapState.tokenInAddress, swapState.tokenOutAddress])
+
   const { tokenIn, tokenOut } = useMemo(() => {
     return {
       tokenIn: tokenState.tokens.filter(t => t.address_bech32 === tokenInAddress)?.[0],
@@ -83,6 +140,8 @@ const Swap = (props: Props) => {
       tokenInAddress: swapState.exchange.baseTokenAddress,
       tokenOutAddress: STREAM_ADDRESS
     }))
+
+    getPairsForExchange()
   }, [swapState.exchange])
 
   useEffect(() => {
@@ -92,8 +151,13 @@ const Swap = (props: Props) => {
       setState({...state, needsApproval: false})
     } else {
       checkApproval()
-      }
+    }
   }, [exchange, swapState.tokenInAddress])
+
+  const getPairsForExchange = async () => {
+    let exchange = await getExchange(swapState.exchange.identifier)
+    dispatch(updateSwap({ availablePairs: exchange.pairs }))
+  }
 
   const checkApproval = async () => {
     const approval = await exchange!.tokenNeedsApproval(tokenIn, BIG_ONE)
