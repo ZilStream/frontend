@@ -255,7 +255,6 @@ const Swap = (props: Props) => {
           onAmountChange={amount => {
             if(!exchange || !tokenIn || !tokenOut) return
             const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount.shiftedBy(tokenIn.decimals), true)
-            console.log(expectedAmount.toNumber(), expectedSlippage.toNumber())
             setState({
               ...state,
               tokenInAmount: amount,
