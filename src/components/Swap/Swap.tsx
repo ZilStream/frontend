@@ -63,6 +63,11 @@ const Swap = (props: Props) => {
   const initiateExchange = () => {
     let zilPay = (window as any).zilPay
 
+    if(typeof zilPay === "undefined") {
+      console.log("ZilPay extension not installed")
+      return
+    }
+
     if(swapState.exchange.identifier === 'zilswap') {
       setExchange(new ZilSwap(blockchainState.client, zilPay))
     } else if(swapState.exchange.identifier === 'xcad-dex') {
@@ -187,7 +192,6 @@ const Swap = (props: Props) => {
     if(!tokenIn) return
 
     const tx = await exchange?.approve(tokenIn, state.tokenInAmount.shiftedBy(tokenIn.decimals))
-    console.log(tx)
     if(tx === null || tx === undefined) {
       setState({...state, needsApproval: false})
     } else {
