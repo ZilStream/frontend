@@ -11,17 +11,14 @@ import Tippy from '@tippyjs/react'
 import TokenIcon from 'components/TokenIcon'
 import { Exchange } from 'lib/exchange/exchange'
 import { ZilSwap } from 'lib/exchange/zilswap/zilswap'
-import { toast } from 'react-toastify'
 import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
 import { BIG_ONE } from 'utils/strings'
 import { openExchange } from 'store/modal/actions'
-import { shortenAddress } from 'utils/shorten'
 import { updateSwap } from 'store/swap/actions'
 import { XCADDex } from 'lib/exchange/xcaddex/xcaddex'
 import { addNotification } from 'store/notification/actions'
 import dayjs from 'dayjs'
 import getExchange from 'lib/zilstream/getExchange'
-import { Pair } from 'types/pair.interface'
 
 interface Props {
   showFullscreen?: boolean
@@ -258,6 +255,7 @@ const Swap = (props: Props) => {
           onAmountChange={amount => {
             if(!exchange || !tokenIn || !tokenOut) return
             const { expectedAmount, expectedSlippage } = exchange.getExchangeRate(tokenIn, tokenOut, amount.shiftedBy(tokenIn.decimals), true)
+            console.log(expectedAmount.toNumber(), expectedSlippage.toNumber())
             setState({
               ...state,
               tokenInAmount: amount,
