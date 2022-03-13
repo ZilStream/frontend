@@ -187,6 +187,7 @@ const Swap = (props: Props) => {
     if(!tokenIn) return
 
     const tx = await exchange?.approve(tokenIn, state.tokenInAmount.shiftedBy(tokenIn.decimals))
+    console.log(tx)
     if(tx === null || tx === undefined) {
       setState({...state, needsApproval: false})
     } else {
@@ -194,7 +195,7 @@ const Swap = (props: Props) => {
         notification: {
           timestamp: dayjs().unix(),
           title: `Approve ${tokenIn.symbol} for ${swapState.exchange.name}`,
-          hash: tx.hash,
+          hash: `0x${tx.id}`,
           status: "pending",
         }
       }))
@@ -221,7 +222,7 @@ const Swap = (props: Props) => {
       notification: {
         timestamp: dayjs().unix(),
         title: `Swap ${cryptoFormat(state.tokenInAmount.toNumber())} ${tokenIn.symbol} to ${cryptoFormat(state.tokenOutAmount.toNumber())} ${tokenOut.symbol}`,
-        hash: tx.hash,
+        hash: `0x${tx.id}`,
         status: "pending",
       }
     }))
