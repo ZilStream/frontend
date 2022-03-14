@@ -1,6 +1,6 @@
 import { ZIL_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
-import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest, feesBachelorsStakersBatchRequest, feesMastersStakersBatchRequest, feesDoctoralStakersBatchRequest, xcadZilPoolsBatchRequest, xcadZilTotalContributionsBatchRequest, xcadZilPoolBalanceBatchRequest, dmzStakingBatchRequest } from "utils/batch";
+import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest, feesBachelorsStakersBatchRequest, feesMastersStakersBatchRequest, feesDoctoralStakersBatchRequest, xcadZilPoolsBatchRequest, xcadZilTotalContributionsBatchRequest, xcadZilPoolBalanceBatchRequest, dmzStakingBatchRequest, bloxStakingBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
 export default async function getPortfolioState(walletAddress: string, tokens: Token[], operators: Operator[] = []): Promise<BatchResponse[]> {
@@ -33,6 +33,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(feesBachelorsStakersBatchRequest(walletAddress))
   batchRequests.push(feesMastersStakersBatchRequest(walletAddress))
   batchRequests.push(feesDoctoralStakersBatchRequest(walletAddress))
+  batchRequests.push(bloxStakingBatchRequest(walletAddress))
 
   Object.values(xcadStakingAddresses).forEach(stakingValue => {
     const tokenAddress = stakingValue[0]
