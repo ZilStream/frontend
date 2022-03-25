@@ -399,7 +399,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
               <Tab.Panel>
                 <TVChartContainer 
-                  symbol={`${token.symbol}/ZIL`} 
+                  symbol={`${pairs[0]?.exchange?.slug}/${pairs[0]?.base_address}/${pairs[0]?.quote_address}/USD`}
                   interval={'240' as ResolutionString} 
                   autosize={true} 
                   fullscreen={false} 

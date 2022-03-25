@@ -1,7 +1,7 @@
+import getTokenPair from 'lib/zilstream/getPair';
+import { ErrorCallback, HistoryCallback, OnReadyCallback, PeriodParams, ResolveCallback, SearchSymbolsCallback, SubscribeBarsCallback, SymbolResolveExtension } from '../../../../public/charting_library/charting_library';
 import { Bar, LibrarySymbolInfo, ResolutionString } from '../../../../public/charting_library/datafeed-api';
 import { UdfCompatibleConfiguration } from '../../../../public/datafeeds/udf/src/udf-compatible-datafeed-base';
-
-const supportedResolutions = ["15", "60", "240", "D"]
 
 const config: UdfCompatibleConfiguration = {
   supports_search: false,
@@ -11,106 +11,81 @@ const config: UdfCompatibleConfiguration = {
     '30' as ResolutionString,
     '60' as ResolutionString,
 		'240' as ResolutionString,
-    '1D' as ResolutionString
+    '1D' as ResolutionString,
+		'1W' as ResolutionString
   ],
   supports_marks: false,
   supports_timescale_marks: false,
 }; 
 
 export default {
-	onReady: (cb: any) => {
-		setTimeout(() => cb(config), 0)
+	onReady: (callback: OnReadyCallback) => {
+		setTimeout(() => callback(config))
 	},
-	searchSymbols: (userInput: string, exchange: string, symbolType: string, onResultReadyCallback: any) => {
+	searchSymbols: (userInput: string, exchange: string, symbolType: string, onResult: SearchSymbolsCallback) => {
 	},
-	resolveSymbol: (symbolName: string, onSymbolResolvedCallback: any, onResolveErrorCallback: any) => {
-		// expects a symbolInfo object in response
-		var symbol_stub = {
-			name: symbolName,
-			description: symbolName,
+	resolveSymbol: async (symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback, extension?: SymbolResolveExtension) => {
+		let parts = symbolName.split('/')
+		let pair = await getTokenPair(parts[0], parts[1], parts[2])
+
+		var symbol_stub: LibrarySymbolInfo = {
+			name: pair.pair,
+			full_name: symbolName,
+			description: pair.pair,
+			ticker: symbolName,
 			type: 'crypto',
-			exchange: 'ZilSwap',
+			exchange: 'zilstream.com',
+			listed_exchange: 'zilstream.com',
 			format: "price",
 			minmov: 1,
 			pricescale: 100,
 			has_intraday: true,
 			// intraday_multipliers: ['15', '60'],
-			supported_resolution:  supportedResolutions,
+			supported_resolutions: config.supported_resolutions ?? [],
 			// volume_precision: 8,
-			data_status: 'static',
+			data_status: 'pulsed',
+			session: '24x7',
+			timezone: 'Etc/UTC'
 		}
 		
-		setTimeout(function() {
-			onSymbolResolvedCallback(symbol_stub)
-		}, 0)
-		
-		
-		// onResolveErrorCallback('Not feeling it today')
-
+		setTimeout(() => onResolve(symbol_stub))
 	},
-	getBars: function(symbolInfo: LibrarySymbolInfo, resolution: string, from: any, to: any, onHistoryCallback: any, onErrorCallback: any, firstDataRequest: any) {
-		var res = resolution
-		if(resolution === '5') {
-			res = '5m'
-		} else if(resolution === '15') {
-			res = '15m'
-		} else if(resolution === '30') {
-			res = '30m'
-		} else if(resolution === '60') {
-			res = '60m'
-		} else if(resolution === '240') {
-			res = '4h'
-		} else if(resolution === '1D') {
-			res = '1day'
+	getBars: function(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback) {
+		var parts = symbolInfo.ticker?.split('/')
+		if(!parts) {
+			setTimeout(() => onError("Invalid address details"))
+			return
 		}
-		var symbols = symbolInfo.name.split('/')
-		var currency = 'ZIL'
-		if(symbols.length === 2) {
-			currency = symbols[1]
-		}
-
-    fetch(`https://api.zilstream.com/rates/${symbols[0]}?interval=${res}&from=${from}&to=${to}&currency=${currency}`)
+    fetch(`https://io.zilstream.com/chart/bars/${parts[0]}/${parts[1]}/${parts[2]}?from=${periodParams.from}&to=${periodParams.to}&res=${resolution}&cb=${periodParams.countBack}`)
       .then(response => response.json())
       .then((data: any) => {
         if (data.length) {
           var bars: Bar[] = []
           data.forEach((el: any) => {
-            let bar = {
-              time: Date.parse(el.time),
-              low: el.low,
-              high: el.high,
-              open: el.open,
-              close: el.close,
+            let bar: Bar = {
+              time: el.timestamp * 1000,
+              low: parts?.[3] === 'USD' ? el.low_usd : el.low,
+              high: parts?.[3] === 'USD' ? el.high_usd : el.high,
+              open: parts?.[3] === 'USD' ? el.open_usd : el.open,
+              close: parts?.[3] === 'USD' ? el.close_usd : el.close,
+							volume: parts?.[3] === 'USD' ? el.volume_usd : el.volume
             }
             bars.push(bar)
           })
           bars.sort((a,b) => a.time > b.time ? 1 : -1)
-          onHistoryCallback(bars, {noData: false})
+          setTimeout(() => onResult(bars, {noData: false}))
         } else {
-          onHistoryCallback([], {noData: true})
+          setTimeout(() => onResult([], {noData: true}))
         }
       })
       .catch((err: any) => {
-        onErrorCallback(err)
+        setTimeout(() => onError(err))
       })
 	},
-	subscribeBars: (symbolInfo: any, resolution: any, onRealtimeCallback: any, subscribeUID: any, onResetCacheNeededCallback: any) => {
+	subscribeBars: (symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string, onResetCacheNeededCallback: () => void) => {
 		// console.log('subscribe bars')
 	},
-	unsubscribeBars: (subscriberUID: any) => {
+	unsubscribeBars: (listenerGuid: string) => {
 		// console.log('unsub bars')
-	},
-	calculateHistoryDepth: (resolution: any, resolutionBack: any, intervalBack: any) => {
-		//optional
-		return undefined
-	},
-	getMarks: (symbolInfo: any, startDate: any, endDate: any, onDataCallback: any, resolution: any) => {
-		//optional
-	},
-	getTimeScaleMarks: (symbolInfo: any, startDate: any, endDate: any, onDataCallback: any, resolution: any) => {
-		//optional
-	},
-	getServerTime: (cb: any) => {
-    return new Date().getTime()
 	}
 }
