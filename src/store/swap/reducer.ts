@@ -9,7 +9,8 @@ const initialState: SwapState = {
   tokenInAddress: null,
   tokenOutAddress: null,
   slippage: 0.01,
-  selectedDirection: "in"
+  selectedDirection: "in",
+  availablePairs: []
 }
 
 const reducer = (state: SwapState = initialState, action: AnyAction) => {

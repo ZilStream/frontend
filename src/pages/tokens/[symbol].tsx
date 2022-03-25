@@ -22,7 +22,7 @@ import { getTokenAPR } from 'utils/apr'
 import InlineChange from 'components/InlineChange'
 import ChartContainer from 'components/ChartContainer'
 import PriceDayRange from 'components/PriceDayRange'
-import { shortenAddress } from 'utils/addressShortener'
+import { shortenAddress } from 'utils/shorten'
 import TVLChartContainer from 'components/TVLChartContainer'
 import MemberWrapper from 'components/MemberWrapper'
 import TokenHolders from 'components/TokenHolders'
@@ -399,7 +399,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
               <Tab.Panel>
                 <TVChartContainer 
-                  symbol={`${token.symbol}/ZIL`} 
+                  symbol={`${pairs[0]?.exchange?.slug}/${pairs[0]?.base_address}/${pairs[0]?.quote_address}/USD`}
                   interval={'240' as ResolutionString} 
                   autosize={true} 
                   fullscreen={false} 

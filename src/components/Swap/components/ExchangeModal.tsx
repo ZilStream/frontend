@@ -1,9 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
-import BigNumber from 'bignumber.js'
 import TokenIcon from 'components/TokenIcon'
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { openCurrency, openExchange } from 'store/modal/actions'
+import { openExchange } from 'store/modal/actions'
 import { updateSwap } from 'store/swap/actions'
 import { ModalState, RootState, SwapState } from 'store/types'
 import { swapExchanges } from 'types/swapExchange.interface'
@@ -69,7 +68,8 @@ const ExchangeModal = () => {
                 {filteredExchanges.map(exchange => (
                   <button
                     key={exchange.name}
-                    className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer"
+                    className={`flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer ${!exchange.active && 'opacity-50'}`}
+                    disabled={!exchange.active}
                     onClick={() => {
                       dispatch(updateSwap({exchange: exchange}))
                       setIsOpen(false)

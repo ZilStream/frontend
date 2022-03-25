@@ -1,7 +1,7 @@
 import { HYDRATE } from "next-redux-wrapper";
 import { AnyAction } from "redux";
 import { NotificationActionTypes } from "./actions";
-import { NotificationAddProps, NotificationState, NotificationStateProps } from "./types";
+import { NotificationAddProps, NotificationRemoveProps, NotificationState, NotificationStateProps, NotificationUpdateProps } from "./types";
 
 const initialState: NotificationState = {
   initialized: false,
@@ -29,6 +29,23 @@ const reducer = (state: NotificationState = initialState, action: AnyAction) => 
           ...state.notifications,
           addProps.notification
         ]
+      }
+
+    case NotificationActionTypes.UPDATE_NOTIFICATION:
+      const updateProps: NotificationUpdateProps = payload
+      return {
+        ...state,
+        notifications: state.notifications.map(notification => notification.hash === updateProps.hash ?
+          {...notification, ...updateProps} :
+          notification
+          ),
+      }
+
+    case NotificationActionTypes.REMOVE_NOTIFICATION:
+      const removeProps: NotificationRemoveProps = payload
+      return {
+        ...state,
+        notifications: state.notifications.filter(notification => notification.hash !== removeProps.hash)
       }
 
     default:

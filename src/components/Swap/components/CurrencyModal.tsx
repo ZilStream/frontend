@@ -32,6 +32,11 @@ const CurrencyModal = () => {
   const filteredTokens = useMemo(() => {
     var tokens = tokenState.tokens
 
+    let quoteTokens = [...new Set(swapState.availablePairs.map(pair => pair.quote_address))] 
+    let baseTokens = [...new Set(swapState.availablePairs.map(pair => pair.base_address))]
+
+    tokens = tokens.filter(token => quoteTokens.includes(token.address_bech32) || baseTokens.includes(token.address_bech32))
+
     if(searchTerm !== '') {
       tokens = tokens.filter(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) || token.name.toLowerCase().includes(searchTerm.toLowerCase()) || token.address_bech32 === searchTerm)
     }
@@ -39,7 +44,7 @@ const CurrencyModal = () => {
     tokens = tokens.filter(t => t.listed).sort((a,b) => (a.balance ?? new BigNumber(0)).isGreaterThan(b.balance ?? 0) ? -1 : 1)
 
     return tokens
-  }, [searchTerm, tokenState])
+  }, [searchTerm, tokenState, swapState.availablePairs])
 
   const selectToken = (tokenAddress: string) => {
     if(swapState.selectedDirection === "in") {

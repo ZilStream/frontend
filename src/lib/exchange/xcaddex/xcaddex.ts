@@ -109,7 +109,7 @@ export class XCADDex extends Exchange {
     } else {
       // zrc2 to zrc2
       txn = {
-        transition: 'SwapExactTokensForTokens',
+        transition: 'DirectSwapExactTokens0ToTokens1',
         args: [
           {
             vname: 'token0_address',
@@ -127,7 +127,7 @@ export class XCADDex extends Exchange {
             value: amount.toString(),
           },
           {
-            vname: 'min_token1_amount',
+            vname: 'token1_amount',
             type: 'Uint128',
             value: minimumOutput.toString(),
           },
@@ -234,7 +234,7 @@ export class XCADDex extends Exchange {
     } else {
       // zrc2 to zrc2
       txn = {
-        transition: 'SwapTokensForExactTokens',
+        transition: 'DirectSwapTokens0ToExactTokens1',
         args: [
           {
             vname: 'token0_address',
@@ -247,7 +247,7 @@ export class XCADDex extends Exchange {
             value: fromBech32Address(tokenOut.address_bech32),
           },
           {
-            vname: 'max_token0_amount',
+            vname: 'token0_amount',
             type: 'Uint128',
             value: maximumInput.toString(),
           },
@@ -314,21 +314,21 @@ export class XCADDex extends Exchange {
   
     if (tokenIn.address_bech32 === ZIL_ADDRESS) {
       // zil to zrc2
-      const { baseReserve, quoteReserve } = this.getReserves(tokenOut)
+      const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonInput = tokenOutAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
       expectedInput = this.getInputFor(tokenOutAmount, quoteReserve, baseReserve)
     } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
       // zrc2 to zil
-      const { baseReserve, quoteReserve } = this.getReserves(tokenIn)
+      const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonInput = tokenOutAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
       expectedInput = this.getInputFor(tokenOutAmount, baseReserve, quoteReserve)
     } else {
       // zrc2 to zrc2
-      const { quoteReserve: zr1, baseReserve: tr1 } = this.getReserves(tokenOut)
+      const { quoteReserve: zr1, baseReserve: tr1 } = this.getReserves(tokenIn, tokenOut)
       const intermediateEpsilonInput = tokenOutAmount.times(zr1).dividedToIntegerBy(tr1)
       const intermediateInput = this.getInputFor(tokenOutAmount, zr1, tr1)
   
-      const { quoteReserve: zr2, baseReserve: tr2 } = this.getReserves(tokenIn)
+      const { quoteReserve: zr2, baseReserve: tr2 } = this.getReserves(tokenIn, tokenOut)
       epsilonInput = intermediateEpsilonInput.times(tr2).dividedToIntegerBy(zr2)
       expectedInput = this.getInputFor(intermediateInput, tr2, zr2)
     }
@@ -346,23 +346,25 @@ export class XCADDex extends Exchange {
   
     if (tokenIn.address_bech32 === ZIL_ADDRESS) {
       // zil to zrc2
-      const { baseReserve, quoteReserve } = this.getReserves(tokenOut)
+      const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonOutput = tokenInAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
       expectedOutput = this.getOutputFor(tokenInAmount, quoteReserve, baseReserve)
     } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
       // zrc2 to zil
-      const { baseReserve, quoteReserve } = this.getReserves(tokenIn)
+      const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonOutput = tokenInAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
       expectedOutput = this.getOutputFor(tokenInAmount, baseReserve, quoteReserve)
     } else {
       // zrc2 to zrc2
-      const { quoteReserve: zr1, baseReserve: tr1 } = this.getReserves(tokenIn)
-      const intermediateEpsilonOutput = tokenInAmount.times(zr1).dividedToIntegerBy(tr1)
-      const intermediateOutput = this.getOutputFor(tokenInAmount, tr1, zr1)
-  
-      const { quoteReserve: zr2, baseReserve: tr2 } = this.getReserves(tokenOut)
-      epsilonOutput = intermediateEpsilonOutput.times(tr2).dividedToIntegerBy(zr2)
-      expectedOutput = this.getOutputFor(intermediateOutput, zr2, tr2)
+      if(tokenIn.address_bech32 === 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y') {
+        const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
+        epsilonOutput = tokenInAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
+        expectedOutput = this.getOutputFor(tokenInAmount, quoteReserve, baseReserve)
+      } else {
+        const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
+      epsilonOutput = tokenInAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
+      expectedOutput = this.getOutputFor(tokenInAmount, baseReserve, quoteReserve)
+      }     
     }
   
     return { epsilonOutput, expectedOutput }
@@ -398,8 +400,13 @@ export class XCADDex extends Exchange {
     return numerator.dividedToIntegerBy(denominator)
   }
 
-  private getReserves(token: Token) {
-    const pool = token.pools?.filter(pool => pool.baseAddress === token.address_bech32 && pool.dex === DEX.XCADDEX)?.[0]
+  private getReserves(tokenIn: Token, tokenOut: Token) {
+    const baseInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenIn.address_bech32 && pool.quoteAddress === tokenOut.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
+    const quoteInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenOut.address_bech32 && pool.quoteAddress === tokenIn.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
+    const baseOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenIn.address_bech32 && pool.quoteAddress === tokenOut.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
+    const quoteOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenOut.address_bech32 && pool.quoteAddress === tokenIn.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
+    const pool = baseInPools.concat(quoteInPools, baseOutPools, quoteOutPools)?.[0]
+
     if(!pool) {
       return {
         baseReserve: new BigNumber(0),

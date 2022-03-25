@@ -24,29 +24,21 @@ export interface ChartContainerProps {
 	fullscreen: ChartingLibraryWidgetOptions['fullscreen'];
 	autosize: ChartingLibraryWidgetOptions['autosize'];
 	studiesOverrides: ChartingLibraryWidgetOptions['studies_overrides'];
-	containerId: ChartingLibraryWidgetOptions['container_id'];
 	theme: string;
 }
 
 export interface ChartContainerState {
 }
 
-function getLanguageFromURL(): LanguageCode | null {
-	const regex = new RegExp('[\\?&]lang=([^&#]*)');
-	const results = regex.exec(location.search);
-	return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' ')) as LanguageCode;
-}
-
 export default class TVChartContainer extends React.PureComponent<Partial<ChartContainerProps>, ChartContainerState> {
-	public static defaultProps: ChartContainerProps = {
-		symbol: 'AAPL',
+	public static defaultProps: Omit<ChartContainerProps, 'container'> = {
+		symbol: 'ZIL',
 		interval: 'D' as ResolutionString,
-		containerId: 'tv_chart_container',
-		datafeedUrl: 'https://demo_feed.tradingview.com',
+		datafeedUrl: '',
 		libraryPath: '/charting_library/',
-		chartsStorageUrl: 'https://saveload.tradingview.com',
+		chartsStorageUrl: '',
 		chartsStorageApiVersion: '1.1',
-		clientId: 'tradingview.com',
+		clientId: '',
 		userId: 'public_user_id',
 		fullscreen: false,
 		autosize: true,
@@ -55,6 +47,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 	};
 
 	private tvWidget: IChartingLibraryWidget | null = null;
+	private ref: React.RefObject<HTMLDivElement> = React.createRef();
 
 	public componentDidMount(): void {
 		const saveLoadAdapter = new SaveLoadAdapter()
@@ -65,12 +58,10 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 			// tslint:disable-next-line:no-any
 			datafeed: DataFeed as IBasicDataFeed,
 			interval: this.props.interval as ChartingLibraryWidgetOptions['interval'],
-			timeframe: '21D',
-			container_id: this.props.containerId as ChartingLibraryWidgetOptions['container_id'],
+			container: this.ref.current ?? '',
 			library_path: this.props.libraryPath as string,
-
-			locale: getLanguageFromURL() || 'en',
-			disabled_features: ['create_volume_indicator_by_default', 'header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
+			locale: 'en',
+			disabled_features: ['header_compare', 'popup_hints', 'go_to_date', 'display_market_status', 'header_symbol_search'],
 			enabled_features: ['side_toolbar_in_fullscreen_mode', 'header_in_fullscreen_mode', 'use_localstorage_for_settings'],
 			save_load_adapter: saveLoadAdapter,
 			auto_save_delay: 3,
@@ -91,15 +82,19 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 				const button = tvWidget.createButton();
 				button.setAttribute('title', 'Click to switch between ZIL and USD');
 				button.classList.add('apply-common-tooltip');
+				button.innerHTML = 'Change to price in ZIL';
 				button.addEventListener('click', () => {
-					const symbols = tvWidget.chart(0).symbol().split('/')
-					const symbol = symbols[0].split(':')[1]
-					const oldCurrency = symbols[1]
-					const newCurrency = symbols[1] === 'ZIL' ? 'USD' : 'ZIL'
-					tvWidget.setSymbol(symbol + '/' + newCurrency, tvWidget.chart(0).resolution(), () => {})
-					button.innerHTML = 'Change to ' + oldCurrency
+					let symbol = tvWidget.chart(0).symbolExt().full_name
+					let current = symbol.substr(symbol.length - 3)
+
+					if(current === 'USD') {
+						tvWidget.setSymbol(symbol.slice(0,-3) + 'ZIL', tvWidget.chart(0).resolution(), () => {})
+						button.innerHTML = 'Change to price in USD';
+					} else {
+						tvWidget.setSymbol(symbol.slice(0,-3) + 'USD', tvWidget.chart(0).resolution(), () => {})
+						button.innerHTML = 'Change to price in ZIL';
+					}
 				})
-				button.innerHTML = 'Change to USD';
 			})
 
 			tvWidget.subscribe('onAutoSaveNeeded', function() {
@@ -122,7 +117,7 @@ export default class TVChartContainer extends React.PureComponent<Partial<ChartC
 	public render(): JSX.Element {
 		return (
 			<div
-				id={ this.props.containerId }
+				ref={this.ref}
 				className={ 'h-80 md:h-144 w-full' }
 			/>
 		);
