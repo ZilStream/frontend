@@ -56,7 +56,13 @@ export default {
 			setTimeout(() => onError("Invalid address details"))
 			return
 		}
-    fetch(`https://io.zilstream.com/chart/bars/${parts[0]}/${parts[1]}/${parts[2]}?from=${periodParams.from}&to=${periodParams.to}&res=${resolution}&cb=${periodParams.countBack}`)
+		var res: ResolutionString|string = resolution
+		if(resolution === '1D') {
+			res = '1440'
+		} else if(resolution === '1W') {
+			res = '10080'
+		}
+    fetch(`https://io.zilstream.com/chart/bars/${parts[0]}/${parts[1]}/${parts[2]}?from=${periodParams.from}&to=${periodParams.to}&res=${res}&cb=${periodParams.countBack}`)
       .then(response => response.json())
       .then((data: any) => {
         if (data.length) {
