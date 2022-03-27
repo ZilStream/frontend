@@ -56,7 +56,7 @@ export abstract class Exchange {
   abstract getExchangeRate(tokenIn: Token, tokenOut: Token, amount: BigNumber, isIn: boolean): ExchangeRate;
 
   public async tokenNeedsApproval(token: Token, amount: BigNumber): Promise<{needsApproval: boolean, allowance: BigNumber}> {
-    const tokenContract: Contract = this.provider.contracts.at(token.address_bech32)
+    const tokenContract: Contract = this.provider.contracts.at(token.address)
     const tokenState = await tokenContract.getSubState('allowances', [this.walletHash, this.contractHash])
     const allowance = new BigNumber(tokenState?.allowances[this.walletHash]?.[this.contractHash] || 0)
     
@@ -70,7 +70,7 @@ export abstract class Exchange {
     const approval = await this.tokenNeedsApproval(token, amount)
     if(approval.needsApproval) {
       try {
-        const tokenContract: Contract = this.provider.contracts.at(token.address_bech32)
+        const tokenContract: Contract = this.provider.contracts.at(token.address)
         const approveTxn = await this.callContract(
           tokenContract,
           'IncreaseAllowance',

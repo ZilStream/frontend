@@ -38,9 +38,9 @@ const TVChartContainer = dynamic(
 )
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {  
-  const { symbol } = context.query
+  const { address } = context.query
 
-  const token = await getToken(symbol as string).catch(error => {
+  const token = await getToken(address as string).catch(error => {
     return
   })
   if(!token) {
@@ -83,11 +83,11 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
       let volume = newPairs.reduce((sum, pair) => {
         if(pair.volume && pair.volume.volume_24h_quote > 0) {
-          const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+          const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
           if(quoteToken && quoteToken.isZil) {
             return sum + pair.volume.volume_24h_quote
           } else {
-            return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+            return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate_zil ?? 0))
           }
         }
         return sum
@@ -95,16 +95,16 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
       setTotalVolume(volume)
 
       newPairs.sort((a,b) => {
-        const aQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === a.quote_address)?.[0]
+        const aQuoteToken = tokenState.tokens.filter(token => token.address === a.quote_address)?.[0]
         var avolume = a.volume?.volume_24h_quote ?? 0
         if(aQuoteToken && !aQuoteToken.isZil) {
-          avolume = (a.volume?.volume_24h_quote ?? 0) * aQuoteToken.market_data.rate
+          avolume = (a.volume?.volume_24h_quote ?? 0) * aQuoteToken.market_data.rate_zil
         }
 
-        const bQuoteToken = tokenState.tokens.filter(token => token.address_bech32 === b.quote_address)?.[0]
+        const bQuoteToken = tokenState.tokens.filter(token => token.address === b.quote_address)?.[0]
         var bvolume = b.volume?.volume_24h_quote ?? 0
         if(bQuoteToken && !bQuoteToken.isZil) {
-          bvolume = (b.volume?.volume_24h_quote ?? 0) * bQuoteToken.market_data.rate
+          bvolume = (b.volume?.volume_24h_quote ?? 0) * bQuoteToken.market_data.rate_zil
         }
 
         return avolume > bvolume ? -1 : 1
@@ -124,20 +124,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
 		    <script type="text/javascript" src="/datafeeds/udf/dist/bundle.js"></script>
       </Head>
-      {!token.listed &&
-        <div className="bg-gray-400 dark:bg-gray-600 rounded-lg p-4 flex flex-col sm:flex-row">
-          <AlertCircle className="mb-2 sm:mr-3" />
-          <div>
-            <div className="font-medium">This token is unlisted, be extra cautious</div>
-            <div className="text-sm">{token.name} is not screened or audited by ZilStream. Please verify the legitimacy of this token yourself.</div>
-          </div>
-        </div>
-      }
-      {token.symbol === 'GRPH' &&
-        <Notice title="Warning: GRPH will launch at $2.5 on CarbSwap" className="w-full max-w-full">
-          <p>When CarbSwap launches, GRPH's price will be set at $2.5. <span className="font-bold">Be cautious trading above this price.</span> <a className="underline" href="https://blog.carbontoken.info/launching-carbswap/" target="_blank">More information here.</a></p>
-        </Notice>
-      }
       <div className="w-full flex flex-col sm:flex-row items-start gap-6 mt-8 mb-6">
         <div className="w-96 flex-shrink-0 max-w-full">
           <div className="flex-grow flex items-center">
@@ -175,18 +161,18 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </a>
             }
             
-            <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="inline-flex items-center mr-2 mb-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
+            <a href={`https://viewblock.io/zilliqa/address/${token.address}`} target="_blank" className="inline-flex items-center mr-2 mb-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded">
               <Box size={12} className="mr-1" />
               ViewBlock 
             </a>
 
-            <a href={`https://zilswap.io/swap?tokenIn=zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz&tokenOut=${token.address_bech32}`} target="_blank" className="inline-flex items-center mr-2 mb-2 justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2">
+            <a href={`https://zilswap.io/swap?tokenIn=zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz&tokenOut=${token.address}`} target="_blank" className="inline-flex items-center mr-2 mb-2 justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2">
               <span className="w-3 h-3 mr-1"><TokenIcon address="zil1p5suryq6q647usxczale29cu3336hhp376c627" /></span>
               Swap 
             </a>
             
             <div>
-              <CopyableAddress address={token.address_bech32} showCopy={true} />
+              <CopyableAddress address={token.address} showCopy={true} />
             </div>
           </div>
         </div>
@@ -195,14 +181,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
             
           <div className="font-medium pb-3 mb-3 sm:border-b border-gray-300 dark:border-gray-800">
             <div className="flex sm:flex-col">
-              <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.market_data.rate)} ZIL</div>
+              <div className="flex-grow font-bold text-xl sm:text-2xl">{cryptoFormat(token.market_data.rate_zil)} ZIL</div>
               <div className="text-gray-500 dark:text-gray-400 text-lg flex items-center">
-                <span className="font-medium">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                <span className="font-medium">{currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)}</span>
                 <span className="text-base ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
               </div>
             </div>
             <div className="my-3">
-              <PriceDayRange price={token.market_data.rate} low={token.market_data.low_24h} high={token.market_data.high_24h} />
+              <PriceDayRange price={token.market_data.rate_zil} low={token.market_data.low_24h} high={token.market_data.high_24h} />
             </div>
           </div>
 
@@ -216,7 +202,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <a href={token.telegram} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><MessageCircle size={14} className="mr-1" /> Telegram</a>
               }
               
-              <a href={`https://viewblock.io/zilliqa/address/${token.address_bech32}`} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><Box size={14} className="mr-1" /> ViewBlock</a>
+              <a href={`https://viewblock.io/zilliqa/address/${token.address}`} target="_blank" className="bg-gray-200 dark:bg-gray-800 rounded-lg py-2 px-2 flex items-center justify-center"><Box size={14} className="mr-1" /> ViewBlock</a>
             </div>
             
             <div className="flex items-center py-3 border-b border-gray-300 dark:border-gray-800">
@@ -224,10 +210,10 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               <button 
                 className="flex items-center gap-2 font-semibold"
                 onClick={() => {
-                  navigator.clipboard.writeText(token.address_bech32)
+                  navigator.clipboard.writeText(token.address)
                 }}
               >
-                {shortenAddress(token.address_bech32, 10)}
+                {shortenAddress(token.address, 10)}
                 <Copy size={14} />
               </button>
             </div>
@@ -440,24 +426,24 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 </thead>
                 <tbody>
                   {pairs.map((pair: Pair, index: number) => {
-                    const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
-                    const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+                    const baseToken = tokenState.tokens.filter(token => token.address === pair.base_address)?.[0]
+                    const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
       
                     var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
                     var volume = (pair.volume?.volume_24h_quote ?? 0)
                     if(quoteToken && !quoteToken.isZil) {
-                      liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
-                      volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate
+                      liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate_zil * 2
+                      volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate_zil
                     }
                     
                     let price = pair.quote?.price ?? 0
                     var zilRate = price
 
                     if(pair.quote_address !== ZIL_ADDRESS && price > 0) {
-                      if(pair.quote_address === token.address_bech32) {
-                        zilRate = (1 / price) * (baseToken?.market_data.rate ?? 0)
+                      if(pair.quote_address === token.address) {
+                        zilRate = (1 / price) * (baseToken?.market_data.rate_zil ?? 0)
                       } else {
-                        zilRate = price * (quoteToken?.market_data.rate ?? 0)
+                        zilRate = price * (quoteToken?.market_data.rate_zil ?? 0)
                       }
                     }
 
@@ -526,7 +512,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <Tab.Panel>
                   <div className="">
                     <h2 className="text-xl text-gray-700 dark:text-gray-200">{token.name} Price and Market Data</h2>
-                    <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
+                    <p className="text-gray-700 dark:text-gray-200">{token.name} price today is {currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)} with a 24-hour trading volume of {currencyFormat(token.market_data.daily_volume_zil * selectedCurrency.rate, selectedCurrency.symbol)}. {token.name} is {token.market_data.change_percentage_24h >= 0 ? 'up' : 'down'} <InlineChange num={token.market_data.change_percentage_24h} /> in the last 24 hours. With a live market cap of {currencyFormat(token.market_data.market_cap_zil * selectedCurrency.rate, selectedCurrency.symbol)}. It has a circulating supply of {numberFormat(token.market_data.current_supply, 0)} {token.symbol} and a max. supply of {numberFormat(token.market_data.max_supply, 0)} {token.symbol}.</p>
                   </div>
                 </Tab.Panel>
                 <Tab.Panel>
@@ -553,8 +539,8 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Price</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.rate)} ZIL</span>
+                    <span className="font-bold">{currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.rate_zil)} ZIL</span>
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -574,13 +560,13 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">Volume / Market Cap</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{numberFormat(token.market_data.daily_volume / token.market_data.market_cap)}</span>
+                    <span className="font-bold">{numberFormat(token.market_data.daily_volume_usd / token.market_data.market_cap_usd)}</span>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">Liquidity / Market Cap</th>
                   <td className="flex flex-col items-end py-3">
-                  <span className="font-bold">{numberFormat(token.market_data.current_liquidity / token.market_data.market_cap)}</span>
+                  <span className="font-bold">{numberFormat(token.market_data.current_liquidity_usd / token.market_data.market_cap_usd)}</span>
                   </td>
                 </tr>
               </tbody>
@@ -613,12 +599,6 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     <span className="font-bold">{currencyFormat(token.market_data.current_liquidity_zil * selectedCurrency.rate, selectedCurrency.symbol, 0)}</span>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th scope="row" className="text-left font-normal py-3">Liquidity Providers</th>
-                  <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{numberFormat(token.market_data.liquidity_providers, 0)}</span>
-                  </td>
-                </tr>
               </tbody>
             </table>
             <table className="w-full text-sm table-auto mt-2">
@@ -639,7 +619,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">All Time High</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.market_data.ath * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="font-bold">{currencyFormat(token.market_data.ath)}</span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.ath)} ZIL</span>
                     <InlineChange num={athChangePercentage} bold />
                   </td>
@@ -647,7 +627,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                 <tr>
                   <th scope="row" className="text-left font-normal py-3">All Time Low</th>
                   <td className="flex flex-col items-end py-3">
-                    <span className="font-bold">{currencyFormat(token.market_data.atl * selectedCurrency.rate, selectedCurrency.symbol)}</span>
+                    <span className="font-bold">{currencyFormat(token.market_data.atl)}</span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">{cryptoFormat(token.market_data.atl)} ZIL</span>
                     <InlineChange num={atlChangePercentage} bold />
                   </td>

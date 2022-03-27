@@ -39,7 +39,7 @@ function BalanceDonut(props: Props) {
     if(token.isZil) {
       zilTotal = zilTotal.plus(balance)
     } else {
-      total = total.plus(balance.times(token.market_data.rate))
+      total = total.plus(balance.times(token.market_data.rate_zil))
     }
   
     if(token.pools) {
@@ -51,35 +51,35 @@ function BalanceDonut(props: Props) {
         let baseAmount = contributionShare.times(pool.baseReserve ?? BIG_ZERO)
 
         if(!baseAmount.isNaN() && !quoteAmount.isNaN()) {
-          const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pool.baseAddress)?.[0]
-          const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pool.quoteAddress)?.[0]
+          const baseToken = tokenState.tokens.filter(token => token.address === pool.baseAddress)?.[0]
+          const quoteToken = tokenState.tokens.filter(token => token.address === pool.quoteAddress)?.[0]
 
-          const baseIndex = tokenTotals.findIndex(token => token.address === baseToken.address_bech32)
+          const baseIndex = tokenTotals.findIndex(token => token.address === baseToken.address)
           if(baseIndex === -1) {
             tokenTotals.push({
               name: baseToken.name,
               symbol: baseToken.symbol,
-              address: baseToken.address_bech32,
+              address: baseToken.address,
               isZil: baseToken.isZil,
-              totalBalance: baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate)
+              totalBalance: baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate_zil)
             })
           } else {
             const current = tokenTotals[baseIndex]
-            tokenTotals[baseIndex].totalBalance = current.totalBalance.plus(baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate))
+            tokenTotals[baseIndex].totalBalance = current.totalBalance.plus(baseAmount.shiftedBy(-baseToken.decimals).times(baseToken.isZil ? 1 : baseToken.market_data.rate_zil))
           }
 
-          const quoteIndex = tokenTotals.findIndex(token => token.address === quoteToken.address_bech32)
+          const quoteIndex = tokenTotals.findIndex(token => token.address === quoteToken.address)
           if(quoteIndex === -1) {
             tokenTotals.push({
               name: quoteToken.name,
               symbol: quoteToken.symbol,
-              address: quoteToken.address_bech32,
+              address: quoteToken.address,
               isZil: quoteToken.isZil,
-              totalBalance: quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate)
+              totalBalance: quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate_zil)
             })
           } else {
             const current = tokenTotals[quoteIndex]
-            tokenTotals[quoteIndex].totalBalance = current.totalBalance.plus(quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate))
+            tokenTotals[quoteIndex].totalBalance = current.totalBalance.plus(quoteAmount.shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate_zil))
           }
         }
       })
@@ -89,18 +89,18 @@ function BalanceDonut(props: Props) {
       if(operator.symbol !== 'ZIL') {
         let staked = toBigNumber(operator.staked, {compression: operator.decimals})
         if(!staked.isNaN()) {
-          total = total.plus(staked.times(token.market_data.rate))
+          total = total.plus(staked.times(token.market_data.rate_zil))
         }        
       }
     })
 
     if(!token.isZil) {
-      const index = tokenTotals.findIndex(t => t.address === token.address_bech32)
+      const index = tokenTotals.findIndex(t => t.address === token.address)
       if(index === -1) {
         tokenTotals.push({
           name: token.name,
           symbol: token.symbol,
-          address: token.address_bech32,
+          address: token.address,
           isZil: false,
           totalBalance: total
         })

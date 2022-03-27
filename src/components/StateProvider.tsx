@@ -40,21 +40,23 @@ const StateProvider = (props: Props) => {
   const zilliqa = new Zilliqa('https://api.zilliqa.com')
 
   async function loadTokens() {
-    const tokens = await getTokens()
+    var tokens = await getTokens()
     if(tokens.length === 0) return
+
+    tokens = tokens.filter(token => token.address === ZIL_ADDRESS || token.reviewed)
 
     batch(() => {
       if(!tokenState.initialized) {
         for (let i = 0; i < tokens.length; i++) {
-          tokens[i].isZil = tokens[i].address_bech32 === ZIL_ADDRESS
-          tokens[i].isStream = tokens[i].address_bech32 === STREAM_ADDRESS
+          tokens[i].isZil = tokens[i].address === ZIL_ADDRESS
+          tokens[i].isStream = tokens[i].address === STREAM_ADDRESS
         }
         dispatch({type: TokenActionTypes.TOKEN_INIT, payload: {tokens}})
       } else {
         tokens.forEach(token => {
-          const { address_bech32, ...tokenDetails} = token
+          const { address, ...tokenDetails} = token
           dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-            address_bech32: address_bech32,
+            address: address,
             ...tokenDetails
           }})
         })
@@ -71,7 +73,7 @@ const StateProvider = (props: Props) => {
     batch(() => {
       favorites.forEach(address => {
         dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-          address_bech32: address,
+          address: address,
           isFavorited: true
         }})
       })
@@ -83,7 +85,7 @@ const StateProvider = (props: Props) => {
       tokenState.tokens.forEach(token => {
         const apr = getTokenAPR(token, tokenState)
         dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-          address_bech32: token.address_bech32,
+          address: token.address,
           apr: apr
         }})
       })
@@ -201,8 +203,8 @@ const StateProvider = (props: Props) => {
       // Check if the alert has already been triggered, if the case skip it immediately.
       if(alert.triggered) return
 
-      let token = tokenState.tokens.filter(token => token.address_bech32 === alert.token_address)?.[0]
-      let currentRate = alert.metric === Metric.PriceZIL ? token.market_data.rate : token.market_data.rate_usd
+      let token = tokenState.tokens.filter(token => token.address === alert.token_address)?.[0]
+      let currentRate = alert.metric === Metric.PriceZIL ? token.market_data.rate_zil : token.market_data.rate_usd
       let targetRate = alert.value
 
       if(alert.indicator === Indicator.Above) {
@@ -226,8 +228,8 @@ const StateProvider = (props: Props) => {
     })
 
     function sendPriceNotificationForToken(token: Token) {
-      new Notification(`${token.symbol}: ${cryptoFormat(token.market_data.rate)} ZIL (${currencyFormat(token.market_data.rate_usd)})`, {
-        body: `${token.name}'s (${token.symbol}) current price is ${cryptoFormat(token.market_data.rate)} ZIL (${currencyFormat(token.market_data.rate_usd)}).`,
+      new Notification(`${token.symbol}: ${cryptoFormat(token.market_data.rate_zil)} ZIL (${currencyFormat(token.market_data.rate_usd)})`, {
+        body: `${token.name}'s (${token.symbol}) current price is ${cryptoFormat(token.market_data.rate_zil)} ZIL (${currencyFormat(token.market_data.rate_usd)}).`,
         icon: token.icon
       })
     }

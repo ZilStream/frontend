@@ -35,13 +35,13 @@ const CurrencyModal = () => {
     let quoteTokens = [...new Set(swapState.availablePairs.map(pair => pair.quote_address))] 
     let baseTokens = [...new Set(swapState.availablePairs.map(pair => pair.base_address))]
 
-    tokens = tokens.filter(token => quoteTokens.includes(token.address_bech32) || baseTokens.includes(token.address_bech32))
+    tokens = tokens.filter(token => quoteTokens.includes(token.address) || baseTokens.includes(token.address))
 
     if(searchTerm !== '') {
-      tokens = tokens.filter(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) || token.name.toLowerCase().includes(searchTerm.toLowerCase()) || token.address_bech32 === searchTerm)
+      tokens = tokens.filter(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) || token.name.toLowerCase().includes(searchTerm.toLowerCase()) || token.address === searchTerm)
     }
 
-    tokens = tokens.filter(t => t.listed).sort((a,b) => (a.balance ?? new BigNumber(0)).isGreaterThan(b.balance ?? 0) ? -1 : 1)
+    tokens = tokens.filter(t => t.reviewed).sort((a,b) => (a.balance ?? new BigNumber(0)).isGreaterThan(b.balance ?? 0) ? -1 : 1)
 
     return tokens
   }, [searchTerm, tokenState, swapState.availablePairs])
@@ -123,11 +123,11 @@ const CurrencyModal = () => {
               <div className="flex-grow overflow-y-scroll border-t dark:border-gray-700 mt-2">
                 {filteredTokens.map(token => (
                   <div
-                    key={token.address_bech32}
+                    key={token.address}
                     className="flex items-center py-2 border-b last:border-b-0 border-gray-100 dark:border-gray-800 cursor-pointer"
-                    onClick={() => selectToken(token.address_bech32)}
+                    onClick={() => selectToken(token.address)}
                   >
-                    <div className="w-6 h-6 mr-4"><TokenIcon address={token.address_bech32} /></div>
+                    <div className="w-6 h-6 mr-4"><TokenIcon address={token.address} /></div>
                     <div className="flex-grow">
                       <div className="font-semibold">{token.symbol}</div>
                       <div className="text-gray-500 dark:text-gray-400 text-sm">{token.name}</div>

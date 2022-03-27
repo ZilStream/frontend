@@ -130,8 +130,8 @@ const Swap = (props: Props) => {
 
   const { tokenIn, tokenOut } = useMemo(() => {
     return {
-      tokenIn: tokenState.tokens.filter(t => t.address_bech32 === tokenInAddress)?.[0],
-      tokenOut: tokenState.tokens.filter(t => t.address_bech32 === tokenOutAddress)?.[0]
+      tokenIn: tokenState.tokens.filter(t => t.address === tokenInAddress)?.[0],
+      tokenOut: tokenState.tokens.filter(t => t.address === tokenOutAddress)?.[0]
     }
   }, [tokenState, swapState])
 
@@ -149,7 +149,7 @@ const Swap = (props: Props) => {
   useEffect(() => {
     if(!exchange || !tokenIn) return
 
-    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if(tokenIn.address === ZIL_ADDRESS) {
       setState({...state, needsApproval: false})
     } else {
       checkApproval()
@@ -168,15 +168,15 @@ const Swap = (props: Props) => {
 
   const getCurrentRate = (): BigNumber => {
     if(!tokenIn || !tokenOut) return new BigNumber(0)
-    const inRate = toBigNumber(tokenIn.symbol === 'ZIL' ? 1 : tokenIn.market_data.rate)
-    const outRate = toBigNumber(tokenOut.symbol === 'ZIL' ? 1 : tokenOut.market_data.rate)
+    const inRate = toBigNumber(tokenIn.symbol === 'ZIL' ? 1 : tokenIn.market_data.rate_zil)
+    const outRate = toBigNumber(tokenOut.symbol === 'ZIL' ? 1 : tokenOut.market_data.rate_zil)
     return inRate.dividedBy(outRate)
   }
 
   const reverse = () => {
     dispatch(updateSwap({
-      tokenInAddress: tokenOut.address_bech32,
-      tokenOutAddress: tokenIn.address_bech32
+      tokenInAddress: tokenOut.address,
+      tokenOutAddress: tokenIn.address
     }))
     setState(previousState => {
       return {
@@ -232,7 +232,7 @@ const Swap = (props: Props) => {
     }))
   }
 
-  let tokenInValue = tokenIn?.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate * selectedCurrency.rate
+  let tokenInValue = tokenIn?.symbol === 'ZIL' ? selectedCurrency.rate : tokenIn?.market_data.rate_zil * selectedCurrency.rate
 
   return (
     <div>

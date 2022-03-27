@@ -71,7 +71,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     30000
   )
 
-  const aprTokens = tokens.filter(token => token.listed === true).sort((a: Token, b: Token) => {
+  const aprTokens = tokens.filter(token => token.reviewed === true).sort((a: Token, b: Token) => {
     if(!a.apr || !b.apr) return -1
     return a.apr.isLessThan(b.apr) ? 1 : -1
   }).slice(0,3)
@@ -107,15 +107,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
       tokensToDisplay = tokensToDisplay.filter(token => token.tags?.split(',').includes('nft'))
     }
 
-    // filters
-    if(!settingsState.filters.bridged) {
-      tokensToDisplay = tokensToDisplay.filter(token => !token.bridged)
-    }
-
-    if(!settingsState.filters.unlisted) {
-      tokensToDisplay = tokensToDisplay.filter(token => token.listed)
-    }
-
     if(currentSort === SortType.APR || currentSort === SortType.APY) {
       tokensToDisplay.sort((a: Token, b: Token) => {
         if(!a.apr || !b.apr) return -1
@@ -127,9 +118,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     } else if(currentSort === SortType.Default) {
       tokensToDisplay.sort((a: Token, b: Token) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.market_cap_zil < b.market_data.market_cap_zil) ? 1 : -1
+          return (a.rank > b.rank) ? 1 : -1
         }
-        return (a.market_data.market_cap_zil > b.market_data.market_cap_zil) ? 1 : -1
+        return (a.rank < b.rank) ? 1 : -1
       })
     } else if(currentSort === SortType.Token) {
       tokensToDisplay.sort((a,b) => {
@@ -141,9 +132,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     } else if(currentSort === SortType.Price || currentSort === SortType.PriceFiat) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.rate > b.market_data.rate) ? 1 : -1
+          return (a.market_data.rate_usd > b.market_data.rate_usd) ? 1 : -1
         }
-        return (a.market_data.rate < b.market_data.rate) ? 1 : -1
+        return (a.market_data.rate_usd < b.market_data.rate_usd) ? 1 : -1
       })
     } else if(currentSort === SortType.ATH) {
       tokensToDisplay.sort((a,b) => {
@@ -183,16 +174,16 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     } else if(currentSort === SortType.Volume) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.daily_volume > b.market_data.daily_volume) ? 1 : -1
+          return (a.market_data.daily_volume_usd > b.market_data.daily_volume_usd) ? 1 : -1
         }
-        return (a.market_data.daily_volume < b.market_data.daily_volume) ? 1 : -1
+        return (a.market_data.daily_volume_usd < b.market_data.daily_volume_usd) ? 1 : -1
       })
     } else if(currentSort === SortType.Liquidity) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.current_liquidity > b.market_data.current_liquidity) ? 1 : -1
+          return (a.market_data.current_liquidity_usd > b.market_data.current_liquidity_usd) ? 1 : -1
         }
-        return (a.market_data.current_liquidity < b.market_data.current_liquidity) ? 1 : -1
+        return (a.market_data.current_liquidity_usd < b.market_data.current_liquidity_usd) ? 1 : -1
       })
     } else if(currentSort === SortType.CircSupply) {
       tokensToDisplay.sort((a,b) => {
@@ -218,16 +209,16 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     } else if(currentSort === SortType.FullyDilutedMarketCap) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.fully_diluted_valuation < b.market_data.fully_diluted_valuation) ? 1 : -1
+          return (a.market_data.fully_diluted_valuation_usd < b.market_data.fully_diluted_valuation_usd) ? 1 : -1
         }
-        return (a.market_data.fully_diluted_valuation < b.market_data.fully_diluted_valuation) ? 1 : -1
+        return (a.market_data.fully_diluted_valuation_usd < b.market_data.fully_diluted_valuation_usd) ? 1 : -1
       })
     } else {
       tokensToDisplay.sort((a: Token, b: Token) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.market_cap > b.market_data.market_cap) ? 1 : -1
+          return (a.market_data.market_cap_usd > b.market_data.market_cap_usd) ? 1 : -1
         }
-        return (a.market_data.market_cap < b.market_data.market_cap) ? 1 : -1
+        return (a.market_data.market_cap_usd < b.market_data.market_cap_usd) ? 1 : -1
       })
     }
 
@@ -333,11 +324,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             <col style={{width: '42px', minWidth: 'auto'}} />
             <col style={{width: '276px', minWidth: 'auto'}} /> 
 
-            {settingsState.columns.priceZIL &&
+            {settingsState.columns.priceFiat &&
               <col style={{width: '100px', minWidth: 'auto'}} />
             }
 
-            {settingsState.columns.priceFiat &&
+            {settingsState.columns.priceZIL &&
               <col style={{width: '100px', minWidth: 'auto'}} />
             }
 
@@ -420,17 +411,6 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                   }
                 </button>
               </th>
-              {settingsState.columns.priceZIL &&
-                <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
-                    {currentSort === SortType.Price &&
-                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
-                    }
-                    ZIL
-                  </button>
-                </th>
-              }
-
               {settingsState.columns.priceFiat &&
                 <th className="px-2 py-2 text-right">
                   <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.PriceFiat)}>
@@ -438,6 +418,17 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                       <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
                     }
                     {selectedCurrency.code}
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.priceZIL &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Price)}>
+                    {currentSort === SortType.Price &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    ZIL
                   </button>
                 </th>
               }

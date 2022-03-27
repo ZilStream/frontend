@@ -152,7 +152,7 @@ export const balanceBatchRequest = (token: Token, address: string): BatchRequest
  * @returns BatchRequest
  */
 export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32)
+  const address = fromBech32Address(token.address)
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.TokenBalance,
@@ -177,7 +177,7 @@ export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): B
  * @returns BatchRequest
  */
 export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32)
+  const address = fromBech32Address(token.address)
   return {
     type: BatchRequestType.TokenAllowance,
     token: token,
@@ -242,7 +242,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const tokenPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.PoolBalance,
@@ -308,7 +308,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const xcadPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.XcadBalances,
@@ -374,7 +374,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const xcadZilPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.XcadZilBalances,

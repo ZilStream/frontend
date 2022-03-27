@@ -88,7 +88,7 @@ function Membership() {
 
                 {streamToken &&
                   <div className="mt-5">
-                    To become a ZilStream member you'll need at least <span className="font-semibold">{cryptoFormat(totalBalance.dividedBy(200).dividedBy(streamToken.market_data.rate).toNumber())} STREAM</span>.
+                    To become a ZilStream member you'll need at least <span className="font-semibold">{cryptoFormat(totalBalance.dividedBy(200).dividedBy(streamToken.market_data.rate_zil).toNumber())} STREAM</span>.
                   </div>
                 }
               </div>

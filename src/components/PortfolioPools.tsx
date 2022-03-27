@@ -52,8 +52,8 @@ function PortfolioPools() {
               let contributionShare = contributionPercentage.shiftedBy(-2)
               let tokenAmount = contributionShare?.times(pool.baseReserve ?? BIG_ZERO);
               let quoteAmount = contributionShare?.times(pool.quoteReserve ?? BIG_ZERO);
-              let baseToken = tokenState.tokens.filter(token => token.address_bech32 === pool.baseAddress)?.[0]
-              let quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pool.quoteAddress)?.[0]
+              let baseToken = tokenState.tokens.filter(token => token.address === pool.baseAddress)?.[0]
+              let quoteToken = tokenState.tokens.filter(token => token.address === pool.quoteAddress)?.[0]
 
               return (
                 <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
@@ -91,12 +91,12 @@ function PortfolioPools() {
                     </div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat(quoteAmount.times(2).shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+                    {currencyFormat(quoteAmount.times(2).shiftedBy(-quoteToken.decimals).times(quoteToken.isZil ? 1 : quoteToken.market_data.rate_zil).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {membership.isMember ? (
                       <>
-                        {currencyFormat(toBigNumber(baseToken.daily_volume).times(0.003).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
+                        {currencyFormat(toBigNumber(baseToken.market_data.daily_volume_zil).times(0.003).times(selectedCurrency.rate).times(contributionShare).toNumber(), selectedCurrency.symbol)}
                       </>
                     ) : (
                       <span className="text-gray-500 dark:text-gray-400 text-sm"><Link href="/membership">Membership</Link></span>

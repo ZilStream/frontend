@@ -39,7 +39,7 @@ export class XCADDex extends Exchange {
 
     let txn: { transition: string; args: Value[]; params: CallParams }
 
-    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if(tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       txn = {
         transition: 'SwapExactZILForTokens',
@@ -47,7 +47,7 @@ export class XCADDex extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'min_token_amount',
@@ -70,7 +70,7 @@ export class XCADDex extends Exchange {
           ...this.txParams,
         },
       }
-    } else if(tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if(tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       txn = {
         transition: 'SwapExactTokensForZIL',
@@ -78,7 +78,7 @@ export class XCADDex extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token_amount',
@@ -114,12 +114,12 @@ export class XCADDex extends Exchange {
           {
             vname: 'token0_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token1_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'token0_amount',
@@ -164,7 +164,7 @@ export class XCADDex extends Exchange {
 
     let txn: { transition: string; args: Value[]; params: CallParams }
 
-    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if(tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       txn = {
         transition: 'SwapZILForExactTokens',
@@ -172,7 +172,7 @@ export class XCADDex extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'token_amount',
@@ -195,7 +195,7 @@ export class XCADDex extends Exchange {
           ...this.txParams,
         },
       }
-    } else if(tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if(tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       txn = {
         transition: 'SwapTokensForExactZIL',
@@ -203,7 +203,7 @@ export class XCADDex extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'max_token_amount',
@@ -239,12 +239,12 @@ export class XCADDex extends Exchange {
           {
             vname: 'token0_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token1_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'token0_amount',
@@ -312,12 +312,12 @@ export class XCADDex extends Exchange {
   let expectedInput: BigNumber // the expected amount after slippage and fees
     let epsilonInput: BigNumber // the zero slippage input
   
-    if (tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if (tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonInput = tokenOutAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
       expectedInput = this.getInputFor(tokenOutAmount, quoteReserve, baseReserve)
-    } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if (tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonInput = tokenOutAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
@@ -344,19 +344,19 @@ export class XCADDex extends Exchange {
     let epsilonOutput: BigNumber // the zero slippage output
     let expectedOutput: BigNumber // the expected amount after slippage and fees
   
-    if (tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if (tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonOutput = tokenInAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
       expectedOutput = this.getOutputFor(tokenInAmount, quoteReserve, baseReserve)
-    } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if (tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
       epsilonOutput = tokenInAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
       expectedOutput = this.getOutputFor(tokenInAmount, baseReserve, quoteReserve)
     } else {
       // zrc2 to zrc2
-      if(tokenIn.address_bech32 === 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y') {
+      if(tokenIn.address === 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y') {
         const { baseReserve, quoteReserve } = this.getReserves(tokenIn, tokenOut)
         epsilonOutput = tokenInAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
         expectedOutput = this.getOutputFor(tokenInAmount, quoteReserve, baseReserve)
@@ -401,10 +401,10 @@ export class XCADDex extends Exchange {
   }
 
   private getReserves(tokenIn: Token, tokenOut: Token) {
-    const baseInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenIn.address_bech32 && pool.quoteAddress === tokenOut.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
-    const quoteInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenOut.address_bech32 && pool.quoteAddress === tokenIn.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
-    const baseOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenIn.address_bech32 && pool.quoteAddress === tokenOut.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
-    const quoteOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenOut.address_bech32 && pool.quoteAddress === tokenIn.address_bech32 && pool.dex === DEX.XCADDEX) ?? []
+    const baseInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenIn.address && pool.quoteAddress === tokenOut.address && pool.dex === DEX.XCADDEX) ?? []
+    const quoteInPools = tokenIn.pools?.filter(pool => pool.baseAddress === tokenOut.address && pool.quoteAddress === tokenIn.address && pool.dex === DEX.XCADDEX) ?? []
+    const baseOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenIn.address && pool.quoteAddress === tokenOut.address && pool.dex === DEX.XCADDEX) ?? []
+    const quoteOutPools = tokenOut.pools?.filter(pool => pool.baseAddress === tokenOut.address && pool.quoteAddress === tokenIn.address && pool.dex === DEX.XCADDEX) ?? []
     const pool = baseInPools.concat(quoteInPools, baseOutPools, quoteOutPools)?.[0]
 
     if(!pool) {

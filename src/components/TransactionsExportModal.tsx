@@ -36,7 +36,7 @@ const TransactionsExportModal = () => {
   }
 
   const findToken = (address: string): Token|null => {
-    const tokens = tokenState.tokens.filter(token => token.address_bech32 === address)
+    const tokens = tokenState.tokens.filter(token => token.address === address)
     if(tokens.length > 0) {
       return tokens[0]
     }

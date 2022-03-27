@@ -7,7 +7,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   const batchRequests: any[] = [];
 
   tokens.forEach(token => {
-    if(token.address_bech32 === ZIL_ADDRESS) {
+    if(token.address === ZIL_ADDRESS) {
       batchRequests.push(balanceBatchRequest(token, walletAddress))
     } else {
       batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
@@ -38,7 +38,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   Object.values(xcadStakingAddresses).forEach(stakingValue => {
     const tokenAddress = stakingValue[0]
     const contractAddress = stakingValue[1]
-    const token = tokens.filter(t => t.address_bech32 === tokenAddress)?.[0]
+    const token = tokens.filter(t => t.address === tokenAddress)?.[0]
     if(token) {
       batchRequests.push(xcadStakingRequest(token, contractAddress, walletAddress))
     }

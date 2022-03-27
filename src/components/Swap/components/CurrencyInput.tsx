@@ -29,7 +29,7 @@ const CurrencyInput = (props: Props) => {
   const fiatValue = (): BigNumber => {
     if(amount.isZero()) return new BigNumber(0)
     if(selectedToken?.symbol === 'ZIL') return amount.times(selectedCurrency.rate)
-    return amount.times(selectedToken?.market_data.rate ?? 1).times(selectedCurrency.rate)
+    return amount.times(selectedToken?.market_data.rate_zil ?? 1).times(selectedCurrency.rate)
   }
 
   return (
@@ -47,7 +47,7 @@ const CurrencyInput = (props: Props) => {
           >
             {selectedToken ? (
               <>
-                <div className="w-5 h-5 mr-2"><TokenIcon address={selectedToken.address_bech32} /></div>
+                <div className="w-5 h-5 mr-2"><TokenIcon address={selectedToken.address} /></div>
                 {selectedToken.symbol}
               </>
             ) : (

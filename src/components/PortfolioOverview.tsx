@@ -32,7 +32,7 @@ function PortfolioOverview() {
       let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
       let contributionShare = contributionPercentage.shiftedBy(-2)
 
-      let volume = toBigNumber(current.market_data.daily_volume)
+      let volume = toBigNumber(current.market_data.daily_volume_zil)
       let fees = volume.times(0.003).times(contributionShare)
       newSum = newSum.plus(fees)
     })
@@ -42,11 +42,11 @@ function PortfolioOverview() {
 
   const totalRewardZil = Object.keys(rewards).reduce((sum, current) => {
     let reward = rewards[current]
-    let token = tokenState.tokens.filter(token => token.address_bech32 === reward.address)[0]
+    let token = tokenState.tokens.filter(token => token.address === reward.address)[0]
     if(token.symbol === 'ZIL') {
       return sum.plus(reward.amount)
     }
-    return sum.plus(reward.amount.times(token.market_data.rate))
+    return sum.plus(reward.amount.times(token.market_data.rate_zil))
   }, new BigNumber(0))
 
   return (
