@@ -96,7 +96,7 @@ const TokenRow = (props: Props) => {
       </td>
 
       {settingsState.columns.priceFiat &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.rate_usd * selectedCurrency.rate, selectedCurrency.symbol)}</td>
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
       {settingsState.columns.priceZIL &&
