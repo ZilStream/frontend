@@ -12,7 +12,7 @@ const initialState: SettingsState = {
     ath: false,
     atl: false,
     change24H: true,
-    change7D: false,
+    change7D: true,
     change30D: false,
     marketCap: true,
     marketCapDiluted: false,
