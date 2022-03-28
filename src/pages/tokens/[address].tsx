@@ -325,6 +325,43 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                   </div>
                 </>
               }
+
+              {token.rewards.filter((reward: any) => reward.exchange_id === 3).length > 0 &&
+                <>
+                  <div className="mt-2">CarbSwap APR: <span className="font-semibold">
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 3).reduce((sum: number, current: any) => sum + current.current_apr, 0)}%
+                  </span></div>
+                  <div>
+                    {token.rewards.filter((reward: any) => reward.exchange_id === 3).map((reward: Reward) => {
+                      const paymentDayDetail = reward.payment_day !== null ? (
+                        <div className="bg-white dark:bg-gray-700 px-3 py-2 rounded-lg shadow-md ">
+                          Distributed on <span className="font-semibold">{dayjs().day(reward.payment_day).format('dddd')}</span>
+                        </div>
+                      ) : (<></>)
+
+                      var period = reward.frequency === 604800 ? 'week' : `${reward.frequency/86400} days`
+                      if(reward.frequency === 86400) {
+                        period = 'day'
+                      }
+                      return (
+                        <div key={reward.reward_token_address} className="flex items-center whitespace-nowrap">
+                          <div className="w-4 h-4 flex-shrink-0 mr-2"><TokenIcon address={reward.reward_token_address} /></div>
+                          <span className="mr-1">{cryptoFormat(reward.amount)}</span>
+                          <span className="font-semibold mr-1">{reward.reward_token_symbol}</span>
+                          <span>/ {period}</span>
+                          {reward.payment_day !== null &&
+                            <Tippy content={paymentDayDetail}>
+                              <button className="ml-2 focus:outline-none">
+                                <Info size={14} className="text-gray-500" />
+                              </button>
+                            </Tippy>
+                          }
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              }
             </div>
             <div className="py-2">
               <div className="text-gray-700 dark:text-gray-400 text-sm">Circulating Supply</div>
