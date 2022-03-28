@@ -7,7 +7,7 @@ import { bnOrZero } from "./strings"
 import { fromBech32Address, toBech32Address } from "@zilliqa-js/zilliqa"
 import BigNumber from "bignumber.js"
 import { DEX } from "types/dex.interface"
-import { ZIL_ADDRESS } from "lib/constants"
+import { CARB_ADDRESS, ZIL_ADDRESS } from "lib/constants"
 import { Operator } from "store/types"
 import { StakingActionTypes } from "store/staking/actions"
 
@@ -249,6 +249,74 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
           return
         }
 
+        case BatchRequestType.CarbPools: {
+          let pools = result.result.pools
+          Object.keys(pools).forEach(address => {
+            let pool = pools[address]
+            let tokenAddress = toBech32Address(address)
+
+            const [x, y] = pool.arguments
+            const carbReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = carbReserve.dividedBy(tokenReserve)
+
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: toBech32Address(address),
+              dex: DEX.CarbSwap,
+              quoteReserve: carbReserve,
+              quoteAddress: CARB_ADDRESS,
+              baseReserve: tokenReserve,
+              baseAddress: tokenAddress,
+              exchangeRate
+            }})
+          })
+          return
+        }
+
+        case BatchRequestType.CarbBalances: {
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+
+          if(result.result === null) {
+            let userContribution = new BigNumber(0)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: token?.address,
+              dex: DEX.CarbSwap,
+              quoteAddress: CARB_ADDRESS,
+              baseAddress: token?.address,
+              userContribution
+            }})
+            return
+          }
+
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+          
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+            address: token?.address,
+            dex: DEX.CarbSwap,
+            quoteAddress: CARB_ADDRESS,
+            baseAddress: token?.address,
+            userContribution
+          }})
+          return
+        }
+
+        case BatchRequestType.CarbTotalContributions: {
+          let totalContributions = result.result.total_contributions
+          Object.keys(totalContributions).forEach(address => {
+            let tokenAddress = toBech32Address(address)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: tokenAddress,
+              dex: DEX.CarbSwap,
+              quoteAddress: CARB_ADDRESS,
+              baseAddress: tokenAddress,
+              totalContribution: new BigNumber(totalContributions[address])
+            }})
+          })
+          return
+        }
+
         case BatchRequestType.StakingOperators: {
           let ssnlist: any[] = result.result.ssnlist
           
@@ -295,6 +363,22 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
             address: '0x38e3e35a151c472f0c446f258c585f27d2b69140',
             staked: new BigNumber(stakers[0]),
             symbol: 'CARB',
+            decimals: 8
+          }}})
+          return
+        }
+
+        case BatchRequestType.GraphStakers: {
+          if(result.result === null) return
+
+          let stakers: number[]  = Object.values(result.result.stakers)
+          if(stakers.length === 0) return
+
+          dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
+            name: 'Graph',
+            address: '0x34e77f91fba80c6555fdf4a23fb132abbace8aaf',
+            staked: new BigNumber(stakers[0]),
+            symbol: 'GRPH',
             decimals: 8
           }}})
           return
