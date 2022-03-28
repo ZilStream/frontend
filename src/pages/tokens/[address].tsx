@@ -79,7 +79,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
   useEffect(() => {
     const fetchPairs = async () => {
-      let newPairs = await getTokenPairs(token.symbol)
+      let newPairs = await getTokenPairs(token.address)
 
       let volume = newPairs.reduce((sum, pair) => {
         if(pair.volume && pair.volume.volume_24h_quote > 0) {
