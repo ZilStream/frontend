@@ -255,7 +255,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <SponsorBlock link="https://carbontoken.info" />
+              <SponsorBlock link="https://carbswap.app" />
 
               <RatesBlock
                 title="ZIL"

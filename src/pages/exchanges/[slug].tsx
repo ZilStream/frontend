@@ -87,9 +87,11 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                 Website 
               </a>
 
-              <div>
-                <CopyableAddress address={exchange.address} showCopy={true} />
-              </div>
+              {exchange.address &&
+                <div>
+                  <CopyableAddress address={exchange.address} showCopy={true} />
+                </div>
+              }
             </div>
           </div>
           <div>
