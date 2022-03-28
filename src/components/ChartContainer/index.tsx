@@ -21,12 +21,12 @@ const ChartContainer = (props: Props) => {
   }, [])
 
   async function fetchRates() {
-    const r = await getRatesForToken(token.symbol)
+    const r = await getRatesForToken(token.address)
     var newRates: {time: string, value: number}[] = []
     r.forEach(rate => {
       newRates.push({
         time: rate.time,
-        value: rate.close
+        value: rate.value
       })
     })
     setRates(newRates)
