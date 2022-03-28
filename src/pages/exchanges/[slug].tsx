@@ -11,6 +11,7 @@ import getExchange from 'lib/zilstream/getExchange'
 import { Pair } from 'types/pair.interface'
 import { Link as WebLink } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
+import EmptyRow from 'components/EmptyRow'
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { slug } = context.query
@@ -172,6 +173,9 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
             })}
           </tbody>
         </table>
+        {pairs.length === 0 &&
+          <EmptyRow message="This exchange doesn't have any pairs yet." />
+        }
       </div>
     </>
   )
