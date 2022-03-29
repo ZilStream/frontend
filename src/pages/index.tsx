@@ -257,7 +257,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <SponsorBlock link="https://carbswap.app" />
+              {/* <SponsorBlock link="https://carbswap.app" /> */}
 
               <RatesBlock
                 title="ZIL"
@@ -273,11 +273,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              {/* <Link href="/exchanges">
+              <Link href="/exchanges">
                 <a>
                   <VolumeChartBlock />
                 </a>
-              </Link> */}
+              </Link>
 
               <HighestAPRBlock tokens={aprTokens} />
             </>
