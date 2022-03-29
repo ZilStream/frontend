@@ -41,7 +41,7 @@ const HighestAPRBlock = (props: Props) => {
               <div className="font-medium flex-grow">
                 <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
                   <a className="flex items-center">
-                    {token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol} {rewards[0]?.exchange_id === 3 ? '/ CARB' : ''}{rewards[0]?.exchange_id === 1 ? '/ CARB' : ''}</span>
+                    {token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol} {rewards[0]?.exchange_id === 3 ? '/ CARB' : ''}{rewards[0]?.exchange_id === 1 ? '/ ZIL' : ''}</span>
                   </a>
                 </Link>
               </div>
