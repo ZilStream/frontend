@@ -9,6 +9,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   tokens.forEach(token => {
     if(token.address === ZIL_ADDRESS) {
       batchRequests.push(balanceBatchRequest(token, walletAddress))
+      batchRequests.push(carbTokenPoolBalanceBatchRequest(token, walletAddress))
     } else {
       batchRequests.push(tokenBalanceBatchRequest(token, walletAddress))
       batchRequests.push(tokenPoolBalanceBatchRequest(token, walletAddress))
