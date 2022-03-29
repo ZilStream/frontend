@@ -272,13 +272,13 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              <Link href="/exchanges">
+              {/* <Link href="/exchanges">
                 <a>
                   <VolumeChartBlock />
                 </a>
-              </Link>
+              </Link> */}
 
-              {/* <HighestAPRBlock tokens={aprTokens} /> */}
+              <HighestAPRBlock tokens={aprTokens} />
             </>
           )}
         </div>
