@@ -39,7 +39,7 @@ export class ZilSwap extends Exchange {
 
     let txn: { transition: string; args: Value[]; params: CallParams }
 
-    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if(tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       txn = {
         transition: 'SwapExactZILForTokens',
@@ -47,7 +47,7 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'min_token_amount',
@@ -70,7 +70,7 @@ export class ZilSwap extends Exchange {
           ...this.txParams,
         },
       }
-    } else if(tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if(tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       txn = {
         transition: 'SwapExactTokensForZIL',
@@ -78,7 +78,7 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token_amount',
@@ -114,12 +114,12 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token0_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token1_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'token0_amount',
@@ -164,7 +164,7 @@ export class ZilSwap extends Exchange {
 
     let txn: { transition: string; args: Value[]; params: CallParams }
 
-    if(tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if(tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       txn = {
         transition: 'SwapZILForExactTokens',
@@ -172,7 +172,7 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'token_amount',
@@ -195,7 +195,7 @@ export class ZilSwap extends Exchange {
           ...this.txParams,
         },
       }
-    } else if(tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if(tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       txn = {
         transition: 'SwapTokensForExactZIL',
@@ -203,7 +203,7 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'max_token_amount',
@@ -239,12 +239,12 @@ export class ZilSwap extends Exchange {
           {
             vname: 'token0_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenIn.address_bech32),
+            value: fromBech32Address(tokenIn.address),
           },
           {
             vname: 'token1_address',
             type: 'ByStr20',
-            value: fromBech32Address(tokenOut.address_bech32),
+            value: fromBech32Address(tokenOut.address),
           },
           {
             vname: 'max_token0_amount',
@@ -312,12 +312,12 @@ export class ZilSwap extends Exchange {
     let expectedInput: BigNumber // the expected amount after slippage and fees
     let epsilonInput: BigNumber // the zero slippage input
   
-    if (tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if (tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       const { baseReserve, quoteReserve } = this.getReserves(tokenOut)
       epsilonInput = tokenOutAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
       expectedInput = this.getInputFor(tokenOutAmount, quoteReserve, baseReserve)
-    } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if (tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn)
       epsilonInput = tokenOutAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
@@ -344,12 +344,12 @@ export class ZilSwap extends Exchange {
     let epsilonOutput: BigNumber // the zero slippage output
     let expectedOutput: BigNumber // the expected amount after slippage and fees
   
-    if (tokenIn.address_bech32 === ZIL_ADDRESS) {
+    if (tokenIn.address === ZIL_ADDRESS) {
       // zil to zrc2
       const { baseReserve, quoteReserve } = this.getReserves(tokenOut)
       epsilonOutput = tokenInAmount.times(baseReserve).dividedToIntegerBy(quoteReserve)
       expectedOutput = this.getOutputFor(tokenInAmount, quoteReserve, baseReserve)
-    } else if (tokenOut.address_bech32 === ZIL_ADDRESS) {
+    } else if (tokenOut.address === ZIL_ADDRESS) {
       // zrc2 to zil
       const { baseReserve, quoteReserve } = this.getReserves(tokenIn)
       epsilonOutput = tokenInAmount.times(quoteReserve).dividedToIntegerBy(baseReserve)
@@ -399,7 +399,7 @@ export class ZilSwap extends Exchange {
   }
 
   private getReserves(token: Token) {
-    const pool = token.pools?.filter(pool => pool.baseAddress === token.address_bech32 && pool.dex === DEX.ZilSwap)?.[0]
+    const pool = token.pools?.filter(pool => pool.baseAddress === token.address && pool.dex === DEX.ZilSwap)?.[0]
     if(!pool) {
       return {
         baseReserve: new BigNumber(0),

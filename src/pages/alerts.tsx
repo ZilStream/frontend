@@ -70,8 +70,8 @@ function Alerts() {
           </thead>
           <tbody>
             {alertState.alerts.map((alert, index) => {
-              let token = tokenState.tokens.filter(token => token.address_bech32 === alert.token_address)?.[0]
-              let currentRate = alert.metric === Metric.Price && alert.token_address !== ZIL_ADDRESS ? token.market_data.rate_usd : token.market_data.rate
+              let token = tokenState.tokens.filter(token => token.address === alert.token_address)?.[0]
+              let currentRate = alert.metric === Metric.Price && alert.token_address !== ZIL_ADDRESS ? token.market_data.rate_usd : token.market_data.rate_zil
               let targetRate = alert.value
               let difference  = (1 - (currentRate / targetRate)) * 100
 

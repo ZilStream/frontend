@@ -33,7 +33,7 @@ const HighestAPRBlock = (props: Props) => {
           <div key={token.id} className="flex items-center gap-3">
             <div>{index+1}.</div>
             <div className="w-6 h-6">
-              <TokenIcon address={token.address_bech32} />
+              <TokenIcon address={token.address} />
             </div>
             <div className="font-medium flex-grow">
               <Link href={`/tokens/${token.symbol.toLowerCase()}`}>

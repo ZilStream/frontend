@@ -37,8 +37,8 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
       const updateProps: TokenUpdateProps = payload
       return {
         ...state,
-        zilRate: (updateProps.address_bech32 === ZIL_ADDRESS && updateProps.market_data?.rate) ? updateProps.market_data.rate : state.zilRate,
-        tokens: state.tokens.map(token => token.address_bech32 === updateProps.address_bech32 ?
+        zilRate: (updateProps.address === ZIL_ADDRESS && updateProps.market_data?.rate_zil) ? updateProps.market_data.rate_zil : state.zilRate,
+        tokens: state.tokens.map(token => token.address === updateProps.address ?
           {...token, ...updateProps} :
           token
           )
@@ -60,7 +60,7 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
       var newState = {
         ...state,
         tokens: state.tokens.map(token => {
-          if(token.address_bech32 === poolProps.address) {
+          if(token.address === poolProps.address) {
             return {
               ...token,
               pools: token.pools?.map(pool => {
@@ -89,7 +89,7 @@ const reducer = (state: TokenState = initialState, action: AnyAction) => {
         newState = {
           ...state,
           tokens: state.tokens.map(token => {
-            if(token.address_bech32 === poolProps.address) {
+            if(token.address === poolProps.address) {
               return {
                 ...token,
                 pools: [

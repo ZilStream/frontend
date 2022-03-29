@@ -8,11 +8,11 @@ export async function getBalancesForTokens(walletAddress: string, tokens: Token[
 
   tokens.forEach(async token => {
     let balance = await getZRCBalance(
-      token.address_bech32,
+      token.address,
       walletAddress
     )
     balances.push({
-      tokenAddress: token.address_bech32,
+      tokenAddress: token.address,
       balance: balance ? (balance * Math.pow(10, -token.decimals)) : 0
     })
   })

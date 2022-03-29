@@ -47,7 +47,7 @@ function PortfolioStaking() {
           <tbody>
             {filteredOperators.map((operator, index) => {
               let token = tokenState.tokens.filter(token => token.symbol == operator.symbol)[0]
-              let lastRate = token.market_data.rate
+              let lastRate = token.market_data.rate_zil
 
               return (
                 <tr key={index} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">

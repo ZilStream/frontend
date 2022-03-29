@@ -54,8 +54,8 @@ export default function useBalances() {
       }
 
       streamBalance = streamBalance.shiftedBy(-8)
-      streamBalanceUSD = streamBalance.times(streamToken.market_data.rate).times(tokenState.zilRate)
-      streamBalanceZIL = streamBalance.times(streamToken.market_data.rate)
+      streamBalanceUSD = streamBalance.times(streamToken.market_data.rate_zil).times(tokenState.zilRate)
+      streamBalanceZIL = streamBalance.times(streamToken.market_data.rate_zil)
     }
 
     var totalBalance = new BigNumber(0)
@@ -69,7 +69,7 @@ export default function useBalances() {
     
         if(current.isZil) return sum.plus(balance)
     
-        return sum.plus(balance.times(current.market_data.rate))
+        return sum.plus(balance.times(current.market_data.rate_zil))
       }, new BigNumber(0))
       totalBalance = totalBalance.plus(holdingBalance)
     
@@ -81,7 +81,7 @@ export default function useBalances() {
             if(!pool.totalContribution || !pool.userContribution) return
             let contributionPercentage = pool.userContribution.dividedBy(pool.totalContribution).times(100)
             let contributionShare = contributionPercentage.shiftedBy(-2)
-            let zilAmount = (pool.baseReserve ?? BIG_ZERO).shiftedBy(-current.decimals).times(current.market_data.rate).times(2).times(contributionShare)
+            let zilAmount = (pool.baseReserve ?? BIG_ZERO).shiftedBy(-current.decimals).times(current.market_data.rate_zil).times(2).times(contributionShare)
             newSum = newSum.plus(zilAmount)
           })
         }
@@ -96,7 +96,7 @@ export default function useBalances() {
           return sum.plus(staked)
         } else {
           let staked = toBigNumber(current.staked, {compression: current.decimals})
-          let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].market_data.rate
+          let rate = tokenState.tokens.filter(token => token.symbol == current.symbol)[0].market_data.rate_zil
           return sum.plus(staked.times(rate))
         }
       }, new BigNumber(0))

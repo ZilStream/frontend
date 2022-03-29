@@ -19,7 +19,7 @@ const AlertFormModal = (props: Props) => {
   let tokenState = useSelector<RootState, TokenState>(state => state.token)
   let tokens = tokenState.tokens
   let streamToken = tokens.filter(token => token.isZil)?.[0]
-  let alertToken = tokens.filter(token => token.address_bech32 === alert?.token_address)?.[0]
+  let alertToken = tokens.filter(token => token.address === alert?.token_address)?.[0]
   let dispatch = useDispatch()
 
   let [formState, setFormState] = useState({
@@ -51,7 +51,7 @@ const AlertFormModal = (props: Props) => {
     if(alert) {
       dispatch(updateAlert({
         previous: alert,
-        token_address: formState.token.address_bech32,
+        token_address: formState.token.address,
         metric: formState.metric,
         indicator: formState.indicator,
         value: +formState.value,
@@ -60,7 +60,7 @@ const AlertFormModal = (props: Props) => {
     } else {
       dispatch(addAlert({
         alert: {
-          token_address: formState.token.address_bech32,
+          token_address: formState.token.address,
           metric: formState.metric,
           indicator: formState.indicator,
           value: +formState.value,
@@ -127,7 +127,7 @@ const AlertFormModal = (props: Props) => {
                     <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white dark:bg-gray-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
                       {tokens.sort((a,b) => a.name > b.name ? 1 : -1).map(token => (
                         <Listbox.Option 
-                          key={token.address_bech32}
+                          key={token.address}
                           value={token}
                           className="py-2 pl-3 pr-10 border-b dark:border-gray-700 last:border-b-0"
                         >

@@ -42,7 +42,7 @@ const TokenHolders = (props: Props) => {
 
   const getHolders = async () => {
     const response = await client.blockchain.getSmartContractSubState(
-      fromBech32Address(token.address_bech32),
+      fromBech32Address(token.address),
       'balances',
       []
     )

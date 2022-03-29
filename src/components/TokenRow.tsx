@@ -41,15 +41,15 @@ const TokenRow = (props: Props) => {
     var favorites = favoritesString.split(',')
 
     if (isFavorited) {
-      favorites = favorites.filter(address => address != token.address_bech32)
+      favorites = favorites.filter(address => address != token.address)
     } else {
-      favorites.push(token.address_bech32)
+      favorites.push(token.address)
     }
 
     localStorage.setItem('favorites', favorites.join(','))
     
     dispatch({type: TokenActionTypes.TOKEN_UPDATE, payload: {
-      address_bech32: token.address_bech32,
+      address: token.address,
       isFavorited: !isFavorited
     }})
 
@@ -69,7 +69,7 @@ const TokenRow = (props: Props) => {
       </td>
       <td className="pl-2 sm:pl-3 pr-1 sm:pr-2 py-2 font-normal text-sm">{props.rank}</td>
       <td className="px-2 py-2 font-medium sticky left-0 z-10">
-        <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+        <Link href={`/tokens/${token.address}`}>
           <a className="flex items-center">
             <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-1 sm:mr-3">
               <TokenIcon url={token.icon} />
@@ -95,12 +95,12 @@ const TokenRow = (props: Props) => {
         </Link>
       </td>
 
-      {settingsState.columns.priceZIL &&
-        <td className="px-2 py-2 font-normal text-right"><FlashChange value={token.market_data.rate}>{cryptoFormat(token.market_data.rate)}</FlashChange></td>
+      {settingsState.columns.priceFiat &&
+        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)}</td>
       }
 
-      {settingsState.columns.priceFiat &&
-        <td className="px-2 py-2 font-normal text-right">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)}</td>
+      {settingsState.columns.priceZIL &&
+        <td className="px-2 py-2 font-normal text-right"><FlashChange value={token.market_data.rate_zil}>{cryptoFormat(token.market_data.rate_zil)}</FlashChange></td>
       }
 
       {settingsState.columns.ath &&

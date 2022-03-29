@@ -44,9 +44,9 @@ const TokenLiquidity = (props: Props) => {
     const response = await client.blockchain.getSmartContractSubState(
       fromBech32Address(zilSwapAddress),
       'balances',
-      [fromBech32Address(token.address_bech32).toLowerCase()]
+      [fromBech32Address(token.address).toLowerCase()]
     )
-    const balances: {[id: string]: string} = response.result.balances[fromBech32Address(token.address_bech32).toLowerCase()]
+    const balances: {[id: string]: string} = response.result.balances[fromBech32Address(token.address).toLowerCase()]
 
     const newHolders: Balance[] = []
     var totalContribution = new BigNumber(0)
@@ -99,7 +99,7 @@ const TokenLiquidity = (props: Props) => {
         </div>
         {filteredHolders.map((holder, index) => {
           const share = holder.balance.dividedBy(state.totalContribution)
-          const tokenAmount = share.times(token.market_data.token_reserve)
+          const tokenAmount = share.times(state.totalContribution)
           return (
             <div key={holder.address} className="flex items-center text-gray-800 dark:text-gray-300 py-2 whitespace-nowrap border-b last:border-b-0 dark:border-gray-700">
               <div className="flex-grow flex items-center">

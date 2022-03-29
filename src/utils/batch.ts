@@ -1,5 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
-import { XCADDEX_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
+import { CARBSWAP_ADDRESS, XCADDEX_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
 import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
@@ -18,9 +18,13 @@ export enum BatchRequestType {
   XcadZilPools = "xcadZilPools",
   XcadZilBalances = "xcadZilBalances",
   XcadZilTotalContributions = "xcadZilTotalContributions",
+  CarbPools = "carbPools",
+  CarbBalances = "carbBalances",
+  CarbTotalContributions = "carbTotalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
+  GraphStakers = "graphStakers",
   PortBuoyStakers = "portBuoyStakers",
   PortDockStakers = "portDockStakers",
   FeesBachelorStakers = "feesBachelorStakers",
@@ -38,11 +42,17 @@ const zilSwapHash = fromBech32Address(zilSwapAddress)
 const xcadDexAddress = XCADDEX_ADDRESS
 const xcadDexHash = fromBech32Address(xcadDexAddress)
 
+const carbSwapAddress = CARBSWAP_ADDRESS
+const carbSwapHash = fromBech32Address(carbSwapAddress)
+
 const stakingAddress = "zil15lr86jwg937urdeayvtypvhy6pnp6d7p8n5z09"
 const stakingHash = fromBech32Address(stakingAddress)
 
 const carbStakingAddress = "zil18r37xks4r3rj7rzydujcckzlylftdy2qerszne"
 const carbStakingHash = fromBech32Address(carbStakingAddress)
+
+const grphStakingAddress = "zil1la9r6xxlth28rxmhuka0dgc7mpfnk4x5jwcw3l"
+const grphStakingHash = fromBech32Address(grphStakingAddress)
 
 const portBuoyStakingAddress = "zil1lkhea3egremrwtn4lfhsa4psk978k2sat3cs3u"
 const portBuoyStakingHash = fromBech32Address(portBuoyStakingAddress)
@@ -152,7 +162,7 @@ export const balanceBatchRequest = (token: Token, address: string): BatchRequest
  * @returns BatchRequest
  */
 export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32)
+  const address = fromBech32Address(token.address)
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.TokenBalance,
@@ -177,7 +187,7 @@ export const tokenBalanceBatchRequest = (token: Token, walletAddress: string): B
  * @returns BatchRequest
  */
 export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32)
+  const address = fromBech32Address(token.address)
   return {
     type: BatchRequestType.TokenAllowance,
     token: token,
@@ -242,7 +252,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const tokenPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.PoolBalance,
@@ -308,7 +318,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const xcadPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.XcadBalances,
@@ -374,7 +384,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  * @returns BatchRequest
  */
  export const xcadZilPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
-  const address = fromBech32Address(token.address_bech32).toLowerCase()
+  const address = fromBech32Address(token.address).toLowerCase()
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
   return {
     type: BatchRequestType.XcadZilBalances,
@@ -384,6 +394,72 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         xcadDexHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [address, walletAddr],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @returns BatchRequest
+ */
+ export const carbPoolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.CarbPools,
+    token: undefined,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        carbSwapHash.replace("0x", "").toLowerCase(),
+        "pools",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @returns BatchRequest
+ */
+ export const carbTotalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.CarbTotalContributions,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        carbSwapHash.replace("0x", "").toLowerCase(),
+        "total_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param Token The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const carbTokenPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.CarbBalances,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        carbSwapHash.replace("0x", "").toLowerCase(),
         "balances",
         [address, walletAddr],
       ],
@@ -450,6 +526,27 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         carbStakingHash.replace("0x", "").toLowerCase(),
+        "stakers",
+        [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the carb stakers.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const graphStakersBatchRequest = (walletAddress: string): BatchRequest => {
+  return {
+    type: BatchRequestType.GraphStakers,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        grphStakingHash.replace("0x", "").toLowerCase(),
         "stakers",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],

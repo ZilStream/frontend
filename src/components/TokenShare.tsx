@@ -44,7 +44,7 @@ const TokenShare = (props: Props) => {
             </div>
           </div>
           <div className="text-4xl flex items-center mt-3">
-            <span className="flex-grow flex items-center gap-2 font-bold">{currencyFormat(token.market_data.rate * selectedCurrency.rate, selectedCurrency.symbol)} <span className="text-gray-400 text-2xl">{cryptoFormat(token.market_data.rate)} ZIL</span></span>
+            <span className="flex-grow flex items-center gap-2 font-bold">{currencyFormat(token.market_data.rate_zil * selectedCurrency.rate, selectedCurrency.symbol)} <span className="text-gray-400 text-2xl">{cryptoFormat(token.market_data.rate_zil)} ZIL</span></span>
             <span className="text-3xl ml-1"><InlineChange num={token.market_data.change_percentage_24h} bold /></span>
           </div>
 

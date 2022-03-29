@@ -21,10 +21,10 @@ function PortfolioBalances() {
 
   filteredTokens.sort((a, b) => {
     const priorBalance = toBigNumber(a.balance, {compression: a.decimals})
-    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.market_data.rate)
+    const priorZilRate = a.isZil ? priorBalance : priorBalance.times(a.market_data.rate_zil)
 
     const nextBalance = toBigNumber(b.balance, {compression: b.decimals})
-    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.market_data.rate)
+    const nextZilRate = b.isZil ? nextBalance : nextBalance.times(b.market_data.rate_zil)
     
     return (priorZilRate.isLessThan(nextZilRate)) ? 1 : -1
   })
@@ -34,7 +34,7 @@ function PortfolioBalances() {
 
     if(current.isZil) return sum.plus(balance)
 
-    return sum.plus(balance.times(current.market_data.rate))
+    return sum.plus(balance.times(current.market_data.rate_zil))
   }, new BigNumber(0))
 
   return (
@@ -62,14 +62,14 @@ function PortfolioBalances() {
             {filteredTokens.map((token, index) => {
               let balance = toBigNumber(token.balance, {compression: token.decimals})
 
-              let rate = token.market_data.rate
+              let rate = token.market_data.rate_zil
               let zilBalance = (token.isZil) ? balance.toNumber() : (Number(balance) * rate)
               let fiatBalance = zilBalance * selectedCurrency.rate
 
               let share = (zilBalance / totalBalance.toNumber()) * 100
               
               return (
-                <tr key={token.address_bech32} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+                <tr key={token.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                   <td className={`pl-4 pr-2 py-4 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === filteredTokens.length-1 ? 'rounded-bl-lg' : ''}`}>
                     <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
                       <a className="flex items-center">

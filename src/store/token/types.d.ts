@@ -3,21 +3,20 @@ import { DEX } from 'types/dex.interface'
 
 export interface Token {
   id: number
+  rank: number
   name: string
   symbol: string
   icon: string
-  address_bech32: string
+  address: string
   decimals: number
   website: string
   whitepaper: string
   telegram: string
-  listed: boolean
-  bridged: boolean
+  discord: string
+  init_supply: number
+  max_supply: number
   viewblock_score: number
-  current_supply: number
-  market_cap: number
-  daily_volume: number
-  current_liquidity: number
+  reviewed: boolean
   last_vote_start: string
   last_vote_end: string
   last_vote_hash: string
@@ -34,21 +33,8 @@ export interface Token {
 }
 
 export interface MarketData {
-  init_supply: number
-  max_supply: number
-  total_supply: number
-  current_supply: number
-  daily_volume: number
-  daily_volume_zil: number
-  current_liquidity: number
-  current_liquidity_zil: number
-  liquidity_providers: number
-  zil_reserve: number
-  token_reserve: number
-  market_cap: number
-  market_cap_zil: number
-  fully_diluted_valuation: number
-  fully_diluted_valuation_zil: number
+  rate_usd: number
+  rate_zil: number
   ath: number
   atl: number
   change_24h: number
@@ -56,10 +42,19 @@ export interface MarketData {
   high_24h: number
   change_percentage_24h: number
   change_percentage_7d: number
-  change_percentage_14d: number
   change_percentage_30d: number
-  rate: number
-  rate_usd: number
+  init_supply: number
+  max_supply: number
+  total_supply: number
+  current_supply: number
+  daily_volume_usd: number
+  daily_volume_zil: number
+  market_cap_usd: number
+  market_cap_zil: number
+  fully_diluted_valuation_usd: number
+  fully_diluted_valuation_zil: number
+  current_liquidity_usd: number
+  current_liquidity_zil: number
 }
 
 export interface Reward {
@@ -102,7 +97,7 @@ export interface TokenInitProps {
 }
 
 export interface TokenUpdateProps extends Partial<Token> {
-  address_bech32: string
+  address: string
 }
 
 export interface TokenAddProps {

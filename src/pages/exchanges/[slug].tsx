@@ -11,6 +11,8 @@ import getExchange from 'lib/zilstream/getExchange'
 import { Pair } from 'types/pair.interface'
 import { Link as WebLink } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
+import EmptyRow from 'components/EmptyRow'
+import { ZIL_ADDRESS } from 'lib/constants'
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { slug } = context.query
@@ -33,10 +35,10 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
 
   useEffect(() => {
     const liquidity = exchange.pairs.reduce((sum, pair) => {
-      const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+      const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
       var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
       if(!quoteToken?.isZil) {
-        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate ?? 0) * 2
+        liquidity = (pair.reserve?.quote_reserve ?? 0) * (quoteToken?.market_data.rate_zil ?? 0) * 2
       }
       return sum + liquidity
     }, 0)
@@ -44,11 +46,11 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
 
     let volume = exchange.pairs.reduce((sum, pair) => {
       if(pair.volume && pair.volume.volume_24h_quote > 0) {
-        const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+        const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
         if(quoteToken && quoteToken.isZil) {
           return sum + pair.volume.volume_24h_quote
         } else {
-          return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate ?? 0))
+          return sum + (pair.volume.volume_24h_quote * (quoteToken?.market_data.rate_zil ?? 0))
         }
       }
       return sum
@@ -56,8 +58,8 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
     setTotalVolume(volume)
 
     const filteredPairs = exchange.pairs.filter(pair => {
-      const token = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
-      return token?.listed
+      const token = tokenState.tokens.filter(token => token.address === pair.base_address)?.[0]
+      return token?.reviewed || token?.address === ZIL_ADDRESS
     })
     filteredPairs.sort((a,b) => {
       return (a.volume?.volume_24h_quote ?? 0) > (b.volume?.volume_24h_quote ?? 0) ? -1 : 1
@@ -86,9 +88,11 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                 Website 
               </a>
 
-              <div>
-                <CopyableAddress address={exchange.address} showCopy={true} />
-              </div>
+              {exchange.address &&
+                <div>
+                  <CopyableAddress address={exchange.address} showCopy={true} />
+                </div>
+              }
             </div>
           </div>
           <div>
@@ -128,14 +132,14 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
           </thead>
           <tbody>
             {pairs.map((pair: Pair, index: number) => {
-              const baseToken = tokenState.tokens.filter(token => token.address_bech32 === pair.base_address)?.[0]
-              const quoteToken = tokenState.tokens.filter(token => token.address_bech32 === pair.quote_address)?.[0]
+              const baseToken = tokenState.tokens.filter(token => token.address === pair.base_address)?.[0]
+              const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
 
               var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
               var volume = (pair.volume?.volume_24h_quote ?? 0)
               if(!quoteToken.isZil) {
-                liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate * 2
-                volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate
+                liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate_zil * 2
+                volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate_zil
               }
 
               return (
@@ -155,7 +159,7 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
                     {pair.pair}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    <div>{cryptoFormat((pair.quote?.price ?? 0) * quoteToken.market_data.rate)} ZIL</div>
+                    <div>{cryptoFormat((pair.quote?.price ?? 0) * quoteToken.market_data.rate_zil)} ZIL</div>
                     <div className="text-gray-500 dark:text-gray-400">{cryptoFormat(pair.quote?.price ?? 0)} {pair.quote_symbol}</div>
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
@@ -172,6 +176,9 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
             })}
           </tbody>
         </table>
+        {pairs.length === 0 &&
+          <EmptyRow message="This exchange doesn't have any pairs yet." />
+        }
       </div>
     </>
   )
