@@ -12,6 +12,7 @@ import { Pair } from 'types/pair.interface'
 import { Link as WebLink } from 'react-feather'
 import CopyableAddress from 'components/CopyableAddress'
 import EmptyRow from 'components/EmptyRow'
+import { ZIL_ADDRESS } from 'lib/constants'
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { slug } = context.query
@@ -58,7 +59,7 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
 
     const filteredPairs = exchange.pairs.filter(pair => {
       const token = tokenState.tokens.filter(token => token.address === pair.base_address)?.[0]
-      return token?.reviewed
+      return token?.reviewed || token.address === ZIL_ADDRESS
     })
     filteredPairs.sort((a,b) => {
       return (a.volume?.volume_24h_quote ?? 0) > (b.volume?.volume_24h_quote ?? 0) ? -1 : 1
