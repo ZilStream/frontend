@@ -29,22 +29,26 @@ const HighestAPRBlock = (props: Props) => {
         </div>
       </div>
       <div className="flex flex-col gap-4 text-sm mt-1">
-        {tokens.map((token, index) => (
-          <div key={token.id} className="flex items-center gap-3">
-            <div>{index+1}.</div>
-            <div className="w-6 h-6">
-              <TokenIcon address={token.address} />
+        {tokens.map((token, index) => {
+          let rewards = token.rewards.sort((a,b) => a.current_apr < b.current_apr ? 1 : -1)
+          
+          return (
+            <div key={token.id} className="flex items-center gap-3">
+              <div>{index+1}.</div>
+              <div className="w-6 h-6">
+                <TokenIcon address={token.address} />
+              </div>
+              <div className="font-medium flex-grow">
+                <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+                  <a className="flex items-center">
+                    {token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol} {rewards[0]?.exchange_id === 3 ? '/ CARB' : ''}{rewards[0]?.exchange_id === 1 ? '/ CARB' : ''}</span>
+                  </a>
+                </Link>
+              </div>
+              <div>{token.apr?.toNumber()}%</div>
             </div>
-            <div className="font-medium flex-grow">
-              <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
-                <a className="flex items-center">
-                  {token.name} <span className="font-normal text-gray-500 ml-1">{token.symbol}</span>
-                </a>
-              </Link>
-            </div>
-            <div>{token.apr?.toNumber()}%</div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
