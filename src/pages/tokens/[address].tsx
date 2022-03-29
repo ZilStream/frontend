@@ -188,7 +188,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </div>
             </div>
             <div className="my-3">
-              <PriceDayRange price={token.market_data.rate_zil} low={token.market_data.low_24h} high={token.market_data.high_24h} />
+              <PriceDayRange price={token.market_data.rate_usd} low={token.market_data.low_24h} high={token.market_data.high_24h} />
             </div>
           </div>
 
