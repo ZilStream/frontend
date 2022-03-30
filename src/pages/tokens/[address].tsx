@@ -109,10 +109,23 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
 
         return avolume > bvolume ? -1 : 1
       })
+
+      
+
       setPairs(newPairs)
     }
     fetchPairs()
   }, [tokenState])
+
+  const chartPair = React.useMemo(() => {
+    if(pairs.length === 0) return undefined
+
+    let zilSwapPairs = pairs.filter(pair => pair.exchange_id === '1')
+    if(zilSwapPairs.length > 0) {
+      return zilSwapPairs[0]
+    }
+    return pairs[0]
+  }, [pairs])
 
   return (
     <>
@@ -422,7 +435,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
               </Tab.Panel>
               <Tab.Panel>
                 <TVChartContainer 
-                  symbol={`${pairs[0]?.exchange?.slug}/${pairs[0]?.base_address}/${pairs[0]?.quote_address}/USD`}
+                  symbol={`${chartPair?.exchange?.slug}/${chartPair?.base_address}/${chartPair?.quote_address}/USD`}
                   interval={'240' as ResolutionString} 
                   autosize={true} 
                   fullscreen={false} 
