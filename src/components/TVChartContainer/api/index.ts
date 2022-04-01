@@ -28,14 +28,28 @@ export default {
 		let parts = symbolName.split('/')
 		let pair = await getTokenPair(parts[0], parts[1], parts[2])
 
+		var exchange = parts[0]
+		if(parts[0] === 'zilswap') {
+			exchange = 'ZilSwap'
+		} else if(parts[0] === 'xcaddex') {
+			exchange = 'XCADDEX'
+		} else if(parts[0] === 'carbswap') {
+			exchange = 'CarbSwap'
+		}
+
+		var description = pair.pair
+		if(parts[3] === 'USD') {
+			description = pair.base_symbol + '/USD (calculated by zilstream.com)'
+		}
+
 		var symbol_stub: LibrarySymbolInfo = {
 			name: pair.pair,
 			full_name: symbolName,
-			description: pair.pair,
+			description: description,
 			ticker: symbolName,
 			type: 'crypto',
-			exchange: 'zilstream.com',
-			listed_exchange: 'zilstream.com',
+			exchange: exchange,
+			listed_exchange: exchange,
 			format: "price",
 			minmov: 1,
 			pricescale: 100,
