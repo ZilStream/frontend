@@ -120,7 +120,7 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
   const chartPair = React.useMemo(() => {
     if(pairs.length === 0) return undefined
 
-    let zilSwapPairs = pairs.filter(pair => pair.exchange_id === '1')
+    let zilSwapPairs = pairs.filter(pair => pair.exchange?.slug === 'zilswap')
     if(zilSwapPairs.length > 0) {
       return zilSwapPairs[0]
     }
