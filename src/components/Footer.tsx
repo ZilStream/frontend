@@ -26,7 +26,7 @@ export default function Footer() {
                 <img className="hidden lg:block h-8 w-auto" src="/logo-text.svg" />
               )}
             </div>
-            <div className="text-gray-400 dark:text-gray-500 font-medium mt-4 text-sm">© 2021 ZilStream. All rights reserved</div>
+            <div className="text-gray-400 dark:text-gray-500 font-medium mt-4 text-sm">© 2022 ZilStream. All rights reserved</div>
           </div>
           <div>
             <div className="flex items-center gap-5 justify-end text-gray-500 dark:text-gray-400">

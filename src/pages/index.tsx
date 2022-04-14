@@ -22,6 +22,7 @@ import Customize from 'components/Customization'
 import Filters from 'components/Filters'
 import HighestAPRBlock from 'components/HighestAPRBlock'
 import SponsorBlock from 'components/SponsorBlock'
+import { ZIL_ADDRESS } from 'lib/constants'
 
 export const getServerSideProps = async () => {
   const initialRates = await getRates()
@@ -72,7 +73,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
     }
   }, 30000)
 
-  const aprTokens = tokens.filter(token => token.reviewed === true).sort((a: Token, b: Token) => {
+  const aprTokens = tokens.filter(token => token.reviewed === true || token.address === ZIL_ADDRESS).sort((a: Token, b: Token) => {
     if(!a.apr || !b.apr) return -1
     return a.apr.isLessThan(b.apr) ? 1 : -1
   }).slice(0,3)
@@ -256,7 +257,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <SponsorBlock link="https://carbswap.app" />
+              {/* <SponsorBlock link="https://soullesscitadel.com/" /> */}
 
               <RatesBlock
                 title="ZIL"
@@ -278,7 +279,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              {/* <HighestAPRBlock tokens={aprTokens} /> */}
+              <HighestAPRBlock tokens={aprTokens} />
             </>
           )}
         </div>

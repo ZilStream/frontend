@@ -1,7 +1,7 @@
 import { lchown } from 'fs'
 import React from 'react'
 import { ChevronUp } from 'react-feather'
-import { cryptoFormat, numberFormat } from 'utils/format'
+import { cryptoFormat, currencyFormat, numberFormat } from 'utils/format'
 
 interface Props {
   price: number
@@ -17,7 +17,7 @@ const PriceDayRange = (props: Props) => {
   return (
     <div className="flex items-center text-xs whitespace-nowrap">
       <div>
-        <span className="text-gray-500 dark:text-gray-400">Low:</span> {cryptoFormat(low)} ZIL
+        <span className="text-gray-500 dark:text-gray-400">Low:</span> {currencyFormat(low)}
       </div>
       <div className="w-full mx-2 h-2 rounded-full overflowx-hidden bg-gray-300 dark:bg-gray-700" style={{maxWidth: 200}}>
         <div className="h-full relative bg-gray-500 rounded-full" style={{width: numberFormat(filledPercentage, 0) + '%'}}>
@@ -25,7 +25,7 @@ const PriceDayRange = (props: Props) => {
         </div>
       </div>
       <div>
-      <span className="text-gray-500 dark:text-gray-400">High:</span> {cryptoFormat(high)} ZIL
+      <span className="text-gray-500 dark:text-gray-400">High:</span> {currencyFormat(high)}
       </div>
     </div>
   )
