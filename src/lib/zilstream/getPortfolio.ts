@@ -34,7 +34,7 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(portBuoyStakersBatchRequest(walletAddress))
   batchRequests.push(portDockStakersBatchRequest(walletAddress))
   batchRequests.push(okipadStakingBatchRequest(walletAddress))
-  batchRequests.push(dmzStakingBatchRequest(walletAddress))
+  // batchRequests.push(dmzStakingBatchRequest(walletAddress))
   batchRequests.push(feesBachelorsStakersBatchRequest(walletAddress))
   batchRequests.push(feesMastersStakersBatchRequest(walletAddress))
   batchRequests.push(feesDoctoralStakersBatchRequest(walletAddress))
