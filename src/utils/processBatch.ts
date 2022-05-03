@@ -101,6 +101,34 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
           return
         }
 
+        case BatchRequestType.HunyBalances: {
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+          console.log('hunybalances', result)
+          if(result.result === null) {
+            let userContribution = new BigNumber(0)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
+              dex: DEX.ZilSwap,
+              quoteAddress: ZIL_ADDRESS,
+              baseAddress: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
+              userContribution
+            }})
+            return
+          }
+
+          let balances = result.result.balances
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+          
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+            address: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
+            dex: DEX.ZilSwap,
+            quoteAddress: ZIL_ADDRESS,
+            baseAddress: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
+            userContribution
+          }})
+          return
+        }
+
         case BatchRequestType.TotalContributions: {
           let totalContributions = result.result.total_contributions
           Object.keys(totalContributions).forEach(address => {

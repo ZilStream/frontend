@@ -33,7 +33,8 @@ export enum BatchRequestType {
   XcadStaking = "XcadStaking",
   OkipadStaking = "OkipadStaking",
   BloxStaking = "BloxStaking",
-  DmzStaking = "DmzStaking"
+  DmzStaking = "DmzStaking",
+  HunyBalances = "HunyBalances",
 };
 
 const zilSwapAddress = ZILSWAP_ADDRESS
@@ -77,6 +78,9 @@ const bloxStakingHash = fromBech32Address(bloxStakingAddress)
 
 const dmzStakingAddress = "zil1n93rsttd44ryckftu8900ketkdz0ky3eu2ljqe"
 const dmzStakingHash = fromBech32Address(dmzStakingAddress)
+
+const hunyHiveAddress = "zil1328u4vxdsguz09qxlzp2e8ayt3p0mt33glpcl6"
+const hunyHiveHash = fromBech32Address(hunyHiveAddress)
 
 export const xcadStakingAddresses = {
   0: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xa397c1aa3054bdad8aecf645a2b582202eea57b9'], // dXCAD #1
@@ -742,6 +746,29 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
         dmzStakingHash.replace("0x", "").toLowerCase(),
         "stakers_total_bal",
         [fromBech32Address(walletAddress).toLowerCase()],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the huny token pool balance.
+ *
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const hunyBalanceBatchRequest = (walletAddress: string): BatchRequest => {
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  console.log(hunyHiveHash.replace("0x", "").toLowerCase(), walletAddr)
+  return {
+    type: BatchRequestType.HunyBalances,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        hunyHiveHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [walletAddr],
       ],
     },
   };
