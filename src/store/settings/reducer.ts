@@ -13,7 +13,8 @@ const initialState: SettingsState = {
     atl: false,
     change24H: true,
     change7D: true,
-    change30D: false,
+    change24HZIL: false,
+    change7DZIL: false,
     marketCap: true,
     marketCapDiluted: false,
     circSupply: false,
@@ -24,6 +25,7 @@ const initialState: SettingsState = {
     apr: false,
     apy: false,
     graph24H: true,
+    graph24HZIL: false
   },
   filters: {
     unlisted: false,
