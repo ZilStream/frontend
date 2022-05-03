@@ -123,9 +123,15 @@ const TokenRow = (props: Props) => {
         </td>
       }
 
-      {settingsState.columns.change30D &&
+      {settingsState.columns.change24HZIL &&
         <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">
-          <InlineChange num={token.market_data.change_percentage_30d} />
+          <InlineChange num={token.market_data.change_percentage_24h_zil} />
+        </td>
+      }
+
+      {settingsState.columns.change7DZIL &&
+        <td className="px-2 py-2 font-normal text-right text-gray-500 dark:text-gray-400">
+          <InlineChange num={token.market_data.change_percentage_7d_zil} />
         </td>
       }
       
@@ -178,12 +184,26 @@ const TokenRow = (props: Props) => {
       }
       
       {settingsState.columns.graph24H &&
-        <td className={`px-2 py-2 flex justify-end ${props.index == 0 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
-          <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
-            <a className="inline-block w-28" style={{height: '52px'}}>
-              <Chart data={props.rates} isUserInteractionEnabled={false} isScalesEnabled={false} />
-            </a>
-          </Link>
+        <td className={`px-2 py-2 justify-end ${props.index == 0 && !settingsState.columns.graph24HZIL ? 'rounded-tr-lg' : ''} ${props.isLast && !settingsState.columns.graph24HZIL ? 'rounded-br-lg' : ''}`}>
+          <div className="flex justify-end">
+            <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+              <a className="inline-block w-28" style={{height: '52px'}}>
+                <Chart data={props.rates} isUserInteractionEnabled={false} isScalesEnabled={false} />
+              </a>
+            </Link>
+          </div>
+        </td>
+      }
+
+      {settingsState.columns.graph24HZIL &&
+        <td className={`px-2 py-2 justify-end ${props.index == 0 ? 'rounded-tr-lg' : ''} ${props.isLast ? 'rounded-br-lg' : ''}`}>
+          <div className="flex justify-end">
+            <Link href={`/tokens/${token.symbol.toLowerCase()}`}>
+              <a className="inline-block w-28" style={{height: '52px'}}>
+                <Chart data={props.rates} isZilValue={true} isUserInteractionEnabled={false} isScalesEnabled={false} />
+              </a>
+            </Link>
+          </div>
         </td>
       }
     </tr>

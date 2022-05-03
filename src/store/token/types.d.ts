@@ -37,12 +37,19 @@ export interface MarketData {
   rate_zil: number
   ath: number
   atl: number
+  ath_zil: number
+  atl_zil: number
   change_24h: number
   low_24h: number
   high_24h: number
+  change_24h_zil: number
+  low_24h_zil: number
+  high_24h_zil: number
   change_percentage_24h: number
   change_percentage_7d: number
   change_percentage_30d: number
+  change_percentage_24h_zil: number
+  change_percentage_7d_zil: number
   init_supply: number
   max_supply: number
   total_supply: number

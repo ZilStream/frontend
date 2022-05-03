@@ -15,7 +15,6 @@ import { SortType, SortDirection } from 'types/sort.interface'
 import { Rate } from 'types/rate.interface'
 import { compactFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
-import TokenIcon from 'components/TokenIcon'
 import TVLChartBlock from 'components/TVLChartBlock'
 import VolumeChartBlock from 'components/VolumeChartBlock'
 import Customize from 'components/Customization'
@@ -166,12 +165,19 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
         }
         return (a.market_data.change_percentage_7d < b.market_data.change_percentage_7d) ? 1 : -1
       })
-    } else if(currentSort === SortType.Change30D) {
+    } else if(currentSort === SortType.Change24HZIL) {
       tokensToDisplay.sort((a,b) => {
         if(currentSortDirection == SortDirection.Ascending) {
-          return (a.market_data.change_percentage_30d > b.market_data.change_percentage_30d) ? 1 : -1
+          return (a.market_data.change_percentage_24h_zil > b.market_data.change_percentage_24h_zil) ? 1 : -1
         }
-        return (a.market_data.change_percentage_30d < b.market_data.change_percentage_30d) ? 1 : -1
+        return (a.market_data.change_percentage_24h_zil < b.market_data.change_percentage_24h_zil) ? 1 : -1
+      })
+    } else if(currentSort === SortType.Change7DZIL) {
+      tokensToDisplay.sort((a,b) => {
+        if(currentSortDirection == SortDirection.Ascending) {
+          return (a.market_data.change_percentage_7d_zil > b.market_data.change_percentage_7d_zil) ? 1 : -1
+        }
+        return (a.market_data.change_percentage_7d_zil < b.market_data.change_percentage_7d_zil) ? 1 : -1
       })
     } else if(currentSort === SortType.Volume) {
       tokensToDisplay.sort((a,b) => {
@@ -350,7 +356,11 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               <col style={{width: '100px', minWidth: 'auto'}} />
             }
 
-            {settingsState.columns.change30D &&
+            {settingsState.columns.change24HZIL &&
+              <col style={{width: '100px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.change7DZIL &&
               <col style={{width: '100px', minWidth: 'auto'}} />
             }
             
@@ -391,6 +401,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             }
             
             {settingsState.columns.graph24H &&
+              <col style={{width: '160px', minWidth: 'auto'}} />
+            }
+
+            {settingsState.columns.graph24HZIL &&
               <col style={{width: '160px', minWidth: 'auto'}} />
             }
           </colgroup>
@@ -479,13 +493,24 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </th>
               }
 
-              {settingsState.columns.change30D &&
+              {settingsState.columns.change24HZIL &&
                 <th className="px-2 py-2 text-right">
-                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change30D)}>
-                    {currentSort === SortType.Change30D &&
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change24HZIL)}>
+                    {currentSort === SortType.Change24HZIL &&
                       <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
                     }
-                    30d %
+                    24h % (ZIL)
+                  </button>
+                </th>
+              }
+
+              {settingsState.columns.change7DZIL &&
+                <th className="px-2 py-2 text-right">
+                  <button className="focus:outline-none font-bold inline-flex items-center" onClick={() => handleSort(SortType.Change7DZIL)}>
+                    {currentSort === SortType.Change7DZIL &&
+                      <Triangle className={`mr-1 ${currentSortDirection === SortDirection.Descending ? 'transform rotate-180': ''}`} fill="gray" size={6} />
+                    }
+                    7d % (ZIL)
                   </button>
                 </th>
               }
@@ -586,6 +611,10 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
               
               {settingsState.columns.graph24H &&
                 <th className="px-2 py-2 text-right whitespace-nowrap">Last 24 hours</th>
+              }
+
+              {settingsState.columns.graph24HZIL &&
+                <th className="px-2 py-2 text-right whitespace-nowrap">Last 24 hours (ZIL)</th>
               }
             </tr>
           </thead>

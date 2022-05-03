@@ -47,7 +47,8 @@ const Customize = () => {
               <div>
                 <ToggleButton selected={columns.change24H} onChange={() => dispatch(updateColumns({ change24H: !columns.change24H }))}>24h %</ToggleButton>
                 <ToggleButton selected={columns.change7D} onChange={() => dispatch(updateColumns({ change7D: !columns.change7D }))}>7d %</ToggleButton>
-                <ToggleButton selected={columns.change30D} onChange={() => dispatch(updateColumns({ change30D: !columns.change30D }))}>30d %</ToggleButton>
+                <ToggleButton selected={columns.change24HZIL} onChange={() => dispatch(updateColumns({ change24HZIL: !columns.change24HZIL }))}>24h % (ZIL)</ToggleButton>
+                <ToggleButton selected={columns.change7DZIL} onChange={() => dispatch(updateColumns({ change7DZIL: !columns.change7DZIL }))}>7d % (ZIL)</ToggleButton>
               </div>
             </div>
 
@@ -76,6 +77,7 @@ const Customize = () => {
                 <ToggleButton selected={columns.apr} onChange={() => dispatch(updateColumns({ apr: !columns.apr }))}>APR %</ToggleButton>
                 <ToggleButton selected={columns.apy} onChange={() => dispatch(updateColumns({ apy: !columns.apy }))}>APY %</ToggleButton>
                 <ToggleButton selected={columns.graph24H} onChange={() => dispatch(updateColumns({ graph24H: !columns.graph24H }))}>Last 24 hours</ToggleButton>
+                <ToggleButton selected={columns.graph24HZIL} onChange={() => dispatch(updateColumns({ graph24HZIL: !columns.graph24HZIL }))}>Last 24 hours (ZIL)</ToggleButton>
               </div>
             </div>
           </div>
