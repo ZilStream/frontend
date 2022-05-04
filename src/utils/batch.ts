@@ -104,7 +104,8 @@ export const xcadStakingAddresses = {
   18: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xda12fa83a9ce290eb5e1bbea6e51f5fca2955ae1'], // dXCAD #2
   19: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x09c3db53d2303a1524eab790fc6ec470cde31193'], // XCAD 90 days
   20: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0x4baab6cff0709331c048bf9df20de87cb9bf2875'], // XCAD 120 days
-  21: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0xca6f1ed57ea5d9a3adeaafc8298ff454a3cde46e'] // XCAD 180 days
+  21: ['zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y', '0xca6f1ed57ea5d9a3adeaafc8298ff454a3cde46e'], // XCAD 180 days
+  22: ['zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f', '0xf228bc7adf3ac09f828dd070d26750bfcfd291e4'] // dXCAD #3
 }
 
 interface BatchRequestItem {
