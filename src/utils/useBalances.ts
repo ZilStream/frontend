@@ -115,10 +115,8 @@ export default function useBalances() {
         if(!pool.userContribution || !pool.totalContribution || pool.userContribution.isZero()) return
 
         token.rewards.filter(reward => reward.exchange_id === pool.dex).forEach(reward => {
-          let contributionPercentage = (reward.adjusted_total_contributed !== null && reward.adjusted_total_contributed !== '1') ? 
-            pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
-            pool.userContribution!.dividedBy(pool.totalContribution ?? BIG_ZERO).times(100)
-          let contributionShare = contributionPercentage.shiftedBy(-2)
+          let contributionPercentage = pool.userContribution!.dividedBy(pool.totalContribution ?? 0).times(100)
+              let contributionShare = contributionPercentage.shiftedBy(-2)
           let currentReward = rewards[reward.reward_token_address]
           let newReward = toBigNumber(reward.amount).times(contributionShare)
   

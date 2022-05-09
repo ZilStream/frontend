@@ -106,9 +106,6 @@ function PortfolioPools() {
                     {membership.isMember ? (
                       <>
                         {baseToken.rewards.filter(reward => reward.exchange_id === pool.dex).map(reward => {
-                          let contributionPercentage = (reward.adjusted_total_contributed !== null && reward.adjusted_total_contributed !== '1') ? 
-                            pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
-                            pool.userContribution!.dividedBy(pool.totalContribution ?? 0).times(100)
                           let contributionShare = contributionPercentage.shiftedBy(-2)
                           let newReward = toBigNumber(reward.amount).times(contributionShare)
 
