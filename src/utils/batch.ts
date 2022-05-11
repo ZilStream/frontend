@@ -79,7 +79,7 @@ const bloxStakingHash = fromBech32Address(bloxStakingAddress)
 const dmzStakingAddress = "zil1n93rsttd44ryckftu8900ketkdz0ky3eu2ljqe"
 const dmzStakingHash = fromBech32Address(dmzStakingAddress)
 
-const hunyHiveAddress = "zil1328u4vxdsguz09qxlzp2e8ayt3p0mt33glpcl6"
+const hunyHiveAddress = "zil10mmqxduremmhyz2j89qptk3x8f2srw8rqukf8y"
 const hunyHiveHash = fromBech32Address(hunyHiveAddress)
 
 export const xcadStakingAddresses = {
