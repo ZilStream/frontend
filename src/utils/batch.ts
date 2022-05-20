@@ -1,5 +1,5 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
-import { CARBSWAP_ADDRESS, XCADDEX_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
+import { CARBSWAP_ADDRESS, XCADDEX_ADDRESS, ZILALL_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
 import { Operator, Token } from "store/types";
 import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
@@ -21,6 +21,9 @@ export enum BatchRequestType {
   CarbPools = "carbPools",
   CarbBalances = "carbBalances",
   CarbTotalContributions = "carbTotalContributions",
+  ZilAllPools = "zilAllPools",
+  ZilAllBalances = "zilAllBalances",
+  ZilAllTotalContributions = "zilAllTotalContributions",
   StakingOperators = "stakingOperators",
   StakingDelegators = "stakingDelegators",
   CarbonStakers = "carbonStakers",
@@ -45,6 +48,9 @@ const xcadDexHash = fromBech32Address(xcadDexAddress)
 
 const carbSwapAddress = CARBSWAP_ADDRESS
 const carbSwapHash = fromBech32Address(carbSwapAddress)
+
+const zilAllAddress = ZILALL_ADDRESS
+const zilAllHash = fromBech32Address(zilAllAddress)
 
 const stakingAddress = "zil15lr86jwg937urdeayvtypvhy6pnp6d7p8n5z09"
 const stakingHash = fromBech32Address(stakingAddress)
@@ -76,7 +82,7 @@ const feesDoctoralStakingHash = fromBech32Address(feesDoctoralStakingAddress)
 const bloxStakingAddress = "zil1heh4x9lhp2cuma9n8qvrap80ax900s9024dmlc"
 const bloxStakingHash = fromBech32Address(bloxStakingAddress)
 
-const dmzStakingAddress = "zil1n93rsttd44ryckftu8900ketkdz0ky3eu2ljqe"
+const dmzStakingAddress = "zil1g5fvu2png22fkdv9krdsamjuv45fp8y3ldqur6"
 const dmzStakingHash = fromBech32Address(dmzStakingAddress)
 
 const hunyHiveAddress = "zil10mmqxduremmhyz2j89qptk3x8f2srw8rqukf8y"
@@ -96,7 +102,7 @@ export const xcadStakingAddresses = {
   10: ['zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp', '0xa7d9862dceead3bcd43811462118bff08737a03a'], // BLOX
   11: ['zil12jhxfcsfyaylhrf9gu8lc82ddgvudu4tzvduum', '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0'], // Oki
   12: ['zil1n9z6pk3aca8rvndya2tfgmyexdsp8m44gpyrs3', '0xf5f4e66c65551a9a48dd146783ce0ec754836281'], // HOL
-  13: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a'], // DMZ
+  13: ['zil19lr3vlpm4lufu2q94mmjvdkvmx8wdwajuntzx2', '0x4512ce283342949b3585b0db0eee5c6568909c91'], // DMZ
   14: ['zil1c6akv8k6dqaac7ft8ezk5gr2jtxrewfw8hc27d', '0xdc54428db01207524385ab07b418bf541efedabe'], // DUCK
   15: ['zil1kwfu3x9n6fsuxc4ynp72uk5rxge25enw7zsf9z', '0x62ceedfa70a34fcbeacebb6d76bcbf339ed47648'], // SCO
   16: ['zil1yqwyfdpxmp0m9suz2c6gx9qgyh7crwd42jz9j4', '0x0bf04c6ae283c9a054aa15dba4996f9246351929'], // zOPUL
@@ -476,6 +482,72 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
 }
 
 /**
+ * Create a `GetSmartContractSubState` request for the token pools.
+ *
+ * @returns BatchRequest
+ */
+ export const zilAllPoolsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.ZilAllPools,
+    token: undefined,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        zilAllHash.replace("0x", "").toLowerCase(),
+        "liquidity",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool total contributions.
+ *
+ * @returns BatchRequest
+ */
+ export const zilAllTotalContributionsBatchRequest = (): BatchRequest => {
+  return {
+    type: BatchRequestType.ZilAllTotalContributions,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        zilAllHash.replace("0x", "").toLowerCase(),
+        "total_contributions",
+        [],
+      ],
+    },
+  };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the token pool balance.
+ *
+ * @param Token The token for which it's requested.
+ * @param string The wallet address.
+ * @returns BatchRequest
+ */
+ export const zilAllTokenPoolBalanceBatchRequest = (token: Token, walletAddress: string): BatchRequest => {
+  const address = fromBech32Address(token.address).toLowerCase()
+  const walletAddr = fromBech32Address(walletAddress).toLowerCase()
+  return {
+    type: BatchRequestType.ZilAllBalances,
+    token: token,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        zilAllHash.replace("0x", "").toLowerCase(),
+        "balances",
+        [address, walletAddr],
+      ],
+    },
+  };
+}
+
+/**
  * Create a `GetSmartContractSubState` request for the staking operators.
  *
  * @returns BatchRequest
@@ -745,7 +817,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       method: "GetSmartContractSubState",
       params: [
         dmzStakingHash.replace("0x", "").toLowerCase(),
-        "stakers_total_bal",
+        "stakers",
         [fromBech32Address(walletAddress).toLowerCase()],
       ],
     },

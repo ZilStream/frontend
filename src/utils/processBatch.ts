@@ -7,7 +7,7 @@ import { bnOrZero } from "./strings"
 import { fromBech32Address, toBech32Address } from "@zilliqa-js/zilliqa"
 import BigNumber from "bignumber.js"
 import { DEX } from "types/dex.interface"
-import { CARB_ADDRESS, ZIL_ADDRESS } from "lib/constants"
+import { CARB_ADDRESS, ZILALL_ADDRESS, ZIL_ADDRESS } from "lib/constants"
 import { Operator } from "store/types"
 import { StakingActionTypes } from "store/staking/actions"
 
@@ -345,6 +345,74 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
           return
         }
 
+        case BatchRequestType.ZilAllPools: {
+          let pools = result.result.liquidity
+          Object.keys(pools).forEach(address => {
+            let pool = pools[address]
+            let tokenAddress = toBech32Address(address)
+
+            const [x, y] = pool.arguments
+            const zilReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = zilReserve.dividedBy(tokenReserve)
+
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: toBech32Address(address),
+              dex: DEX.ZilAll,
+              quoteReserve: zilReserve,
+              quoteAddress: ZIL_ADDRESS,
+              baseReserve: tokenReserve,
+              baseAddress: tokenAddress,
+              exchangeRate
+            }})
+          })
+          return
+        }
+
+        case BatchRequestType.ZilAllBalances: {
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+
+          if(result.result === null) {
+            let userContribution = new BigNumber(0)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: token?.address,
+              dex: DEX.ZilAll,
+              quoteAddress: ZIL_ADDRESS,
+              baseAddress: token?.address,
+              userContribution
+            }})
+            return
+          }
+
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
+          
+          dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+            address: token?.address,
+            dex: DEX.ZilAll,
+            quoteAddress: ZIL_ADDRESS,
+            baseAddress: token?.address,
+            userContribution
+          }})
+          return
+        }
+
+        case BatchRequestType.ZilAllTotalContributions: {
+          let totalContributions = result.result.total_contributions
+          Object.keys(totalContributions).forEach(address => {
+            let tokenAddress = toBech32Address(address)
+            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
+              address: tokenAddress,
+              dex: DEX.ZilAll,
+              quoteAddress: ZIL_ADDRESS,
+              baseAddress: tokenAddress,
+              totalContribution: new BigNumber(totalContributions[address])
+            }})
+          })
+          return
+        }
+
         case BatchRequestType.StakingOperators: {
           let ssnlist: any[] = result.result.ssnlist
           
@@ -527,7 +595,7 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
         case BatchRequestType.DmzStaking: {
           if(result.result === null) return
 
-          let stakers: number[]  = Object.values(result.result.stakers_total_bal)
+          let stakers: number[]  = Object.values(result.result.stakers)
           if(stakers.length === 0) return
 
           dispatch({ type: StakingActionTypes.STAKING_ADD, payload: { operator: {
