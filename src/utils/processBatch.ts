@@ -1,6 +1,6 @@
 import { Dispatch } from "redux"
 import { batch } from "react-redux"
-import { BatchRequestType, BatchResponse, xcadStakingAddresses } from "utils/batch"
+import { BatchRequestType, BatchResponse } from "utils/batch"
 import { BlockchainActionsTypes } from "store/blockchain/actions"
 import { TokenActionTypes } from "store/token/actions"
 import { bnOrZero } from "./strings"
