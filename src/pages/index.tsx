@@ -263,7 +263,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <SponsorBlock link="https://zolar.io/" />
+              <SponsorBlock link="https://zolar.io/hive" />
 
               <RatesBlock
                 title="ZIL"
