@@ -66,16 +66,15 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
 
   useInterval(async () => {
+    var newRates: Rate[] = []
+
     try {
-      let newRates = await getRates()
-      if(newRates === null) {
-        setRates([])
-      } else {
-        setRates(newRates)
-      }
-    } catch {
-      setRates([])
+      newRates = await getRates()
+    } catch(e) {
+      newRates = []
     }
+      
+    setRates(newRates)
   }, 30000)
 
   const aprTokens = tokens.filter(token => token.reviewed === true || token.address === ZIL_ADDRESS).sort((a: Token, b: Token) => {
