@@ -24,7 +24,13 @@ import SponsorBlock from 'components/SponsorBlock'
 import { ZIL_ADDRESS } from 'lib/constants'
 
 export const getServerSideProps = async () => {
-  const initialRates = await getRates()
+  var initialRates: Rate[] = []
+
+  try {
+    initialRates = await getRates()
+  } catch(e) {
+    initialRates = []
+  }  
   
   return {
     props: {
