@@ -3,9 +3,10 @@ import { createChart, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightwei
 import { useTheme } from 'next-themes'
 
 interface Props {
-  data: {time: string, value: number}[],
+  data: {time: string, value: number, value_zil?: number}[],
   isUserInteractionEnabled?: boolean,
   isScalesEnabled?: boolean,
+  isZilValue?: boolean
 }
 
 export interface ChartDataPoint {
@@ -67,7 +68,7 @@ function Chart(props: Props) {
       props.data.forEach(rate => {
         data.push({
           time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
-          value: rate.value
+          value: props.isZilValue ? rate.value_zil! : rate.value
         })
       })
 
@@ -82,8 +83,8 @@ function Chart(props: Props) {
         crosshairMarkerVisible: props.isUserInteractionEnabled ? true : false,
         autoscaleInfoProvider: () => ({
           priceRange: {
-              minValue: Math.min(...props.data.map(item => item.value)),
-              maxValue: Math.max(...props.data.map(item => item.value)),
+              minValue: Math.min(...props.data.map(item => props.isZilValue ? item.value_zil! : item.value)),
+              maxValue: Math.max(...props.data.map(item => props.isZilValue ? item.value_zil! : item.value)),
           },
         }),
       });
@@ -102,7 +103,7 @@ function Chart(props: Props) {
     props.data.forEach(rate => {
       data.push({
         time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
-        value: rate.value
+        value: props.isZilValue ? rate.value_zil! : rate.value
       })
     })
 

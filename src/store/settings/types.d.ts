@@ -12,7 +12,8 @@ export interface DataColumns {
   atl: boolean
   change24H: boolean
   change7D: boolean
-  change30D: boolean
+  change24HZIL: boolean
+  change7DZIL: boolean
   marketCap: boolean
   marketCapDiluted: boolean
   circSupply: boolean
@@ -23,6 +24,7 @@ export interface DataColumns {
   apr: boolean
   apy: boolean
   graph24H: boolean
+  graph24HZIL: boolean
 }
 
 export interface TokenFilters {

@@ -141,6 +141,10 @@ const StateProvider = (props: Props) => {
         ...settings,
         initialized: true
       }))
+    } else {
+      dispatch(updateSettings({
+        initialized: true
+      }))
     }
   }
 

@@ -4,7 +4,7 @@ import { bnOrZero } from "./strings";
 import { toBigNumber } from "./useMoneyFormatter";
 
 export function getTokenAPR(token: Token, tokenState: TokenState): BigNumber {
-  const rewards: Reward[] = token.rewards
+  const rewards: Reward[] = token.rewards ?? []
 
   const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
   list.reduce((previous, currentItem) => {

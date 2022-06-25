@@ -1,10 +1,11 @@
 import { ZIL_ADDRESS } from "lib/constants";
+import { stakingBatchRequests } from "lib/staking/staking";
 import { Operator, Token } from "store/types";
-import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, carbonStakersBatchRequest, portBuoyStakersBatchRequest, portDockStakersBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadStakingAddresses, xcadStakingRequest, okipadStakingBatchRequest, feesBachelorsStakersBatchRequest, feesMastersStakersBatchRequest, feesDoctoralStakersBatchRequest, xcadZilPoolsBatchRequest, xcadZilTotalContributionsBatchRequest, xcadZilPoolBalanceBatchRequest, dmzStakingBatchRequest, bloxStakingBatchRequest, carbTokenPoolBalanceBatchRequest, carbPoolsBatchRequest, carbTotalContributionsBatchRequest, graphStakersBatchRequest } from "utils/batch";
+import { balanceBatchRequest, sendBatchRequest, tokenBalanceBatchRequest, BatchResponse, poolsBatchRequest, tokenPoolBalanceBatchRequest, totalContributionsBatchRequest, stakingOperatorsBatchRequest, stakingDelegatorsBatchRequest, infoBatchRequest, xcadPoolsBatchRequest, xcadTotalContributionsBatchRequest, xcadPoolBalanceBatchRequest, xcadZilPoolsBatchRequest, xcadZilTotalContributionsBatchRequest, xcadZilPoolBalanceBatchRequest, carbTokenPoolBalanceBatchRequest, carbPoolsBatchRequest, carbTotalContributionsBatchRequest, hunyBalanceBatchRequest, zilAllTokenPoolBalanceBatchRequest, zilAllPoolsBatchRequest, zilAllTotalContributionsBatchRequest } from "utils/batch";
 import { Network } from "utils/network";
 
 export default async function getPortfolioState(walletAddress: string, tokens: Token[], operators: Operator[] = []): Promise<BatchResponse[]> {
-  const batchRequests: any[] = [];
+  var batchRequests: any[] = [];
 
   tokens.forEach(token => {
     if(token.address === ZIL_ADDRESS) {
@@ -16,8 +17,9 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
       batchRequests.push(xcadPoolBalanceBatchRequest(token, walletAddress))
       batchRequests.push(xcadZilPoolBalanceBatchRequest(token, walletAddress))
       batchRequests.push(carbTokenPoolBalanceBatchRequest(token, walletAddress))
+      batchRequests.push(zilAllTokenPoolBalanceBatchRequest(token, walletAddress))
     }
-  }) 
+  })
 
   batchRequests.push(infoBatchRequest())
   batchRequests.push(poolsBatchRequest())
@@ -28,26 +30,11 @@ export default async function getPortfolioState(walletAddress: string, tokens: T
   batchRequests.push(xcadZilTotalContributionsBatchRequest())
   batchRequests.push(carbPoolsBatchRequest())
   batchRequests.push(carbTotalContributionsBatchRequest())
+  batchRequests.push(zilAllPoolsBatchRequest())
+  batchRequests.push(zilAllTotalContributionsBatchRequest())
   batchRequests.push(stakingOperatorsBatchRequest())
-  batchRequests.push(carbonStakersBatchRequest(walletAddress))
-  batchRequests.push(graphStakersBatchRequest(walletAddress))
-  batchRequests.push(portBuoyStakersBatchRequest(walletAddress))
-  batchRequests.push(portDockStakersBatchRequest(walletAddress))
-  batchRequests.push(okipadStakingBatchRequest(walletAddress))
-  // batchRequests.push(dmzStakingBatchRequest(walletAddress))
-  batchRequests.push(feesBachelorsStakersBatchRequest(walletAddress))
-  batchRequests.push(feesMastersStakersBatchRequest(walletAddress))
-  batchRequests.push(feesDoctoralStakersBatchRequest(walletAddress))
-  batchRequests.push(bloxStakingBatchRequest(walletAddress))
-
-  Object.values(xcadStakingAddresses).forEach(stakingValue => {
-    const tokenAddress = stakingValue[0]
-    const contractAddress = stakingValue[1]
-    const token = tokens.filter(t => t.address === tokenAddress)?.[0]
-    if(token) {
-      batchRequests.push(xcadStakingRequest(token, contractAddress, walletAddress))
-    }
-  })
+  batchRequests = batchRequests.concat(stakingBatchRequests(walletAddress))
+  batchRequests.push(hunyBalanceBatchRequest(walletAddress))
 
   if(operators.length > 0) {
     operators.forEach(operator => {

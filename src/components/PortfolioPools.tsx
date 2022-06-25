@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
+import { DEX } from 'types/dex.interface'
 import { currencyFormat } from 'utils/format'
 import { BIG_ZERO } from 'utils/strings'
 import useBalances from 'utils/useBalances'
@@ -67,8 +68,23 @@ function PortfolioPools() {
                           <TokenIcon url={quoteToken.icon} />
                         </div>
                       </div>
-                      <span className="font-semibold">{baseToken.symbol} / {quoteToken.symbol}</span>
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{baseToken.symbol} / {quoteToken.symbol}</span>
+                        {pool.dex === DEX.ZilSwap &&
+                          <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">ZilSwap</span>
+                        }
+                        {pool.dex === DEX.XCADDEX &&
+                          <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">XCAD DEX</span>
+                        }
+                        {pool.dex === DEX.CarbSwap &&
+                          <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">CarbSwap</span>
+                        }
+                        {pool.dex === DEX.ZilAll &&
+                          <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">ZILALL DEX</span>
+                        }
+                      </div>
                     </div>
+                    
                   </td>
                   <td className="px-2 py-2 font-normal text-right whitespace-nowrap">
                     <div>
@@ -106,9 +122,6 @@ function PortfolioPools() {
                     {membership.isMember ? (
                       <>
                         {baseToken.rewards.filter(reward => reward.exchange_id === pool.dex).map(reward => {
-                          let contributionPercentage = (reward.adjusted_total_contributed !== null && reward.adjusted_total_contributed !== '1') ? 
-                            pool.userContribution!.dividedBy(toBigNumber(reward.adjusted_total_contributed)).times(100) :
-                            pool.userContribution!.dividedBy(pool.totalContribution ?? 0).times(100)
                           let contributionShare = contributionPercentage.shiftedBy(-2)
                           let newReward = toBigNumber(reward.amount).times(contributionShare)
 
