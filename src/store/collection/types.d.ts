@@ -19,3 +19,20 @@ export interface NftCollection {
     floor_price: number
   }
 }
+
+export interface CollectionState {
+  initialized: boolean,
+  collections: NftCollection[]
+}
+
+export interface CollectionInitProps {
+  collections: NftCollection[]
+}
+
+export interface CollectionUpdateProps extends Partial<NftCollection> {
+  address: string
+}
+
+export interface CollectionAddProps {
+  collection: NftCollection
+}

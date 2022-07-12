@@ -10,6 +10,7 @@ import blockchain from './blockchain/reducer'
 import swap from './swap/reducer'
 import alert from './alert/reducer'
 import notification from './notification/reducer'
+import collection from './collection/reducer'
 
 export default combineReducers({
   token,
@@ -21,5 +22,6 @@ export default combineReducers({
   blockchain,
   swap,
   alert,
-  notification
+  notification,
+  collection
 })

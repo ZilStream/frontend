@@ -8,6 +8,7 @@ import * as Blockchain from './blockchain/actions'
 import * as Swap from './swap/actions'
 import * as Alert from './alert/actions'
 import * as Notification from './notification/actions'
+import * as Collection from './collection/actions'
 
 export default { 
   Token, 
@@ -19,5 +20,6 @@ export default {
   Blockchain, 
   Swap,
   Alert,
-  Notification
+  Notification,
+  Collection
 }

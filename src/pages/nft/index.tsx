@@ -1,22 +1,20 @@
 import TokenIcon from 'components/TokenIcon'
 import getNftCollections from 'lib/zilstream/getNftCollections'
-import { InferGetServerSidePropsType } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import React from 'react'
+import React, { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { CollectionState, RootState } from 'store/types'
 import { cryptoFormat } from 'utils/format'
 
-export const getServerSideProps = async () => {
-  const collections = await getNftCollections()
-  
-  return {
-    props: {
-      collections,
-    },
-  }
-}
+function NftCollections() {
+  const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
 
-function NftCollections({ collections }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  let collections = useMemo(() => {
+    if(!collectionState.initialized) return []
+    return collectionState.collections
+  }, [collectionState])
+
   return (
     <>
       <Head>
