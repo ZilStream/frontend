@@ -92,6 +92,11 @@ function PortfolioOverview() {
             </div>
             <div className="text-gray-500 text-md ml-2">{moneyFormat(totalRewardZil, {compression: 0, maxFractionDigits: 2})} ZIL</div>
           </div>
+          <div className="-mt-1 mb-1">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Weekly: {currencyFormat(totalRewardZil.times(7).times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)} ({moneyFormat(totalRewardZil.times(7), {compression: 0, maxFractionDigits: 2})} ZIL)
+            </span>
+          </div>
           <div className="text-sm">
             {Object.keys(rewards).map(address => {
               let reward = rewards[address]
