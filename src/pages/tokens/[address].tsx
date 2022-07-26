@@ -479,14 +479,14 @@ function TokenDetail({ token }: InferGetServerSidePropsType<typeof getServerSide
                     const baseToken = tokenState.tokens.filter(token => token.address === pair.base_address)?.[0]
                     const quoteToken = tokenState.tokens.filter(token => token.address === pair.quote_address)?.[0]
       
-                    var liquidity = (pair.reserve?.quote_reserve ?? 0) * 2
-                    var volume = (pair.volume?.volume_24h_quote ?? 0)
+                    var liquidity = (pair.quote_reserve ?? 0) * 2
+                    var volume = (pair.volume_24h_quote ?? 0)
                     if(quoteToken && !quoteToken.isZil) {
-                      liquidity = (pair.reserve?.quote_reserve ?? 0) * quoteToken.market_data.rate_zil * 2
-                      volume = (pair.volume?.volume_24h_quote ?? 0) * quoteToken.market_data.rate_zil
+                      liquidity = (pair.quote_reserve ?? 0) * quoteToken.market_data.rate_zil * 2
+                      volume = (pair.volume_24h_quote ?? 0) * quoteToken.market_data.rate_zil
                     }
                     
-                    let price = pair.quote?.price ?? 0
+                    let price = pair.price ?? 0
                     var zilRate = price
 
                     if(pair.quote_address !== ZIL_ADDRESS && price > 0) {
