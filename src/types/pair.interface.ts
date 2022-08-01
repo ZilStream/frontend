@@ -12,6 +12,11 @@ export interface Pair {
   quote_symbol: string
   quote_address: string
   exchange_id?: string
+  price?: number
+  base_reserve?: number
+  quote_reserve?: number
+  volume_24h_base?: number
+  volume_24h_quote?: number
   quote?: Quote
   reserve?: Reserve
   exchange?: Exchange

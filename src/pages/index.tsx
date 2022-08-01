@@ -22,6 +22,7 @@ import Filters from 'components/Filters'
 import HighestAPRBlock from 'components/HighestAPRBlock'
 import SponsorBlock from 'components/SponsorBlock'
 import { ZIL_ADDRESS } from 'lib/constants'
+import HighestVolumeBlock from 'components/HighestVolumeBlock'
 
 export const getServerSideProps = async () => {
   var initialRates: Rate[] = []
@@ -290,7 +291,9 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
                 </a>
               </Link>
 
-              <HighestAPRBlock tokens={aprTokens} />
+              {/* <HighestAPRBlock tokens={aprTokens} /> */}
+
+              <HighestVolumeBlock />
             </>
           )}
         </div>
