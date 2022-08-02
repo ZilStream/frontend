@@ -1,19 +1,39 @@
 import TokenIcon from 'components/TokenIcon'
-import getNftCollections from 'lib/zilstream/getNftCollections'
+import getNftRates from 'lib/zilstream/getNftRates'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { CollectionState, RootState } from 'store/types'
+import { Rate } from 'types/rate.interface'
 import { cryptoFormat } from 'utils/format'
+
+const Chart = dynamic(
+  () => import('components/Chart'),
+  { ssr: false }
+)
 
 function NftCollections() {
   const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
+  const [rates, setRates] = useState<Rate[]>([])
 
   let collections = useMemo(() => {
     if(!collectionState.initialized) return []
     return collectionState.collections
   }, [collectionState])
+
+  async function getCollectionsRates() {
+    let ids = collections.map(collection => collection.id)
+    if(ids.length === 0) return
+    let newRates = await getNftRates(ids)
+    console.log(newRates)
+    setRates(newRates)
+  }
+
+  useEffect(() => {
+    getCollectionsRates()
+  }, [collections])
 
   return (
     <>
@@ -35,7 +55,8 @@ function NftCollections() {
             <col style={{width: '300px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
             <col style={{width: '100px', minWidth: 'auto'}} />
-            <col style={{width: '100px', minWidth: 'auto'}} />
+            <col style={{width: '120px', minWidth: 'auto'}} />
+            <col style={{width: '160px', minWidth: 'auto'}} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
@@ -44,11 +65,12 @@ function NftCollections() {
               <th className="px-2 py-2 text-right">Floor</th>
               <th className="px-2 py-2 text-right">Volume (7d)</th>
               <th className="px-2 py-2 text-right">Volume (All time)</th>
+              <th className="px-2 py-2 text-right">Floor (30d)</th>
             </tr>
           </thead>
           <tbody>
             {collections.map((collection, index) => (
-              <tr role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
+              <tr key={collection.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0">
                 <td className={`pl-4 pr-1 sm:pr-2 py-3 font-normal text-sm ${index === 0 ? 'rounded-tl-lg' : ''} ${index === collections.length-1 ? 'rounded-bl-lg' : ''}`}>{index+1}</td>
                 <td className="px-2 py-3 font-medium sticky left-0 z-10">
                   <Link href={`/tokens/`}>
@@ -70,6 +92,13 @@ function NftCollections() {
                 <td className="px-2 py-3 font-normal text-right">{cryptoFormat(collection.market_data.floor_price)}</td>
                 <td className="px-2 py-3 font-normal text-right">{cryptoFormat(collection.market_data.volume_7d)}</td>
                 <td className={`px-2 py-3 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === collections.length-1 ? 'rounded-br-lg' : ''}`}>{cryptoFormat(collection.market_data.volume_all_time)}</td>
+                <td className={`px-2 py-2 justify-end ${index == 0 ? 'rounded-tr-lg' : ''} ${index === collections.length-1 ? 'rounded-br-lg' : ''}`}>
+                  <div className="flex justify-end">
+                    <a className="w-28" style={{height: '52px'}}>
+                      <Chart data={rates.filter(rate => rate.collection_id === collection.id)} isZilValue={false} isUserInteractionEnabled={false} isScalesEnabled={false} />
+                    </a>
+                  </div>
+                </td>
               </tr>
             ))}
             

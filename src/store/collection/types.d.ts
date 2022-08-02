@@ -1,4 +1,5 @@
 export interface NftCollection {
+  id: string
   name: string
   symbol: string
   description: string
