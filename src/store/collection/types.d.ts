@@ -18,6 +18,12 @@ export interface NftCollection {
     volume_all_time: number
     floor_price: number
   }
+  tokens?: NftToken[]
+}
+
+export interface NftToken {
+  id: string
+  image?: string
 }
 
 export interface CollectionState {

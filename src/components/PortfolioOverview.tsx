@@ -20,7 +20,7 @@ function PortfolioOverview() {
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
-  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useBalances()
+  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, collectionBalance, membership, rewards } = useBalances()
 
   const estimatedFees = tokenState.tokens.reduce((sum, current) => {
     if(!current.pools) return sum
@@ -50,7 +50,7 @@ function PortfolioOverview() {
   }, new BigNumber(0))
 
   return (
-    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-4">
+    <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg sm:w-96 max-w-full flex-shrink-0 flex-grow-0 mr-6">
       <div className="text-gray-600 dark:text-gray-400 text-sm">Current Balance</div>
       <div className="flex-grow flex flex-col items-start mb-6">
         <div className="font-semibold text-2xl">
@@ -145,6 +145,16 @@ function PortfolioOverview() {
             {currencyFormat(stakingBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
           </div>
           <div className="text-gray-500 text-md ml-2">{moneyFormat(stakingBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
+        </div>
+      </div>
+
+      <div className="text-gray-600 dark:text-gray-400 text-sm border-b dark:border-gray-700 pb-2 mb-2 mt-8">NFT Collections</div>
+      <div className="flex items-start">
+        <div className="flex-grow flex items-center">
+          <div className="font-medium text-xl">
+            {currencyFormat(collectionBalance.times(selectedCurrency.rate).toNumber(), selectedCurrency.symbol)}
+          </div>
+          <div className="text-gray-500 text-md ml-2">{moneyFormat(collectionBalance, {compression: 0, maxFractionDigits: 2})} ZIL</div>
         </div>
       </div>
     </div>

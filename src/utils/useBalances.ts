@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { useSelector } from 'react-redux'
-import { AccountState, RootState, StakingState, Token, TokenState } from 'store/types'
+import { AccountState, CollectionState, RootState, StakingState, Token, TokenState } from 'store/types'
 import { BIG_ZERO } from './strings'
 import { toBigNumber } from './useMoneyFormatter'
 
@@ -16,14 +16,16 @@ export default function useBalances() {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
+  const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
 
-  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, membership, rewards } = useMemo(() => {
+  const { totalBalance, holdingBalance, liquidityBalance, stakingBalance, collectionBalance, membership, rewards } = useMemo(() => {
     if(!tokenState.initialized) {
       return {
         totalBalance: new BigNumber(0),
         holdingBalance: new BigNumber(0),
         liquidityBalance: new BigNumber(0),
         stakingBalance: new BigNumber(0),
+        collectionBalance: new BigNumber(0),
         membership: {
           streamBalance: new BigNumber(0),
           streamBalanceUSD: new BigNumber(0),
@@ -62,6 +64,7 @@ export default function useBalances() {
     var holdingBalance = new BigNumber(0)
     var liquidityBalance = new BigNumber(0)
     var stakingBalance = new BigNumber(0)
+    var collectionBalance = new BigNumber(0)
 
     if(tokenState.initialized) {
       holdingBalance = tokenState.tokens.reduce((sum, current) => {
@@ -101,6 +104,15 @@ export default function useBalances() {
         }
       }, new BigNumber(0))
       totalBalance = totalBalance.plus(stakingBalance)
+    }
+
+    if(collectionState.initialized) {
+      collectionBalance = collectionState.collections.reduce((sum, current) => {
+        if(!current.tokens || current.tokens.length === 0) return sum
+        let floor = toBigNumber(current.market_data.floor_price)
+        return sum.plus(floor.times(current.tokens.length))
+      }, new BigNumber(0))
+      totalBalance = totalBalance.plus(collectionBalance)
     }
 
     const membershipZIL = totalBalance.dividedBy(200)
@@ -150,6 +162,7 @@ export default function useBalances() {
       holdingBalance,
       liquidityBalance,
       stakingBalance,
+      collectionBalance,
       membership: {
         streamBalance,
         streamBalanceUSD,
@@ -166,6 +179,7 @@ export default function useBalances() {
     holdingBalance, 
     liquidityBalance, 
     stakingBalance,
+    collectionBalance,
     membership,
     rewards
   }

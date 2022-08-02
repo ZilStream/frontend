@@ -448,7 +448,6 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
         }
 
         case BatchRequestType.Staking: {
-          console.log('staking')
           let contract = result.request.stakingContract
           if(!contract || result.result === null) return
 
