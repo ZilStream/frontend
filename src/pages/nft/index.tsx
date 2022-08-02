@@ -101,7 +101,6 @@ function NftCollections() {
                 </td>
               </tr>
             ))}
-            
           </tbody>
         </table>
       </div>
