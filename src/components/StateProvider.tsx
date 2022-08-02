@@ -130,6 +130,13 @@ const StateProvider = (props: Props) => {
     let ownedTokens = await getTokensFromCollectionsOwnerStates(accountState.selectedWallet.address, ownerStates)
 
     batch(() => {
+      collectionState.collections.forEach(collection => {
+        dispatch({type: CollectionActionTypes.COLLECTION_UPDATE, payload:{
+          address: collection.address,
+          tokens: []
+        }})
+      })
+
       Object.keys(ownedTokens).forEach(address => {
         var tokens: NftToken[] = []
         ownedTokens[address].forEach(token => {
