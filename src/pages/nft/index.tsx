@@ -81,7 +81,7 @@ function NftCollections() {
                         <div className="flex flex-col">
                           <div className="flex flex-col md:flex-row items-start md:items-center">
                             <span className="ml-2 truncate w-44 md:w-64 lg:w-auto">{collection.name}</span>
-                            <span className="font-normal ml-2 text-gray-500 truncate inline-block w-32">{collection.owner_name}</span>
+                            <span className="font-normal ml-2 text-gray-500 truncate inline-block w-32 xl:w-48">{collection.owner_name}</span>
                           </div>
                         </div>
                       </div>
@@ -90,7 +90,7 @@ function NftCollections() {
                 </td>
                 <td className="px-2 py-3 font-normal text-right">{cryptoFormat(collection.market_data.floor_price)}</td>
                 <td className="px-2 py-3 font-normal text-right">{cryptoFormat(collection.market_data.volume_7d)}</td>
-                <td className={`px-2 py-3 font-normal text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === collections.length-1 ? 'rounded-br-lg' : ''}`}>{cryptoFormat(collection.market_data.volume_all_time)}</td>
+                <td className="px-2 py-3 font-normal text-right">{cryptoFormat(collection.market_data.volume_all_time)}</td>
                 <td className={`px-2 py-2 justify-end ${index == 0 ? 'rounded-tr-lg' : ''} ${index === collections.length-1 ? 'rounded-br-lg' : ''}`}>
                   <div className="flex justify-end">
                     <a className="w-28" style={{height: '52px'}}>
