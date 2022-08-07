@@ -68,7 +68,7 @@ const Header = () => {
                 </Link>
 
                 <Link href="/nft">
-                  <a className={router.pathname.includes('/nft') ? 'menu-item-active' : 'menu-item'}>NFT</a>
+                  <a className={router.pathname.includes('/nft') ? 'menu-item-active' : 'menu-item'}>NFT <span className="bg-primary dark:bg-primaryDark dark:text-black text-xs py-1 px-2 rounded font-semibold ml-1">Beta</span></a>
                 </Link>
 
                 <Link href="/exchanges">
