@@ -1,7 +1,7 @@
 import { fromBech32Address } from "@zilliqa-js/crypto";
 import { CARBSWAP_ADDRESS, XCADDEX_ADDRESS, ZILALL_ADDRESS, ZILSWAP_ADDRESS } from "lib/constants";
 import { StakingContract } from "lib/staking/staking";
-import { Operator, Token } from "store/types";
+import { NftCollection, Operator, Token } from "store/types";
 import { Network } from "./network";
 import { Node, TestnetNode } from "./node";
 
@@ -29,6 +29,7 @@ export enum BatchRequestType {
   StakingDelegators = "stakingDelegators",
   HunyBalances = "HunyBalances",
   Staking = "Staking",
+  NftCollectionState = "NftCollectionState",
 };
 
 const zilSwapAddress = ZILSWAP_ADDRESS
@@ -59,6 +60,7 @@ export interface BatchRequestItem {
 export interface BatchRequest {
   type: string
   token?: Token
+  collection?: NftCollection
   stakingContract?: StakingContract
   item: BatchRequestItem
 }
@@ -536,7 +538,7 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
  */
  export const hunyBalanceBatchRequest = (walletAddress: string): BatchRequest => {
   const walletAddr = fromBech32Address(walletAddress).toLowerCase()
-  console.log(hunyHiveHash.replace("0x", "").toLowerCase(), walletAddr)
+  
   return {
     type: BatchRequestType.HunyBalances,
     item: {
@@ -549,6 +551,30 @@ export const tokenAllowancesBatchRequest = (token: Token, walletAddress: string)
       ],
     },
   };
+}
+
+/**
+ * Create a `GetSmartContractSubState` request for the nft collection state.
+ *
+ * @param string The collection address.
+ * @returns BatchRequest
+ */
+export const nftCollectionStateBatchRequest = (collection: NftCollection): BatchRequest => {
+  const address = fromBech32Address(collection.address).toLowerCase()
+  
+  return {
+    type: BatchRequestType.NftCollectionState,
+    collection: collection,
+    item: {
+      ...requestParams,
+      method: "GetSmartContractSubState",
+      params: [
+        address.replace("0x", "").toLowerCase(),
+        "token_owners",
+        []
+      ]
+    }
+  }
 }
 
 /**

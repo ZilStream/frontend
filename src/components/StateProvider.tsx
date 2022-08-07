@@ -1,19 +1,24 @@
 import { Zilliqa } from '@zilliqa-js/zilliqa'
 import getZilRates from 'lib/coingecko/getZilRates'
 import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
+import getCollectionsOwnerStates from 'lib/zilstream/getCollectionsOwnerStates'
+import getCollectionsOwnerState from 'lib/zilstream/getCollectionsOwnerStates'
+import getNftCollections from 'lib/zilstream/getNftCollections'
 import getPortfolioState from 'lib/zilstream/getPortfolio'
 import getTokens from 'lib/zilstream/getTokens'
+import getTokensFromCollectionsOwnerStates from 'lib/zilstream/getTokensFromCollectionsOwnerState'
 import React, { useEffect, useState } from 'react'
 import { batch, useDispatch, useSelector, useStore } from 'react-redux'
 import { startSagas } from 'saga/saga'
 import { AccountActionTypes, updateWallet } from 'store/account/actions'
 import { setAlertState, updateAlert } from 'store/alert/actions'
+import { CollectionActionTypes } from 'store/collection/actions'
 import { CurrencyActionTypes } from 'store/currency/actions'
 import { setNotificationState, updateNotification } from 'store/notification/actions'
 import { updateSettings } from 'store/settings/actions'
 import { updateSwap } from 'store/swap/actions'
 import { TokenActionTypes } from 'store/token/actions'
-import { AccountState, AlertState, BlockchainState, NotificationState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
+import { AccountState, AlertState, BlockchainState, CollectionState, NftToken, NotificationState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
 import { Indicator, Metric } from 'types/metric.interface'
 import { AccountType } from 'types/walletType.interface'
 import { getTokenAPR } from 'utils/apr'
@@ -30,6 +35,7 @@ const StateProvider = (props: Props) => {
   const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
   const accountState = useSelector<RootState, AccountState>(state => state.account)
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
   const stakingState = useSelector<RootState, StakingState>(state => state.staking)
   const settingsState = useSelector<RootState, SettingsState>(state => state.settings)
   const swapState = useSelector<RootState, SwapState>(state => state.swap)
@@ -64,6 +70,11 @@ const StateProvider = (props: Props) => {
     })
 
     processAlerts()
+  }
+
+  async function loadNftCollections() {
+    let collections = await getNftCollections()
+    dispatch({type: CollectionActionTypes.COLLECTION_INIT, payload: {collections}})
   }
 
   async function setFavorites() {
@@ -111,6 +122,35 @@ const StateProvider = (props: Props) => {
     let batchResults = await getPortfolioState(accountState.selectedWallet.address, tokenState.tokens, stakingState.operators)
 
     await processBatchResults(batchResults)
+  }
+
+  async function loadCollectionState() {
+    if(!accountState.selectedWallet || collectionState.initialized === false) return
+    let ownerStates = await getCollectionsOwnerStates(collectionState.collections)
+    let ownedTokens = await getTokensFromCollectionsOwnerStates(accountState.selectedWallet.address, ownerStates)
+
+    batch(() => {
+      collectionState.collections.forEach(collection => {
+        dispatch({type: CollectionActionTypes.COLLECTION_UPDATE, payload:{
+          address: collection.address,
+          tokens: []
+        }})
+      })
+
+      Object.keys(ownedTokens).forEach(address => {
+        var tokens: NftToken[] = []
+        ownedTokens[address].forEach(token => {
+          tokens.push({
+            id: token,
+          })
+        })
+
+        dispatch({type: CollectionActionTypes.COLLECTION_UPDATE, payload:{
+          address: address,
+          tokens: tokens
+        }})
+      })
+    })
   }
 
   async function fetchStakingState() {
@@ -256,6 +296,7 @@ const StateProvider = (props: Props) => {
     loadNotifications()
     loadTokens()
     loadZilRates()
+    loadNftCollections()
 
     startSagas()
   }, [])
@@ -265,6 +306,11 @@ const StateProvider = (props: Props) => {
     setFavorites()
     setTokenAPRs()
   }, [tokenState.initialized])
+
+  useEffect(() => {
+    if(!collectionState.initialized || !accountState.selectedWallet) return
+    loadCollectionState()
+  }, [collectionState.initialized, accountState.selectedWallet])
 
   useEffect(() => {
     if(!tokenState.initialized || !accountState.selectedWallet) return

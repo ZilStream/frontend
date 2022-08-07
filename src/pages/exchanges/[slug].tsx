@@ -25,7 +25,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   }
 }
 
-const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const ExchangeDetail = ({ exchange }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
   const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
   const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
@@ -184,4 +184,4 @@ const Exchange = ({ exchange }: InferGetServerSidePropsType<typeof getServerSide
   )
 }
 
-export default Exchange
+export default ExchangeDetail

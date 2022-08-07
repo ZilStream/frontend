@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Operator, RootState, Token, TokenState } from 'store/types'
+import { CollectionState, Operator, RootState, Token, TokenState } from 'store/types'
 import { BIG_ZERO } from 'utils/strings'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 
@@ -21,6 +21,7 @@ interface Props {
 function BalanceDonut(props: Props) {
   const {theme, setTheme, resolvedTheme} = useTheme()
   const tokenState = useSelector<RootState, TokenState>(state => state.token)
+  const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
 
   interface TokenTotal {
     name: string
@@ -117,6 +118,21 @@ function BalanceDonut(props: Props) {
       zilTotal = zilTotal.plus(staked)
     }
   })
+
+  var nftTotal = new BigNumber(0)
+  collectionState.collections.filter(collection => collection.tokens && collection.tokens.length > 0).forEach(collection => {
+    nftTotal = nftTotal.plus(collection.tokens!.length * collection.market_data.floor_price)
+  })
+
+  if(nftTotal.gt(0)) {
+    tokenTotals.push({
+      name: 'NFTs',
+      symbol: 'NFTs',
+      address: 'NFTs',
+      isZil: false,
+      totalBalance: nftTotal
+    })
+  }
 
   const zilIndex = tokenTotals.findIndex(token => token.address === ZIL_ADDRESS)
   if(zilIndex === -1) {

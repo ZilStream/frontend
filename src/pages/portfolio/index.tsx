@@ -9,6 +9,7 @@ import PortfolioStaking from 'components/PortfolioStaking';
 import PortfolioOnboard from 'components/PortfolioOnboard';
 import PortfolioHeader from 'components/PortfolioHeader';
 import Membership from 'pages/membership';
+import PortfolioCollections from 'components/PortfolioCollections';
 
 const Portfolio = () => {
   const accountState = useSelector<RootState, AccountState>(state => state.account)
@@ -32,6 +33,7 @@ const Portfolio = () => {
           <PortfolioBalances />
           <PortfolioPools />
           <PortfolioStaking />
+          <PortfolioCollections />
         </div>
       </div>
     </>
