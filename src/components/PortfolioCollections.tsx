@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box } from 'react-feather';
+import { LazyLoad } from 'react-observer-api';
 import { useSelector } from 'react-redux';
 import { CollectionState, Currency, CurrencyState, RootState } from 'store/types';
 import { cryptoFormat, currencyFormat } from 'utils/format';
 import NftImage from './NftImage';
-import TokenShare from './TokenShare';
 
 function PortfolioCollections() {
   const collectionState = useSelector<RootState, CollectionState>(state => state.collection)
@@ -40,9 +40,16 @@ function PortfolioCollections() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {collection.tokens!.map(token => (
-              <div key={token.id} className="aspect-square bg-white dark:bg-gray-800 overflow-hidden rounded-lg flex items-center justify-center">
-                <NftImage collection={collection} token={token} />
-                <span className="absolute text-3xl font-bold text-gray-100 dark:text-gray-700">{token.id}</span>
+              <div key={token.id}>
+                <div className="aspect-square bg-white dark:bg-gray-800 overflow-hidden rounded-lg flex items-center justify-center">
+                  <LazyLoad style={{'z-index': '10'}}>
+                    <NftImage collection={collection} token={token} />
+                  </LazyLoad>
+                  <span className="absolute text-3xl font-bold text-gray-100 dark:text-gray-700">{token.id}</span>
+                </div>
+                <div className="text-sm flex items-center mt-1">
+                  <span className="font-medium">#{token.id}</span>
+                </div>
               </div>
             ))}
           </div>

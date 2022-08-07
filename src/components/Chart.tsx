@@ -98,8 +98,12 @@ function Chart(props: Props) {
   }, [])
 
   useEffect(() => {
+    if(series) {
+      chart?.removeSeries(series)
+    }
+    
     var data: ChartDataPoint[] = [];
-
+    props.data.sort((a,b) =>  new Date(a.time).getTime()  -  new Date(b.time).getTime())
     props.data.forEach(rate => {
       data.push({
         time: (Date.parse(rate.time) / 1000) as UTCTimestamp,
@@ -107,7 +111,29 @@ function Chart(props: Props) {
       })
     })
 
-    series?.setData(data)
+    const isIncrease = data.length > 0 &&  data?.[0].value < data?.[data.length-1].value
+
+    const newSeries = chart?.addAreaSeries({
+      topColor: isIncrease ? 'rgba(76, 175, 80, 0.56)' : 'rgba(255, 82, 82, 0.56)',
+      bottomColor: isIncrease ? 'rgba(76, 175, 80, 0.04)' : 'rgba(255, 82, 82, 0.04)',
+      lineColor: isIncrease ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 82, 82, 1)',
+      lineWidth: 2,
+      priceLineVisible: false,
+      crosshairMarkerVisible: props.isUserInteractionEnabled ? true : false,
+      autoscaleInfoProvider: () => ({
+        priceRange: {
+            minValue: Math.min(...props.data.map(item => props.isZilValue ? item.value_zil! : item.value)),
+            maxValue: Math.max(...props.data.map(item => props.isZilValue ? item.value_zil! : item.value)),
+        },
+      }),
+    });
+
+    newSeries?.setData(data)
+
+    if(newSeries) {
+      setSeries(newSeries)
+    }
+
     chart?.timeScale().fitContent()
   }, [props.data])
 

@@ -47,7 +47,7 @@ const NftImage = (props: Props) => {
   }
 
   return (
-    <img className="z-10" src={image} />
+    <img className="z-10" src={image} loading="lazy" />
   )
 }
 
