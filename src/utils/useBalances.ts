@@ -115,7 +115,7 @@ export default function useBalances() {
       totalBalance = totalBalance.plus(collectionBalance)
     }
 
-    const membershipZIL = totalBalance.dividedBy(200)
+    const membershipZIL = totalBalance.minus(collectionBalance).dividedBy(200)
     const isMember = streamBalanceZIL.isGreaterThanOrEqualTo(membershipZIL) && streamBalanceZIL.isGreaterThan(0)
 
     var rewards: {[key: string]: TokenReward} = {}
