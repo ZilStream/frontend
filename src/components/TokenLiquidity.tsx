@@ -8,6 +8,7 @@ import { shortenAddress } from 'utils/shorten'
 import { cryptoFormat, numberFormat } from 'utils/format'
 import { toBigNumber } from 'utils/useMoneyFormatter'
 import LoadingSpinner from './LoadingSpinner'
+import { DEX } from 'types/dex.interface'
 
 interface Props {
   token: Token
@@ -24,6 +25,8 @@ const TokenLiquidity = (props: Props) => {
   const blockchainState = useSelector<RootState, BlockchainState>(state => state.blockchain)
   const client = blockchainState.client
 
+  const [totalContribution, setTotalContribution] = useState<BigNumber>(new BigNumber(0))
+  const [baseReserve, setBaseReserve] = useState<BigNumber>(new BigNumber(0))
   const [holders, setHolders] = useState<Balance[]>([])
   const excludedAddresses = token.supply_skip_addresses.split(",")
   const zilSwapAddress = ZILSWAP_ADDRESS
@@ -37,8 +40,14 @@ const TokenLiquidity = (props: Props) => {
   })
 
   useEffect(() => {
-    getHolders()
+    getTotalContribution()
+    getBaseReserve()
   }, [])
+
+  useEffect(() => {
+    if(totalContribution.isZero() || baseReserve.isZero()) return
+    getHolders()
+  }, [totalContribution, baseReserve])
 
   const getHolders = async () => {
     const response = await client.blockchain.getSmartContractSubState(
@@ -49,13 +58,15 @@ const TokenLiquidity = (props: Props) => {
     const balances: {[id: string]: string} = response.result.balances[fromBech32Address(token.address).toLowerCase()]
 
     const newHolders: Balance[] = []
-    var totalContribution = new BigNumber(0)
+
     Object.entries(balances).forEach(([hex, b]) => {
       const address = toBech32Address(hex)
-      const balance = toBigNumber(b).shiftedBy(-token.decimals)
-      if(balance.isZero()) return
+      const userContribution = toBigNumber(b)
 
-      totalContribution = totalContribution.plus(balance)
+      if(userContribution.isZero()) return
+
+      const share = userContribution.dividedBy(totalContribution)
+      const balance = share.times(baseReserve).shiftedBy(-token.decimals)
 
       newHolders.push({
         address,
@@ -64,6 +75,26 @@ const TokenLiquidity = (props: Props) => {
     })
     setHolders(newHolders)
     setState({...state, totalContribution, isLoading: false})
+  }
+
+  const getTotalContribution = async () => {
+    const response = await client.blockchain.getSmartContractSubState(
+      fromBech32Address(zilSwapAddress),
+      'total_contributions',
+      [fromBech32Address(token.address).toLowerCase()]
+    )
+
+    setTotalContribution(toBigNumber(response.result.total_contributions[fromBech32Address(token.address).toLowerCase()]))
+  }
+
+  const getBaseReserve = async () => {
+    const response = await client.blockchain.getSmartContractSubState(
+      fromBech32Address(zilSwapAddress),
+      'pools',
+      [fromBech32Address(token.address).toLowerCase()]
+    )
+
+    setBaseReserve(toBigNumber(response.result.pools[fromBech32Address(token.address).toLowerCase()].arguments[1]))
   }
 
   const filteredHolders = useMemo(() => {
@@ -86,7 +117,7 @@ const TokenLiquidity = (props: Props) => {
     <div>
       <div className="flex items-center">
         <div className="flex-grow">
-          <span className="font-semibold">{holders.length} liquidity providers</span>
+          <span className="font-semibold">{holders.length} liquidity providers on ZilSwap</span>
         </div>
       </div>
       <div>
