@@ -269,7 +269,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
             </>
           ) : (
             <>
-              <SponsorBlock link="https://arena.zilchill.com/arena/the-leos-civil-war-rAFd-Hivj" />
+              {/* <SponsorBlock link="https://arena.zilchill.com/arena/the-leos-civil-war-rAFd-Hivj" /> */}
 
               <RatesBlock
                 title="ZIL"
@@ -293,7 +293,7 @@ function Home({ initialRates }: InferGetServerSidePropsType<typeof getServerSide
 
               {/* <HighestAPRBlock tokens={aprTokens} /> */}
 
-              {/* <HighestVolumeBlock /> */}
+              <HighestVolumeBlock />
             </>
           )}
         </div>
