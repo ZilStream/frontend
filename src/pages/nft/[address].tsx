@@ -151,6 +151,11 @@ function NftCollection({ collection }: InferGetServerSidePropsType<typeof getSer
           <div className="h-96 bg-white dark:bg-gray-800 rounded-lg p-4">
             <Chart data={rates} isZilValue={false} isUserInteractionEnabled={true} isScalesEnabled={true} />
           </div>
+          {collection.address === 'zil13fum43ax8qeprt5s9u6wsmrtw2vsvdrdhmvtrm' &&
+            <div className="flex justify-center py-3">
+              <span className="text-gray-500 dark:text-gray-400 italic text-sm">„Find Jonny‘s favorite Soulless“</span>
+            </div>
+          }
         </div>
       </div>
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
