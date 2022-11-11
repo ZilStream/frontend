@@ -335,6 +335,15 @@ const stakingContracts: StakingContract[] = [
     statePath: "stakers_total_bal",
   },
   {
+    address: "zil1y2zmxxmflcjf5ce58z8qg3ucl4j969asnuc7ft",
+    token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    token_symbol: "XCAD",
+    token_decimals: 18,
+    reward_token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    name: "XCAD DEX: XCAD 180 days",
+    statePath: "stakers_total_bal",
+  },
+  {
     address: "zil17g5tc7kl8tqflq5d6pcdye6shl8a9y0yyp06c0",
     token: "zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f",
     token_symbol: "dXCAD",
