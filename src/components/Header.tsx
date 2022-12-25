@@ -79,6 +79,10 @@ const Header = () => {
                   <a className={router.pathname.includes('/portfolio') ? 'menu-item-active' : 'menu-item'}>Portfolio</a>
                 </Link>
 
+                <Link href="/staking">
+                  <a className={router.pathname.includes('/staking') ? 'menu-item-active' : 'menu-item'}>Staking</a>
+                </Link>
+
                 {/* <Link href="/swap">
                   <a className={router.pathname === '/swap' ? 'menu-item-active' : 'menu-item'}>Swap <span className="bg-primary dark:bg-primaryDark dark:text-black text-xs py-1 px-2 rounded font-semibold ml-1">New</span></a>
                 </Link> */}

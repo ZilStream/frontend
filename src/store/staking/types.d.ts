@@ -6,9 +6,11 @@ export type Operator = {
   staked?: BigNumber
   // url: string
   // api_url: string
-  // stake_amount: BigNumber
-  // buffered_deposit: BigNumber
+  stake_amount: BigNumber
+  stake_rewards: BigNumber
+  buffered_deposit: BigNumber
   comission: BigNumber
+  comission_rewards: BigNumber
   symbol: string
   decimals: number
 }

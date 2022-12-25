@@ -421,7 +421,11 @@ export function processBatch(batchResults: BatchResponse[], walletAddress: strin
             operators.push({
               name: ssnlist[address].arguments[3],
               address: address,
-              comission: new BigNumber(ssnlist[address].arguments[6]),
+              stake_amount: new BigNumber(ssnlist[address].arguments[1]),
+              stake_rewards: new BigNumber(ssnlist[address].arguments[2]),
+              buffered_deposit: new BigNumber(ssnlist[address].arguments[6]),
+              comission: new BigNumber(ssnlist[address].arguments[7]),
+              comission_rewards: new BigNumber(ssnlist[address].arguments[8]),
               symbol: 'ZIL',
               decimals: 12
             })
