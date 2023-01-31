@@ -31,26 +31,24 @@ import SponsorBlock from "components/SponsorBlock";
 import { ZIL_ADDRESS } from "lib/constants";
 import HighestVolumeBlock from "components/HighestVolumeBlock";
 
-export const getServerSideProps = async () => {
-  var initialRates: Rate[] = [];
+// export const getServerSideProps = async () => {
+//   var initialRates: Rate[] = [];
 
-  try {
-    initialRates = await getRates();
-  } catch (e) {
-    initialRates = [];
-  }
+//   try {
+//     initialRates = await getRates();
+//   } catch (e) {
+//     initialRates = [];
+//   }
 
-  return {
-    props: {
-      initialRates,
-    },
-  };
-};
+//   return {
+//     props: {
+//       initialRates,
+//     },
+//   };
+// };
 
-function Home({
-  initialRates,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [rates, setRates] = useState<Rate[]>(initialRates);
+function Home() {
+  const [rates, setRates] = useState<Rate[]>([]);
   const tokenState = useSelector<RootState, TokenState>((state) => state.token);
   const currencyState = useSelector<RootState, CurrencyState>(
     (state) => state.currency
@@ -82,7 +80,7 @@ function Home({
     (currency) => currency.code === currencyState.selectedCurrency
   )!;
 
-  useInterval(async () => {
+  const fetchRates = async () => {
     var newRates: Rate[] = [];
 
     try {
@@ -92,7 +90,15 @@ function Home({
     }
 
     setRates(newRates);
+  };
+
+  useInterval(async () => {
+    fetchRates();
   }, 30000);
+
+  useEffect(() => {
+    fetchRates();
+  }, []);
 
   const aprTokens = tokens
     .filter((token) => token.reviewed === true || token.address === ZIL_ADDRESS)
