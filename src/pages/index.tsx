@@ -135,6 +135,10 @@ function Home({
       tokensToDisplay = tokensToDisplay.filter((token) =>
         token.tags?.split(",").includes("nft")
       );
+    } else if (currentList == ListType.Creators) {
+      tokensToDisplay = tokensToDisplay.filter((token) =>
+        token.tags?.split(",").includes("creator")
+      );
     }
 
     if (currentSort === SortType.APR || currentSort === SortType.APY) {
@@ -467,6 +471,16 @@ function Home({
                 } mr-2`}
               >
                 NFT
+              </button>
+              <button
+                onClick={() => setCurrentList(ListType.Creators)}
+                className={`${
+                  currentList == ListType.Creators
+                    ? "list-btn-selected"
+                    : "list-btn"
+                } mr-2`}
+              >
+                Creators
               </button>
             </div>
           </div>
