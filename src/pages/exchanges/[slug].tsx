@@ -112,6 +112,10 @@ const ExchangeDetail = ({
     setPairs(filteredPairs);
   }, [tokenState, exchange]);
 
+  if (!exchange) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Head>
