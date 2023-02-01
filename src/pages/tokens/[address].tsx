@@ -164,7 +164,7 @@ function TokenDetail({
       setPairs(newPairs);
     };
     fetchPairs();
-  }, [tokenState]);
+  }, [tokenState, token]);
 
   const chartPair = React.useMemo(() => {
     if (pairs.length === 0) return undefined;
