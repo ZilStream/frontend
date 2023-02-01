@@ -1,47 +1,52 @@
-import BigNumber from 'bignumber.js'
-import CopyableAddress from 'components/CopyableAddress'
-import TokenIcon from 'components/TokenIcon'
-import TVLChartBlock from 'components/TVLChartBlock'
-import VolumeChartBlock from 'components/VolumeChartBlock'
-import getStats from 'lib/zilstream/getStats'
-import { InferGetServerSidePropsType } from 'next'
-import Head from 'next/head'
-import Link from 'next/link'
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { Currency, CurrencyState, RootState, TokenState } from 'store/types'
-import getExchanges from 'lib/zilstream/getExchanges'
-import { currencyFormat, numberFormat } from 'utils/format'
+import BigNumber from "bignumber.js";
+import CopyableAddress from "components/CopyableAddress";
+import TokenIcon from "components/TokenIcon";
+import TVLChartBlock from "components/TVLChartBlock";
+import VolumeChartBlock from "components/VolumeChartBlock";
+import getStats from "lib/zilstream/getStats";
+import { InferGetServerSidePropsType } from "next";
+import Head from "next/head";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Currency, CurrencyState, RootState, TokenState } from "store/types";
+import getExchanges from "lib/zilstream/getExchanges";
+import { currencyFormat, numberFormat } from "utils/format";
+import { Exchange } from "types/exchange.interface";
 
-export const getServerSideProps = async () => {
-  const exchanges = await getExchanges()
+const Exchanges = () => {
+  const tokenState = useSelector<RootState, TokenState>((state) => state.token);
+  const currencyState = useSelector<RootState, CurrencyState>(
+    (state) => state.currency
+  );
+  const selectedCurrency: Currency = currencyState.currencies.find(
+    (currency) => currency.code === currencyState.selectedCurrency
+  )!;
+  const [exchanges, setExchanges] = useState<Exchange[]>([]);
 
-  return {
-    props: {
-      exchanges,
-    }
-  }
-}
+  const fetchExchanges = async () => {
+    const newExchanges = await getExchanges();
+    setExchanges(newExchanges);
+  };
 
-const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const tokenState = useSelector<RootState, TokenState>(state => state.token)
-  const currencyState = useSelector<RootState, CurrencyState>(state => state.currency)
-  const selectedCurrency: Currency = currencyState.currencies.find(currency => currency.code === currencyState.selectedCurrency)!
+  useEffect(() => {
+    fetchExchanges();
+  }, []);
 
-  exchanges.sort((a,b) => {
-    return (a.stats?.liquidity ?? 0) > (b.stats?.liquidity ?? 0) ? -1 : 1
-  })
+  exchanges.sort((a, b) => {
+    return (a.stats?.liquidity ?? 0) > (b.stats?.liquidity ?? 0) ? -1 : 1;
+  });
 
   let totalVolume = exchanges.reduce((sum, exchange) => {
-    return sum + (exchange.stats?.volume_24h ?? 0)
-  }, 0)
+    return sum + (exchange.stats?.volume_24h ?? 0);
+  }, 0);
 
   let totalLiquidity = exchanges.reduce((sum, exchange) => {
-    return sum + (exchange.stats?.liquidity ?? 0)
-  }, 0)
+    return sum + (exchange.stats?.liquidity ?? 0);
+  }, 0);
 
   return (
-    <>  
+    <>
       <Head>
         <title>Exchanges | ZilStream</title>
         <meta property="og:title" content={`Exchanges | ZilStream`} />
@@ -52,17 +57,17 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
             <h1 className="mb-1">Exchanges</h1>
           </div>
         </div>
-      </div>      
+      </div>
       <div className="scrollable-table-container max-w-full overflow-x-scroll">
         <table className="zilstream-table table-fixed border-collapse">
           <colgroup>
-            <col style={{width: '24px', minWidth: 'auto'}} />
-            <col style={{width: '250px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
-            <col style={{width: '140px', minWidth: 'auto'}} />
+            <col style={{ width: "24px", minWidth: "auto" }} />
+            <col style={{ width: "250px", minWidth: "auto" }} />
+            <col style={{ width: "140px", minWidth: "auto" }} />
+            <col style={{ width: "140px", minWidth: "auto" }} />
+            <col style={{ width: "140px", minWidth: "auto" }} />
+            <col style={{ width: "140px", minWidth: "auto" }} />
+            <col style={{ width: "140px", minWidth: "auto" }} />
           </colgroup>
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr>
@@ -78,12 +83,20 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
           <tbody>
             {exchanges.map((exchange, index) => {
               return (
-                <tr key={exchange.address} role="row" className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap">
-                  <td className={`pl-5 pr-2 py-2 font-medium ${index === 0 ? 'rounded-tl-lg' : ''} ${index === exchanges.length-1 ? 'rounded-bl-lg' : ''}`}>
-                    <div>{index+1}</div>
+                <tr
+                  key={exchange.address}
+                  role="row"
+                  className="text-sm border-b dark:border-gray-700 last:border-b-0 whitespace-nowrap"
+                >
+                  <td
+                    className={`pl-5 pr-2 py-2 font-medium ${
+                      index === 0 ? "rounded-tl-lg" : ""
+                    } ${index === exchanges.length - 1 ? "rounded-bl-lg" : ""}`}
+                  >
+                    <div>{index + 1}</div>
                   </td>
                   <td className="px-2 py-4 flex items-center font-medium">
-                   <Link href={`/exchanges/${exchange.slug}`}>
+                    <Link href={`/exchanges/${exchange.slug}`}>
                       <a className="flex items-center">
                         <div className="w-6 h-6 flex-shrink-0 flex-grow-0 mr-3">
                           <TokenIcon url={exchange.icon} />
@@ -96,25 +109,41 @@ const Exchanges = ({ exchanges }: InferGetServerSidePropsType<typeof getServerSi
                     {exchange.pairs.length}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat((exchange.stats?.volume_24h ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                    {currencyFormat(
+                      (exchange.stats?.volume_24h ?? 0) * selectedCurrency.rate,
+                      selectedCurrency.symbol
+                    )}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {numberFormat(((exchange.stats?.volume_24h ?? 0) / totalVolume) * 100)}%
+                    {numberFormat(
+                      ((exchange.stats?.volume_24h ?? 0) / totalVolume) * 100
+                    )}
+                    %
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {currencyFormat((exchange.stats?.liquidity ?? 0) * selectedCurrency.rate, selectedCurrency.symbol)}
+                    {currencyFormat(
+                      (exchange.stats?.liquidity ?? 0) * selectedCurrency.rate,
+                      selectedCurrency.symbol
+                    )}
                   </td>
-                  <td className={`pl-2 pr-3 py-2 text-right ${index === 0 ? 'rounded-tr-lg' : ''} ${index === exchanges.length-1 ? 'rounded-br-lg' : ''}`}>
-                    {numberFormat(((exchange.stats?.liquidity ?? 0) / totalLiquidity) * 100)}%
+                  <td
+                    className={`pl-2 pr-3 py-2 text-right ${
+                      index === 0 ? "rounded-tr-lg" : ""
+                    } ${index === exchanges.length - 1 ? "rounded-br-lg" : ""}`}
+                  >
+                    {numberFormat(
+                      ((exchange.stats?.liquidity ?? 0) / totalLiquidity) * 100
+                    )}
+                    %
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Exchanges
+export default Exchanges;
