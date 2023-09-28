@@ -9,6 +9,9 @@ export function currencyFormat(
   if (symbol === "₿") {
     return symbol + num.toFixed(8);
   }
+  if (num === 0) {
+    return symbol + num.toFixed(2);
+  }
   if (num < 0.00001) {
     return symbol + num.toFixed(12);
   }
