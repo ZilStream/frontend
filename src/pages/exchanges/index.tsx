@@ -115,10 +115,17 @@ const Exchanges = () => {
                     )}
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
-                    {numberFormat(
-                      ((exchange.stats?.volume_24h ?? 0) / totalVolume) * 100
+                    {totalVolume === 0 ? (
+                      <>0%</>
+                    ) : (
+                      <>
+                        {numberFormat(
+                          ((exchange.stats?.volume_24h ?? 0) / totalVolume) *
+                            100
+                        )}
+                        %
+                      </>
                     )}
-                    %
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {currencyFormat(

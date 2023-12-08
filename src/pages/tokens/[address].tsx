@@ -863,7 +863,11 @@ function TokenDetail({
                             index === pairs.length - 1 ? "rounded-br-lg" : ""
                           }`}
                         >
-                          {numberFormat((volume / totalVolume) * 100)}%
+                          {totalVolume === 0 ? (
+                            <>0%</>
+                          ) : (
+                            <>{numberFormat((volume / totalVolume) * 100)}%</>
+                          )}
                         </td>
                       </tr>
                     );
