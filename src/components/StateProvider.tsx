@@ -151,27 +151,35 @@ const StateProvider = (props: Props) => {
 
   async function loadZilRates() {
     const zilRates = await getZilRates();
-    dispatch({
-      type: CurrencyActionTypes.CURRENCY_UPDATE,
-      payload: {
-        code: "USD",
-        rate: +zilRates.price,
-      },
-    });
-    dispatch({
-      type: CurrencyActionTypes.CURRENCY_SELECT,
-      payload: { currency: "USD" },
-    });
-    // batch(() => {
-    //   Object.entries(zilRates.zilliqa).map(([key, value]: [string, any]) => {
-    //     dispatch({type: CurrencyActionTypes.CURRENCY_UPDATE, payload: {
-    //       code: key.toUpperCase(),
-    //       rate: value as number
-    //     }})
-    //   })
+    // dispatch({
+    //   type: CurrencyActionTypes.CURRENCY_UPDATE,
+    //   payload: {
+    //     code: "USD",
+    //     rate: +zilRates.price,
+    //   },
+    // });
+    // dispatch({
+    //   type: CurrencyActionTypes.CURRENCY_SELECT,
+    //   payload: { currency: "USD" },
+    // });
+    batch(() => {
+      Object.entries(zilRates.zilliqa).map(([key, value]: [string, any]) => {
+        dispatch({
+          type: CurrencyActionTypes.CURRENCY_UPDATE,
+          payload: {
+            code: key.toUpperCase(),
+            rate: value as number,
+          },
+        });
+      });
 
-    //   dispatch({type: CurrencyActionTypes.CURRENCY_SELECT, payload: {currency: localStorage.getItem('selectedCurrency') ?? 'USD'}})
-    // })
+      dispatch({
+        type: CurrencyActionTypes.CURRENCY_SELECT,
+        payload: {
+          currency: localStorage.getItem("selectedCurrency") ?? "USD",
+        },
+      });
+    });
   }
 
   async function loadWalletState() {
