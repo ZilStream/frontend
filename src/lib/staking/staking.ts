@@ -1,15 +1,15 @@
-import { fromBech32Address } from "@zilliqa-js/zilliqa"
-import { BatchRequest, BatchRequestType, requestParams } from "utils/batch"
+import { fromBech32Address } from "@zilliqa-js/zilliqa";
+import { BatchRequest, BatchRequestType, requestParams } from "utils/batch";
 
 export interface StakingContract {
-  address: string
-  token: string
-  token_symbol: string
-  token_decimals: number
-  reward_token: string
-  name?: string
-  statePath: string
-  cumulativeValues?: boolean
+  address: string;
+  token: string;
+  token_symbol: string;
+  token_decimals: number;
+  reward_token: string;
+  name?: string;
+  statePath: string;
+  cumulativeValues?: boolean;
 }
 
 const stakingContracts: StakingContract[] = [
@@ -86,6 +86,51 @@ const stakingContracts: StakingContract[] = [
     statePath: "removeStaker",
   },
   {
+    address: "zil1x7ms2qksd76zyqaralpwwyl3akqve05pr6dhjv",
+    token: "zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v",
+    token_symbol: "FEES",
+    token_decimals: 4,
+    reward_token: "zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v",
+    name: "UG - 7 %",
+    statePath: "stakers",
+  },
+  {
+    address: "zil1gtlpys5ed39xjphvyu5untg3qqy46t2xf72tjd",
+    token: "zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v",
+    token_symbol: "FEES",
+    token_decimals: 4,
+    reward_token: "zil1jy3g5j9w5njqwxuuv3zwkz9syyueelmu7g080v",
+    name: "PG - 10 %",
+    statePath: "stakers",
+  },
+  {
+    address: "zil1748h9aswsq66d5c55z6334zkkmafuudeyjqcsr",
+    token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    token_symbol: "DXFEES",
+    token_decimals: 4,
+    reward_token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    name: "TRADER - APR 5%",
+    statePath: "stakers",
+  },
+  {
+    address: "zil1z3p3ztpz8qtjas5t4j0uqygvh0akvuajxxkq43",
+    token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    token_symbol: "DXFEES",
+    token_decimals: 4,
+    reward_token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    name: "HODLer - APR 7%",
+    statePath: "stakers",
+  },
+  {
+    address: "zil1czhrmhujx0sxaya4ctv2k89qsdpjvrqefanar3",
+    token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    token_symbol: "DXFEES",
+    token_decimals: 4,
+    reward_token: "zil144qhc6455049uzk3qzccpw67857vhlreartrcl",
+    name: "Partner 7%",
+    statePath: "stakers",
+  },
+  {
     address: "zil1heh4x9lhp2cuma9n8qvrap80ax900s9024dmlc",
     token: "zil1gf5vxndx44q6fn025fwdaajnrmgvngdzel0jzp",
     token_symbol: "BLOX",
@@ -111,7 +156,7 @@ const stakingContracts: StakingContract[] = [
     reward_token: "zil1xxl6yp2twxvljdnn87g9fk7wykdrcv66xdy4rc",
     name: "LunrFi 1-month",
     statePath: "stakes",
-    cumulativeValues: true
+    cumulativeValues: true,
   },
   {
     address: "zil1eft78svmxf0cxn82ysdtxxs6ky8e85xnzfvzrh",
@@ -121,7 +166,7 @@ const stakingContracts: StakingContract[] = [
     reward_token: "zil1xxl6yp2twxvljdnn87g9fk7wykdrcv66xdy4rc",
     name: "LunrFi 3-month",
     statePath: "stakes",
-    cumulativeValues: true
+    cumulativeValues: true,
   },
   {
     address: "zil1dt57qg37zmxzm58tvdx8rvyrk09zpsxwc77hpp",
@@ -131,7 +176,7 @@ const stakingContracts: StakingContract[] = [
     reward_token: "zil1xxl6yp2twxvljdnn87g9fk7wykdrcv66xdy4rc",
     name: "LunrFi 6-month",
     statePath: "stakes",
-    cumulativeValues: true
+    cumulativeValues: true,
   },
   {
     address: "zil1qs6ppsy0p6rnaqznx3zs9q4rafmu4p8qtm3pdd",
@@ -141,7 +186,7 @@ const stakingContracts: StakingContract[] = [
     reward_token: "zil1xxl6yp2twxvljdnn87g9fk7wykdrcv66xdy4rc",
     name: "LunrFi 12-month",
     statePath: "stakes",
-    cumulativeValues: true
+    cumulativeValues: true,
   },
 
   // XCAD DEX SAS
@@ -351,13 +396,31 @@ const stakingContracts: StakingContract[] = [
     reward_token: "zil1xfcg9hfpdlmz2aytz0s4dww35hfa6s0jnjut5f",
     name: "XCAD DEX: dXCAD",
     statePath: "stakers_total_bal",
-  }
-]
+  },
+  {
+    address: "zil1p604wcea2zsae43r2ypwqrmdjqmu2vh4npk3vh",
+    token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    token_symbol: "XCAD",
+    token_decimals: 18,
+    reward_token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    name: "XCAD DEX: XCAD 180 days",
+    statePath: "stakers_total_bal",
+  },
+  {
+    address: "zil1zaa50zf7mct6eyrnvctcwxuwl50vktug0hkr6j",
+    token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    token_symbol: "XCAD",
+    token_decimals: 18,
+    reward_token: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+    name: "XCAD DEX: XCAD 360 days",
+    statePath: "stakers_total_bal",
+  },
+];
 
 export const stakingBatchRequests = (walletAddress: string): BatchRequest[] => {
-  var reqs: BatchRequest[] = []
+  var reqs: BatchRequest[] = [];
 
-  stakingContracts.forEach(contract => {
+  stakingContracts.forEach((contract) => {
     reqs.push({
       type: BatchRequestType.Staking,
       stakingContract: contract,
@@ -367,12 +430,11 @@ export const stakingBatchRequests = (walletAddress: string): BatchRequest[] => {
         params: [
           fromBech32Address(contract.address).replace("0x", "").toLowerCase(),
           contract.statePath,
-          [fromBech32Address(walletAddress).toLowerCase()]
-        ]
-      }
-    })
-  })
+          [fromBech32Address(walletAddress).toLowerCase()],
+        ],
+      },
+    });
+  });
 
-  return reqs
-}
-
+  return reqs;
+};
