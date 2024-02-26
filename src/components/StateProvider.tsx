@@ -1,14 +1,54 @@
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+import { Zilliqa } from '@zilliqa-js/zilliqa'
+import getZilRates from 'lib/coingecko/getZilRates'
+import { STREAM_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
+import getCollectionsOwnerStates from 'lib/zilstream/getCollectionsOwnerStates'
+import getCollectionsOwnerState from 'lib/zilstream/getCollectionsOwnerStates'
+import getNftCollections from 'lib/zilstream/getNftCollections'
+import getPortfolioState from 'lib/zilstream/getPortfolio'
+import getTokens from 'lib/zilstream/getTokens'
+import getTokensFromCollectionsOwnerStates from 'lib/zilstream/getTokensFromCollectionsOwnerState'
+import React, { useEffect, useState } from 'react'
+import { batch, useDispatch, useSelector, useStore } from 'react-redux'
+import { startSagas } from 'saga/saga'
+import { AccountActionTypes, updateWallet } from 'store/account/actions'
+import { setAlertState, updateAlert } from 'store/alert/actions'
+import { CollectionActionTypes } from 'store/collection/actions'
+import { CurrencyActionTypes } from 'store/currency/actions'
+import { setNotificationState, updateNotification } from 'store/notification/actions'
+import { updateSettings } from 'store/settings/actions'
+import { updateSwap } from 'store/swap/actions'
+import { TokenActionTypes } from 'store/token/actions'
+import { AccountState, AlertState, BlockchainState, CollectionState, NftToken, NotificationState, RootState, SettingsState, StakingState, SwapState, Token, TokenState } from 'store/types'
+import { Indicator, Metric } from 'types/metric.interface'
+import { AccountType } from 'types/walletType.interface'
+import { getTokenAPR } from 'utils/apr'
+import { BatchResponse, sendBatchRequest, stakingDelegatorsBatchRequest } from 'utils/batch'
+import { cryptoFormat, currencyFormat } from 'utils/format'
+import { useInterval } from 'utils/interval'
+import { processBatch } from 'utils/processBatch'
+=======
+>>>>>>> Stashed changes
 import { Zilliqa } from "@zilliqa-js/zilliqa";
 import getZilRates from "lib/coingecko/getZilRates";
 import { STREAM_ADDRESS, ZIL_ADDRESS } from "lib/constants";
 import getCollectionsOwnerStates from "lib/zilstream/getCollectionsOwnerStates";
+<<<<<<< Updated upstream
 import getCollectionsOwnerState from "lib/zilstream/getCollectionsOwnerStates";
 import getNftCollections from "lib/zilstream/getNftCollections";
+=======
+>>>>>>> Stashed changes
 import getPortfolioState from "lib/zilstream/getPortfolio";
 import getTokens from "lib/zilstream/getTokens";
 import getTokensFromCollectionsOwnerStates from "lib/zilstream/getTokensFromCollectionsOwnerState";
 import React, { useEffect, useState } from "react";
+<<<<<<< Updated upstream
 import { batch, useDispatch, useSelector, useStore } from "react-redux";
+=======
+import { batch, useDispatch, useSelector } from "react-redux";
+>>>>>>> Stashed changes
 import { startSagas } from "saga/saga";
 import { AccountActionTypes, updateWallet } from "store/account/actions";
 import { setAlertState, updateAlert } from "store/alert/actions";
@@ -19,7 +59,10 @@ import {
   updateNotification,
 } from "store/notification/actions";
 import { updateSettings } from "store/settings/actions";
+<<<<<<< Updated upstream
 import { updateSwap } from "store/swap/actions";
+=======
+>>>>>>> Stashed changes
 import { TokenActionTypes } from "store/token/actions";
 import {
   AccountState,
@@ -42,10 +85,20 @@ import {
   BatchResponse,
   sendBatchRequest,
   stakingDelegatorsBatchRequest,
+<<<<<<< Updated upstream
 } from "utils/batch";
 import { cryptoFormat, currencyFormat } from "utils/format";
 import { useInterval } from "utils/interval";
 import { processBatch } from "utils/processBatch";
+=======
+  stakingLastRewardCycleBatchRequest,
+  stakingOperatorsBatchRequest,
+} from "utils/batch";
+import { cryptoFormat, currencyFormat } from "utils/format";
+import { useInterval } from "utils/interval";
+import { processBatch, processSignedOutBatch } from "utils/processBatch";
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 interface Props {
   children: React.ReactNode;
@@ -109,6 +162,7 @@ const StateProvider = (props: Props) => {
     processAlerts();
   }
 
+<<<<<<< Updated upstream
   async function loadNftCollections() {
     let collections = await getNftCollections();
     dispatch({
@@ -117,6 +171,8 @@ const StateProvider = (props: Props) => {
     });
   }
 
+=======
+>>>>>>> Stashed changes
   async function setFavorites() {
     const favoritesString = localStorage.getItem("favorites") ?? "";
     var favorites = favoritesString.split(",");
@@ -182,6 +238,14 @@ const StateProvider = (props: Props) => {
     });
   }
 
+  async function loadStakingState() {
+    var batchRequests: any[] = [];
+    batchRequests.push(stakingLastRewardCycleBatchRequest());
+    batchRequests.push(stakingOperatorsBatchRequest());
+    let batchResults = await sendBatchRequest(batchRequests);
+    await processSignedOutBatch(batchResults, dispatch);
+  }
+
   async function loadWalletState() {
     if (!accountState.selectedWallet || tokenState.initialized === false)
       return;
@@ -235,6 +299,7 @@ const StateProvider = (props: Props) => {
     });
   }
 
+<<<<<<< Updated upstream
   async function fetchStakingState() {
     if (!accountState.selectedWallet) return;
     const walletAddress = accountState.selectedWallet.address;
@@ -249,6 +314,8 @@ const StateProvider = (props: Props) => {
     await processBatchResults(batchResults);
   }
 
+=======
+>>>>>>> Stashed changes
   async function processBatchResults(batchResults: BatchResponse[]) {
     if (!accountState.selectedWallet) return;
     const walletAddress = accountState.selectedWallet.address;
@@ -409,12 +476,28 @@ const StateProvider = (props: Props) => {
   }, [blockchainState.blockHeight]);
 
   useEffect(() => {
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+    loadSettings()
+    loadAlerts()
+    loadNotifications()
+    loadTokens()
+    loadZilRates()
+    loadNftCollections()
+=======
+>>>>>>> Stashed changes
     loadSettings();
     loadAlerts();
     loadNotifications();
     loadTokens();
     loadZilRates();
+<<<<<<< Updated upstream
     loadNftCollections();
+=======
+    loadStakingState();
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
     startSagas();
   }, []);
@@ -436,6 +519,7 @@ const StateProvider = (props: Props) => {
   }, [accountState.selectedWallet, tokenState.initialized]);
 
   useEffect(() => {
+<<<<<<< Updated upstream
     if (stakingState.operators.length === 0 || stakingLoaded) return;
     setStakingLoaded(true);
     fetchStakingState();
@@ -443,6 +527,19 @@ const StateProvider = (props: Props) => {
 
   useEffect(() => {
     if (!accountState.initialized) return;
+=======
+<<<<<<< Updated upstream
+    if(stakingState.operators.length === 0 || stakingLoaded) return
+    setStakingLoaded(true)
+    fetchStakingState()
+  }, [stakingState])
+
+  useEffect(() => {
+    if(!accountState.initialized) return
+=======
+    if (!accountState.initialized) return;
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     // This makes sure all account changes persist.
     localStorage.setItem("account", JSON.stringify(accountState));
   }, [accountState]);

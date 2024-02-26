@@ -116,6 +116,7 @@ const Header = () => {
                   </a>
                 </Link>
 
+<<<<<<< Updated upstream
                 <Link href="/nft">
                   <a
                     className={
@@ -131,6 +132,8 @@ const Header = () => {
                   </a>
                 </Link>
 
+=======
+>>>>>>> Stashed changes
                 <Link href="/exchanges">
                   <a
                     className={
@@ -157,6 +160,18 @@ const Header = () => {
 
                 <Link href="/staking">
                   <a className={router.pathname.includes('/staking') ? 'menu-item-active' : 'menu-item'}>Staking</a>
+                </Link>
+
+                <Link href="/staking">
+                  <a
+                    className={
+                      router.pathname.includes("/staking")
+                        ? "menu-item-active"
+                        : "menu-item"
+                    }
+                  >
+                    Staking
+                  </a>
                 </Link>
 
                 {/* <Link href="/swap">
@@ -190,6 +205,22 @@ const Header = () => {
                       tabIndex={-1}
                     >
                       <div className="py-1" role="none">
+                        <Menu.Item>
+                          <Link href="/nft">
+                            <a
+                              className={
+                                router.pathname.includes("/nft")
+                                  ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 block px-4 py-2 text-sm"
+                                  : "text-gray-700 dark:text-gray-300 block px-4 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-700"
+                              }
+                            >
+                              NFT{" "}
+                              <span className="bg-primary dark:bg-primaryDark dark:text-black text-xs py-1 px-2 rounded font-semibold ml-1">
+                                Beta
+                              </span>
+                            </a>
+                          </Link>
+                        </Menu.Item>
                         <Menu.Item>
                           <Link href="/bridge">
                             <a
