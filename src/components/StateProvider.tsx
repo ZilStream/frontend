@@ -42,7 +42,6 @@ import {
 import { cryptoFormat, currencyFormat } from 'utils/format'
 import { useInterval } from 'utils/interval'
 import { processBatch, processSignedOutBatch } from 'utils/processBatch'
-npm
 
 interface Props {
   children: React.ReactNode
