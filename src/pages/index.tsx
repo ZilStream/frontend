@@ -391,7 +391,7 @@ function Home() {
             </>
           ) : (
             <>
-              <SponsorBlock link="https://plunderswap.com" />
+              <SponsorBlock link="https://kalijo.io" />
 
               <RatesBlock
                 title="ZIL"
