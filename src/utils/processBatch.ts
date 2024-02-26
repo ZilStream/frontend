@@ -1,79 +1,72 @@
-import { Dispatch } from "redux";
-import { batch } from "react-redux";
-import { BatchRequestType, BatchResponse } from "utils/batch";
-import { BlockchainActionsTypes } from "store/blockchain/actions";
-import { TokenActionTypes } from "store/token/actions";
-import { bnOrZero } from "./strings";
-import { fromBech32Address, toBech32Address } from "@zilliqa-js/zilliqa";
-import BigNumber from "bignumber.js";
-import { DEX } from "types/dex.interface";
-import { CARB_ADDRESS, ZILALL_ADDRESS, ZIL_ADDRESS } from "lib/constants";
-import { Operator } from "store/types";
-import { StakingActionTypes } from "store/staking/actions";
-import { toBigNumber } from "./useMoneyFormatter";
+import { Dispatch } from 'redux'
+import { batch } from 'react-redux'
+import { BatchRequestType, BatchResponse } from 'utils/batch'
+import { BlockchainActionsTypes } from 'store/blockchain/actions'
+import { TokenActionTypes } from 'store/token/actions'
+import { bnOrZero } from './strings'
+import { fromBech32Address, toBech32Address } from '@zilliqa-js/zilliqa'
+import BigNumber from 'bignumber.js'
+import { DEX } from 'types/dex.interface'
+import { CARB_ADDRESS, ZILALL_ADDRESS, ZIL_ADDRESS } from 'lib/constants'
+import { Operator } from 'store/types'
+import { StakingActionTypes } from 'store/staking/actions'
+import { toBigNumber } from './useMoneyFormatter'
 
-export function processSignedOutBatch(
-  batchResults: BatchResponse[],
-  dispatch: Dispatch
-) {
+export function processSignedOutBatch(batchResults: BatchResponse[], dispatch: Dispatch) {
   batch(() => {
     batchResults.forEach((result) => {
       switch (result.request.type) {
         case BatchRequestType.StakingLastRewardCycle: {
-          let lastrewardcycle: any = result.result.lastrewardcycle;
+          let lastrewardcycle: any = result.result.lastrewardcycle
           dispatch({
             type: StakingActionTypes.STAKING_UDPATE,
             payload: {
               lastrewardcycle: toBigNumber(lastrewardcycle),
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.StakingOperators: {
-          let ssnlist: any[] = result.result.ssnlist;
+          let ssnlist: any[] = result.result.ssnlist
 
           let recommendedAddresses = [
-            "0x341283D3FB53CF2E03E694BE7534895C7BD6BC8F".toLowerCase(), // PlunderSwap
-            "0x796FC4E67254C2C6D27D32527845D27E01F7318C".toLowerCase(), // Avely
-            "0xB83FC2C72C44B6B869C64384375C979DC3F7CF05".toLowerCase(), // Ignite
-          ];
+            '0x341283D3FB53CF2E03E694BE7534895C7BD6BC8F'.toLowerCase(), // PlunderSwap
+            '0x796FC4E67254C2C6D27D32527845D27E01F7318C'.toLowerCase(), // Avely
+            '0xB83FC2C72C44B6B869C64384375C979DC3F7CF05'.toLowerCase(), // Ignite
+          ]
 
-          var operators: Operator[] = [];
+          var operators: Operator[] = []
           Object.keys(ssnlist).forEach((ssnAddress) => {
-            let address: any = ssnAddress;
+            let address: any = ssnAddress
             operators.push({
               name: ssnlist[address].arguments[3],
               address: address,
-              active: ssnlist[address].arguments[0].constructor == "True",
+              active: ssnlist[address].arguments[0].constructor == 'True',
               stake_amount: new BigNumber(ssnlist[address].arguments[1]),
               buffered_deposit: new BigNumber(ssnlist[address].arguments[6]),
               comission: new BigNumber(ssnlist[address].arguments[7]),
-              symbol: "ZIL",
+              symbol: 'ZIL',
               decimals: 12,
               recommended: recommendedAddresses.includes(address.toLowerCase()),
-            });
-          });
+            })
+          })
 
           dispatch({
             type: StakingActionTypes.STAKING_INIT,
             payload: { operators: operators },
-          });
-          return;
+          })
+          return
         }
       }
-    });
-  });
+    })
+  })
 }
 
-export function processBatch(
-  batchResults: BatchResponse[],
-  walletAddress: string,
-  dispatch: Dispatch
-) {
+export function processBatch(batchResults: BatchResponse[], walletAddress: string, dispatch: Dispatch) {
   batch(() => {
     batchResults.forEach((result) => {
-      let token = result.request.token;
+      let token = result.request.token
 
       switch (result.request.type) {
         case BatchRequestType.BlockchainInfo: {
@@ -82,8 +75,8 @@ export function processBatch(
             payload: {
               blockHeight: +result.result.NumTxBlocks - 1,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.Balance: {
@@ -94,16 +87,16 @@ export function processBatch(
               balance: bnOrZero(result.result.balance),
               isZil: true,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.TokenBalance: {
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
-          let balance: BigNumber | undefined;
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
+          let balance: BigNumber | undefined
 
           if (result.result) {
-            balance = bnOrZero(result.result.balances[walletAddr]);
+            balance = bnOrZero(result.result.balances[walletAddr])
           }
 
           dispatch({
@@ -112,20 +105,20 @@ export function processBatch(
               address: token?.address,
               balance: balance,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.Pools: {
-          let pools = result.result.pools;
+          let pools = result.result.pools
           Object.keys(pools).forEach((address) => {
-            let pool = pools[address];
-            let tokenAddress = toBech32Address(address);
+            let pool = pools[address]
+            let tokenAddress = toBech32Address(address)
 
-            const [x, y] = pool.arguments;
-            const zilReserve = new BigNumber(x);
-            const tokenReserve = new BigNumber(y);
-            const exchangeRate = zilReserve.dividedBy(tokenReserve);
+            const [x, y] = pool.arguments
+            const zilReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = zilReserve.dividedBy(tokenReserve)
 
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -138,17 +131,17 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 exchangeRate,
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.PoolBalance: {
-          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -158,14 +151,12 @@ export function processBatch(
                 baseAddress: token?.address,
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
-          let balances = result.result.balances[tokenAddress];
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -176,49 +167,47 @@ export function processBatch(
               baseAddress: token?.address,
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.HunyBalances: {
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
-                address: "zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e",
+                address: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
                 dex: DEX.ZilSwap,
                 quoteAddress: ZIL_ADDRESS,
-                baseAddress: "zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e",
+                baseAddress: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
-          let balances = result.result.balances;
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+          let balances = result.result.balances
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
             payload: {
-              address: "zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e",
+              address: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
               dex: DEX.ZilSwap,
               quoteAddress: ZIL_ADDRESS,
-              baseAddress: "zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e",
+              baseAddress: 'zil1m3m5jqqcaemtefnlk795qpw59daukra8prc43e',
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.TotalContributions: {
-          let totalContributions = result.result.total_contributions;
+          let totalContributions = result.result.total_contributions
           Object.keys(totalContributions).forEach((address) => {
-            let tokenAddress = toBech32Address(address);
+            let tokenAddress = toBech32Address(address)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -228,20 +217,20 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 totalContribution: new BigNumber(totalContributions[address]),
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.XcadPools: {
-          let pools = result.result.xpools;
+          let pools = result.result.xpools
           Object.keys(pools).forEach((address) => {
-            let pool = pools[address];
+            let pool = pools[address]
 
-            const [quote, base, x, y] = pool.arguments;
-            const quoteReserve = new BigNumber(x);
-            const baseReserve = new BigNumber(y);
-            const exchangeRate = quoteReserve.dividedBy(baseReserve);
+            const [quote, base, x, y] = pool.arguments
+            const quoteReserve = new BigNumber(x)
+            const baseReserve = new BigNumber(y)
+            const exchangeRate = quoteReserve.dividedBy(baseReserve)
 
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -254,55 +243,53 @@ export function processBatch(
                 baseReserve,
                 exchangeRate,
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.XcadBalances: {
-          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
                 address: token?.address,
                 dex: DEX.XCADDEX,
-                quoteAddress: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+                quoteAddress: 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y',
                 baseAddress: token?.address,
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
           let balances =
-            result.result.xbalances[
-              "0x153feaddc48871108e286de3304b9597c817b456," + tokenAddress
-            ]["0x153feaddc48871108e286de3304b9597c817b456"];
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+            result.result.xbalances['0x153feaddc48871108e286de3304b9597c817b456,' + tokenAddress][
+              '0x153feaddc48871108e286de3304b9597c817b456'
+            ]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
             payload: {
               address: token?.address,
               dex: DEX.XCADDEX,
-              quoteAddress: "zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y",
+              quoteAddress: 'zil1z5l74hwy3pc3pr3gdh3nqju4jlyp0dzkhq2f5y',
               baseAddress: token?.address,
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.XcadTotalContributions: {
-          let totalContributions = result.result.xtotal_contributions;
+          let totalContributions = result.result.xtotal_contributions
           Object.keys(totalContributions).forEach((address) => {
-            const [quote, base] = address.split(",");
+            const [quote, base] = address.split(',')
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -310,24 +297,22 @@ export function processBatch(
                 dex: DEX.XCADDEX,
                 quoteAddress: toBech32Address(quote),
                 baseAddress: toBech32Address(base),
-                totalContribution: new BigNumber(
-                  totalContributions[address][quote]
-                ),
+                totalContribution: new BigNumber(totalContributions[address][quote]),
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.XcadZilPools: {
-          let pools = result.result.pools;
+          let pools = result.result.pools
           Object.keys(pools).forEach((address) => {
-            let pool = pools[address];
+            let pool = pools[address]
 
-            const [x, y] = pool.arguments;
-            const zilReserve = new BigNumber(x);
-            const tokenReserve = new BigNumber(y);
-            const exchangeRate = zilReserve.dividedBy(tokenReserve);
+            const [x, y] = pool.arguments
+            const zilReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = zilReserve.dividedBy(tokenReserve)
 
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -340,17 +325,17 @@ export function processBatch(
                 baseReserve: tokenReserve,
                 exchangeRate,
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.XcadZilBalances: {
-          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -360,14 +345,12 @@ export function processBatch(
                 baseAddress: token?.address,
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
-          let balances = result.result.balances[tokenAddress];
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -378,12 +361,12 @@ export function processBatch(
               baseAddress: token?.address,
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.XcadZilTotalContributions: {
-          let totalContributions = result.result.total_contributions;
+          let totalContributions = result.result.total_contributions
           Object.keys(totalContributions).forEach((address) => {
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -394,21 +377,21 @@ export function processBatch(
                 baseAddress: toBech32Address(address),
                 totalContribution: new BigNumber(totalContributions[address]),
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.CarbPools: {
-          let pools = result.result.pools;
+          let pools = result.result.pools
           Object.keys(pools).forEach((address) => {
-            let pool = pools[address];
-            let tokenAddress = toBech32Address(address);
+            let pool = pools[address]
+            let tokenAddress = toBech32Address(address)
 
-            const [x, y] = pool.arguments;
-            const carbReserve = new BigNumber(x);
-            const tokenReserve = new BigNumber(y);
-            const exchangeRate = carbReserve.dividedBy(tokenReserve);
+            const [x, y] = pool.arguments
+            const carbReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = carbReserve.dividedBy(tokenReserve)
 
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -421,17 +404,17 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 exchangeRate,
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.CarbBalances: {
-          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -441,14 +424,12 @@ export function processBatch(
                 baseAddress: token?.address,
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
-          let balances = result.result.balances[tokenAddress];
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -459,14 +440,14 @@ export function processBatch(
               baseAddress: token?.address,
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.CarbTotalContributions: {
-          let totalContributions = result.result.total_contributions;
+          let totalContributions = result.result.total_contributions
           Object.keys(totalContributions).forEach((address) => {
-            let tokenAddress = toBech32Address(address);
+            let tokenAddress = toBech32Address(address)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -476,21 +457,21 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 totalContribution: new BigNumber(totalContributions[address]),
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.ZilAllPools: {
-          let pools = result.result.liquidity;
+          let pools = result.result.liquidity
           Object.keys(pools).forEach((address) => {
-            let pool = pools[address];
-            let tokenAddress = toBech32Address(address);
+            let pool = pools[address]
+            let tokenAddress = toBech32Address(address)
 
-            const [x, y] = pool.arguments;
-            const zilReserve = new BigNumber(x);
-            const tokenReserve = new BigNumber(y);
-            const exchangeRate = zilReserve.dividedBy(tokenReserve);
+            const [x, y] = pool.arguments
+            const zilReserve = new BigNumber(x)
+            const tokenReserve = new BigNumber(y)
+            const exchangeRate = zilReserve.dividedBy(tokenReserve)
 
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -503,17 +484,17 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 exchangeRate,
               },
-            });
-          });
-          return;
+            })
+          })
+          return
         }
 
         case BatchRequestType.ZilAllBalances: {
-          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
-          let walletAddr = fromBech32Address(walletAddress).toLowerCase();
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase()
+          let walletAddr = fromBech32Address(walletAddress).toLowerCase()
 
           if (result.result === null) {
-            let userContribution = new BigNumber(0);
+            let userContribution = new BigNumber(0)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -523,14 +504,12 @@ export function processBatch(
                 baseAddress: token?.address,
                 userContribution,
               },
-            });
-            return;
+            })
+            return
           }
 
-          let balances = result.result.balances[tokenAddress];
-          let userContribution = new BigNumber(
-            balances ? balances[walletAddr] || 0 : 0
-          );
+          let balances = result.result.balances[tokenAddress]
+          let userContribution = new BigNumber(balances ? balances[walletAddr] || 0 : 0)
 
           dispatch({
             type: TokenActionTypes.TOKEN_UPDATE_POOL,
@@ -541,51 +520,14 @@ export function processBatch(
               baseAddress: token?.address,
               userContribution,
             },
-          });
-          return;
+          })
+          return
         }
 
         case BatchRequestType.ZilAllTotalContributions: {
-<<<<<<< Updated upstream
           let totalContributions = result.result.total_contributions
-          Object.keys(totalContributions).forEach(address => {
-            let tokenAddress = toBech32Address(address)
-            dispatch({type: TokenActionTypes.TOKEN_UPDATE_POOL, payload: {
-              address: tokenAddress,
-              dex: DEX.ZilAll,
-              quoteAddress: ZIL_ADDRESS,
-              baseAddress: tokenAddress,
-              totalContribution: new BigNumber(totalContributions[address])
-            }})
-          })
-          return
-        }
-
-        case BatchRequestType.StakingOperators: {
-          let ssnlist: any[] = result.result.ssnlist
-          
-          var operators: Operator[] = []
-          Object.keys(ssnlist).forEach(ssnAddress => {
-            let address: any = ssnAddress
-            operators.push({
-              name: ssnlist[address].arguments[3],
-              address: address,
-              stake_amount: new BigNumber(ssnlist[address].arguments[1]),
-              stake_rewards: new BigNumber(ssnlist[address].arguments[2]),
-              buffered_deposit: new BigNumber(ssnlist[address].arguments[6]),
-              comission: new BigNumber(ssnlist[address].arguments[7]),
-              comission_rewards: new BigNumber(ssnlist[address].arguments[8]),
-              symbol: 'ZIL',
-              decimals: 12
-            })
-          })
-
-          dispatch({ type: StakingActionTypes.STAKING_INIT, payload: { operators: operators }})
-          return
-=======
-          let totalContributions = result.result.total_contributions;
           Object.keys(totalContributions).forEach((address) => {
-            let tokenAddress = toBech32Address(address);
+            let tokenAddress = toBech32Address(address)
             dispatch({
               type: TokenActionTypes.TOKEN_UPDATE_POOL,
               payload: {
@@ -595,47 +537,43 @@ export function processBatch(
                 baseAddress: tokenAddress,
                 totalContribution: new BigNumber(totalContributions[address]),
               },
-            });
-          });
-          return;
->>>>>>> Stashed changes
+            })
+          })
+          return
         }
 
         case BatchRequestType.StakingDelegators: {
           if (result && result.result) {
-            let ssnDelegators: any[] = result.result.ssn_deleg_amt;
+            let ssnDelegators: any[] = result.result.ssn_deleg_amt
             Object.keys(ssnDelegators).forEach((ssnAddress) => {
-              let address: any = ssnAddress;
-              let amount: any =
-                ssnDelegators[address][
-                  fromBech32Address(walletAddress).toLowerCase()
-                ];
-              let staked = new BigNumber(amount);
+              let address: any = ssnAddress
+              let amount: any = ssnDelegators[address][fromBech32Address(walletAddress).toLowerCase()]
+              let staked = new BigNumber(amount)
               dispatch({
                 type: StakingActionTypes.STAKING_UPDATE_OPERATOR,
                 payload: {
                   address: ssnAddress,
                   staked,
                 },
-              });
-            });
+              })
+            })
           }
-          return;
+          return
         }
 
         case BatchRequestType.Staking: {
-          let contract = result.request.stakingContract;
-          if (!contract || result.result === null) return;
+          let contract = result.request.stakingContract
+          if (!contract || result.result === null) return
 
-          let staker: any = Object.values(result.result[contract.statePath])[0];
-          var staked = new BigNumber(0);
+          let staker: any = Object.values(result.result[contract.statePath])[0]
+          var staked = new BigNumber(0)
 
           if (contract.cumulativeValues === true) {
             Object.values(staker).forEach((value: any) => {
-              staked = staked.plus(value);
-            });
+              staked = staked.plus(value)
+            })
           } else {
-            staked = staked.plus(staker);
+            staked = staked.plus(staker)
           }
 
           dispatch({
@@ -653,11 +591,11 @@ export function processBatch(
                 comission: new BigNumber(0),
               },
             },
-          });
+          })
 
-          return;
+          return
         }
       }
-    });
-  });
+    })
+  })
 }
