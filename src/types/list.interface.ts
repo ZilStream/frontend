@@ -3,5 +3,6 @@ export enum ListType {
   Favorites,
   DeFi,
   NFT,
-  APR
+  APR,
+  Creators,
 }
