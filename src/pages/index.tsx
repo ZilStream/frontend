@@ -391,7 +391,7 @@ function Home() {
             </>
           ) : (
             <>
-              <SponsorBlock link="https://kalijo.io" />
+              <SponsorBlock link="https://launchpad.kalijo.io" />
 
               <RatesBlock
                 title="ZIL"
