@@ -82,7 +82,7 @@ const ExchangeDetail = ({
     setTotalLiquidity(liquidity);
 
     let volume = exchange.pairs.reduce((sum, pair) => {
-      if (pair.volume && (pair.volume_24h_quote ?? 0) > 0) {
+      if ((pair.volume_24h_quote ?? 0) > 0) {
         const quoteToken = tokenState.tokens.filter(
           (token) => token.address === pair.quote_address
         )?.[0];
@@ -271,7 +271,7 @@ const ExchangeDetail = ({
                   </td>
                   <td className="px-2 py-2 font-normal text-right">
                     {currencyFormat(
-                      (volume ?? 0) * selectedCurrency.rate,
+                      volume * selectedCurrency.rate,
                       selectedCurrency.symbol
                     )}
                   </td>
