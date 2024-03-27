@@ -32,8 +32,12 @@ function ApiTerms() {
             TradingView is a charting platform for a global community of traders
             and investors. Supercharged by robust technologies across browser,
             desktop and mobile apps, the platform provides unparalleled access
-            to live data e.g. BTC USD Chart, the latest news, financial reports,
-            Stock screener and Economic calendar.
+            to live data e.g.{" "}
+            <a href="https://www.tradingview.com/symbols/BTCUSD/">
+              BTC USD Chart
+            </a>
+            , the latest news, financial reports, Stock screener and Economic
+            calendar.
           </p>
         </div>
       </div>
