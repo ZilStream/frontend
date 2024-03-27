@@ -53,17 +53,19 @@ const Supply = (props: Props) => {
         </div>
       </div>
 
-      <div className="flex items-center">
-        <div className="flex-grow">Undistributed Supply:</div>
-        <div className="font-semibold">
-          {numberFormat(
-            props.token.market_data.max_supply -
-              props.token.market_data.current_supply -
-              props.token.market_data.burned_supply,
-            0
-          )}
+      {props.token.market_data.max_supply > 0 && (
+        <div className="flex items-center">
+          <div className="flex-grow">Undistributed Supply:</div>
+          <div className="font-semibold">
+            {numberFormat(
+              props.token.market_data.max_supply -
+                props.token.market_data.current_supply -
+                props.token.market_data.burned_supply,
+              0
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {props.token.market_data.max_supply > 0 ? (
         <div className="flex items-center">
