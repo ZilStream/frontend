@@ -11,6 +11,9 @@ interface Props {
 const Supply = (props: Props) => {
   const [showPopup, setShowPopup] = useState(false);
 
+  const maxWithoutBurned =
+    props.token.market_data.max_supply - props.token.market_data.burned_supply;
+
   const percentage =
     (props.token.market_data.current_supply /
       props.token.market_data.max_supply) *
@@ -19,6 +22,8 @@ const Supply = (props: Props) => {
     (props.token.market_data.burned_supply /
       props.token.market_data.max_supply) *
     100;
+  const percentageWithoutBurned =
+    (props.token.market_data.current_supply / maxWithoutBurned) * 100;
   const excludedAddresses =
     props.token.supply_skip_addresses != ""
       ? props.token.supply_skip_addresses.split(",")
@@ -124,7 +129,9 @@ const Supply = (props: Props) => {
           {numberFormat(props.token.market_data.current_supply, 0)}{" "}
           {props.token.symbol}
         </div>
-        <div className="font-medium">{numberFormat(percentage, 0)}%</div>
+        <div className="font-medium">
+          {numberFormat(percentageWithoutBurned, 0)}%
+        </div>
         <Tippy content={SupplyInfo}>
           <button className="ml-2 focus:outline-none">
             <Info size={14} className="text-gray-500" />
