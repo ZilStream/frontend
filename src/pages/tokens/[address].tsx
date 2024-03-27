@@ -119,16 +119,16 @@ function TokenDetail({
       let newPairs = await getTokenPairs(token.address);
 
       let volume = newPairs.reduce((sum, pair) => {
-        if (pair.volume && pair.volume.volume_24h_quote > 0) {
+        if (pair.volume_24h_quote ?? 0 > 0) {
           const quoteToken = tokenState.tokens.filter(
             (token) => token.address === pair.quote_address
           )?.[0];
           if (quoteToken && quoteToken.isZil) {
-            return sum + pair.volume.volume_24h_quote;
+            return sum + (pair.volume_24h_quote ?? 0);
           } else {
             return (
               sum +
-              pair.volume.volume_24h_quote *
+              (pair.volume_24h_quote ?? 0) *
                 (quoteToken?.market_data.rate_zil ?? 0)
             );
           }
@@ -141,21 +141,19 @@ function TokenDetail({
         const aQuoteToken = tokenState.tokens.filter(
           (token) => token.address === a.quote_address
         )?.[0];
-        var avolume = a.volume?.volume_24h_quote ?? 0;
+        var avolume = a.volume_24h_quote ?? 0;
         if (aQuoteToken && !aQuoteToken.isZil) {
           avolume =
-            (a.volume?.volume_24h_quote ?? 0) *
-            aQuoteToken.market_data.rate_zil;
+            (a.volume_24h_quote ?? 0) * aQuoteToken.market_data.rate_zil;
         }
 
         const bQuoteToken = tokenState.tokens.filter(
           (token) => token.address === b.quote_address
         )?.[0];
-        var bvolume = b.volume?.volume_24h_quote ?? 0;
+        var bvolume = b.volume_24h_quote ?? 0;
         if (bQuoteToken && !bQuoteToken.isZil) {
           bvolume =
-            (b.volume?.volume_24h_quote ?? 0) *
-            bQuoteToken.market_data.rate_zil;
+            (b.volume_24h_quote ?? 0) * bQuoteToken.market_data.rate_zil;
         }
 
         return avolume > bvolume ? -1 : 1;
@@ -1211,6 +1209,16 @@ function TokenDetail({
                   <td className="flex flex-col items-end py-3">
                     <span className="font-bold">
                       {numberFormat(token.market_data.total_supply, 0)}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="text-left font-normal py-3">
+                    Burned Supply
+                  </th>
+                  <td className="flex flex-col items-end py-3">
+                    <span className="font-bold">
+                      {numberFormat(token.market_data.burned_supply, 0)}
                     </span>
                   </td>
                 </tr>
