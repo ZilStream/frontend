@@ -1212,7 +1212,7 @@ function TokenDetail({
                     </span>
                   </td>
                 </tr>
-                <tr>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th scope="row" className="text-left font-normal py-3">
                     Burned Supply
                   </th>
