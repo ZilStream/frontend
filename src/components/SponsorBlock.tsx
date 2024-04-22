@@ -12,7 +12,7 @@ const SponsorBlock = (props: Props) => {
   return (
     <a href={`${link ?? ""}?ref=zilstream`} target="_blank">
       <div
-        className={`h-48 rounded-xl py-2 px-3 shadow bg-white dark:bg-gray-800 text-white dark:text-white relative flex flex-col bg-center bg-cover bg-[url('https://zilstream.b-cdn.net/sponsorships/seed_now_live_banner.png')]`}
+        className={`h-48 rounded-xl py-2 px-3 shadow bg-white dark:bg-gray-800 text-white dark:text-white relative flex flex-col bg-center bg-cover bg-[url('https://zilstream.b-cdn.net/sponsorships/hrse-sale.jpg')]`}
       >
         <div className="mb-2">
           <div className="flex items-center text-lg -mb-1">

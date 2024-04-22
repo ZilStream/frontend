@@ -391,7 +391,9 @@ function Home() {
             </>
           ) : (
             <>
-              <SponsorBlock link="https://plunderswap.com/swap?outputCurrency=0xe64cA52EF34FdD7e20C0c7fb2E392cc9b4F6D049" />
+              {/* <SponsorBlock link="https://plunderswap.com/swap?outputCurrency=0xe64cA52EF34FdD7e20C0c7fb2E392cc9b4F6D049" /> */}
+
+              <SponsorBlock link="https://launchpad.kalijo.io" />
 
               <RatesBlock
                 title="ZIL"
