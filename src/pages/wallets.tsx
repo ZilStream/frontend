@@ -17,8 +17,8 @@ function Wallets() {
       <div className="pt-8 pb-2 md:pb-8">
         <div className="flex flex-col lg:flex-row items-start">
           <div className="flex-grow">
-            <h2 className="mb-1">Manage wallets</h2>
-            <div className="text-gray-500 dark:text-gray-400 text-lg">Manage your wallets</div>
+            <h2 className="mb-1">Manage $uperChain Wallets & Dapps</h2>
+            <div className="text-gray-500 dark:text-gray-400 text-lg">Manage your GSC20 wallets</div>
           </div>
         </div>
       </div>
@@ -34,6 +34,10 @@ function Wallets() {
           <thead className="text-gray-500 dark:text-gray-400 text-xs">
             <tr className="py-2">
               <th className="pl-4 pr-2 py-3 text-left">Wallet</th>
+              <th className="pl-4 pr-2 py-3 text-left">Dapps</th>
+              <th className="pl-4 pr-2 py-3 text-left">Chains</th>
+              <th className="pl-4 pr-2 py-3 text-left">DeFi</th>
+              <th className="pl-4 pr-2 py-3 text-left">CeFi</th>
               <th className="px-2 py-3 text-right">Type</th>
               <th className="px-2 py-3 text-right">Connected</th>
               <th className="px-2 py-3 text-right">Actions</th>
@@ -53,9 +57,9 @@ function Wallets() {
                 </td>
                 <td className="px-2 py-3 text-right">
                   {wallet.isConnected ? (
-                    <span className="text-sm"><span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2" />Connected</span>
+                    <span className="text-sm"><span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2" />GSC20 is Connected</span>
                   ) : (
-                    <span className="text-sm"><span className="w-2 h-2 bg-orange-500 rounded-full inline-block mr-2" />Not connected</span>
+                    <span className="text-sm"><span className="w-2 h-2 bg-orange-500 rounded-full inline-block mr-2" />GSC20 not connected</span>
                   )}
                 </td>
                 <td className="px-2 py-3 text-right">
