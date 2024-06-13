@@ -6,12 +6,12 @@ function PremiumMembership() {
   return (
     <>
       <Head>
-        <title>Announcing Premium Membership | ZilStream</title>
+        <title>Introducing Network Membership | GSCxBT.com</title>
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@zilstream" />
-        <meta name="twitter:title" content="Announcing Premium Membership | ZilStream" />
-        <meta name="twitter:description" content="Introducing ZilStream Premium Membership, Portfolio and STREAM token." />
+        <meta name="twitter:title" content="Introducing Network Membership | GSCxBT.com" />
+        <meta name="twitter:description" content="Introducing GAEAos Network Membership, GSC20 Portal and XBTA." />
         <meta name="twitter:image" content="https://zilstream.com/images/zilstream-banner.png" />
 
         <meta property="og:url" content="https://zilstream.com/updates/announcing-premium-membership" key="ogurl" />
