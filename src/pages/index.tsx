@@ -988,14 +988,14 @@ function Home({
 
               {settingsState.columns.graph24HZIL && (
                 <th className="px-2 py-2 text-right whitespace-nowrap">
-                  Last 24 hours (ZIL)
+                  Last 24 hours (GSC)
                 </th>
               )}
             </tr>
           </thead>
           <tbody>
             {displayedTokens
-              .filter((token) => token.symbol != "ZIL")
+              .filter((token) => token.symbol != "GSC")
               .map((token, index) => {
                 return (
                   <TokenRow
@@ -1007,7 +1007,7 @@ function Home({
                       (rate) => rate.token_id == token.id.toString()
                     )}
                     isLast={
-                      displayedTokens.filter((token) => token.symbol != "ZIL")
+                      displayedTokens.filter((token) => token.symbol != "GSC")
                         .length ===
                       index + 1
                     }
@@ -1025,7 +1025,7 @@ function Home({
           displayedTokens.length === 0 && (
             <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
               <span className="text-gray-500 dark:text-gray-400 italic">
-                Star a token and you'll see it here in your favorites.
+                Choose a GSC20 token and see it shine in your SuperChain favorites.
               </span>
             </div>
           )}
