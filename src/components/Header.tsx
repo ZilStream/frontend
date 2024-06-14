@@ -51,12 +51,12 @@ const Header = () => {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/">
                 <a>
-                  <img className="block lg:hidden h-8 w-auto" src="/logo.svg" alt="ZilStream" />
+                  <img className="block lg:hidden h-8 w-auto" src="/logo.png" alt="GSCxBT" />
                   
                   {resolvedTheme === 'dark' ? (
-                    <img className="hidden lg:block h-8 w-auto" src="/logo-text-dark.svg" />
+                    <img className="hidden lg:block h-8 w-auto" src="/logo-text-dark.png" />
                   ) : (
-                    <img className="hidden lg:block h-8 w-auto" src="/logo-text.svg" />
+                    <img className="hidden lg:block h-8 w-auto" src="/logo-text.png" />
                   )}
                 </a>
               </Link>

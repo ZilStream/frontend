@@ -1025,7 +1025,7 @@ function Home({
           displayedTokens.length === 0 && (
             <div className="bg-white dark:bg-gray-800 py-4 px-5 rounded-lg mt-1 flex items-center justify-center">
               <span className="text-gray-500 dark:text-gray-400 italic">
-                Choose a GSC20 token and see it shine in your $uperChain favorites.
+            Choose a GSC20 token and see it shine in your $uperChain favorites.
               </span>
             </div>
           )}

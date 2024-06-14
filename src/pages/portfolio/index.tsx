@@ -21,8 +21,8 @@ const Portfolio = () => {
   return (
     <>
       <Head>
-        <title>Portfolio | ZilStream</title>
-        <meta property="og:title" content={`Portfolio | ZilStream`} />
+        <title>Portfolio | GSCxBT.com</title>
+        <meta property="og:title" content={`Portfolio | GSCxBT.com`} />
       </Head>
 
       <PortfolioHeader />
