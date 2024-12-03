@@ -89,9 +89,7 @@ export function processBatch(
         }
 
         case BatchRequestType.PoolBalance: {
-          let tokenAddress = token!.address.startsWith("0x")
-            ? token!.address
-            : fromBech32Address(token!.address);
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
           let walletAddr = fromBech32Address(walletAddress).toLowerCase();
 
           if (result.result === null) {
@@ -207,9 +205,7 @@ export function processBatch(
         }
 
         case BatchRequestType.XcadBalances: {
-          let tokenAddress = token!.address.startsWith("0x")
-            ? token!.address
-            : fromBech32Address(token!.address);
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
           let walletAddr = fromBech32Address(walletAddress).toLowerCase();
 
           if (result.result === null) {
@@ -295,9 +291,7 @@ export function processBatch(
         }
 
         case BatchRequestType.XcadZilBalances: {
-          let tokenAddress = token!.address.startsWith("0x")
-            ? token!.address
-            : fromBech32Address(token!.address);
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
           let walletAddr = fromBech32Address(walletAddress).toLowerCase();
 
           if (result.result === null) {
@@ -378,9 +372,7 @@ export function processBatch(
         }
 
         case BatchRequestType.CarbBalances: {
-          let tokenAddress = token!.address.startsWith("0x")
-            ? token!.address
-            : fromBech32Address(token!.address);
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
           let walletAddr = fromBech32Address(walletAddress).toLowerCase();
 
           if (result.result === null) {
@@ -462,9 +454,7 @@ export function processBatch(
         }
 
         case BatchRequestType.ZilAllBalances: {
-          let tokenAddress = token!.address.startsWith("0x")
-            ? token!.address
-            : fromBech32Address(token!.address);
+          let tokenAddress = fromBech32Address(token!.address).toLowerCase();
           let walletAddr = fromBech32Address(walletAddress).toLowerCase();
 
           if (result.result === null) {

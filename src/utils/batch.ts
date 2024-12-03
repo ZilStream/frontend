@@ -157,7 +157,9 @@ export const tokenAllowancesBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = fromBech32Address(token.address);
+  const address = token.address.startsWith("0x")
+    ? token.address
+    : fromBech32Address(token.address);
   return {
     type: BatchRequestType.TokenAllowance,
     token: token,
@@ -221,9 +223,7 @@ export const tokenPoolBalanceBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = token.address.startsWith("0x")
-    ? token.address
-    : fromBech32Address(token.address);
+  const address = fromBech32Address(token.address).toLowerCase();
   const walletAddr = fromBech32Address(walletAddress).toLowerCase();
   return {
     type: BatchRequestType.PoolBalance,
@@ -288,9 +288,7 @@ export const xcadPoolBalanceBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = token.address.startsWith("0x")
-    ? token.address
-    : fromBech32Address(token.address);
+  const address = fromBech32Address(token.address).toLowerCase();
   const walletAddr = fromBech32Address(walletAddress).toLowerCase();
   return {
     type: BatchRequestType.XcadBalances,
@@ -359,9 +357,7 @@ export const xcadZilPoolBalanceBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = token.address.startsWith("0x")
-    ? token.address
-    : fromBech32Address(token.address);
+  const address = fromBech32Address(token.address).toLowerCase();
   const walletAddr = fromBech32Address(walletAddress).toLowerCase();
   return {
     type: BatchRequestType.XcadZilBalances,
@@ -426,9 +422,7 @@ export const carbTokenPoolBalanceBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = token.address.startsWith("0x")
-    ? token.address
-    : fromBech32Address(token.address);
+  const address = fromBech32Address(token.address).toLowerCase();
   const walletAddr = fromBech32Address(walletAddress).toLowerCase();
   return {
     type: BatchRequestType.CarbBalances,
@@ -493,9 +487,7 @@ export const zilAllTokenPoolBalanceBatchRequest = (
   token: Token,
   walletAddress: string
 ): BatchRequest => {
-  const address = token.address.startsWith("0x")
-    ? token.address
-    : fromBech32Address(token.address);
+  const address = fromBech32Address(token.address).toLowerCase();
   const walletAddr = fromBech32Address(walletAddress).toLowerCase();
   return {
     type: BatchRequestType.ZilAllBalances,
