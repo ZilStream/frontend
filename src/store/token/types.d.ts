@@ -8,6 +8,7 @@ export interface Token {
   symbol: string;
   icon: string;
   address: string;
+  proxy_address: string;
   decimals: number;
   website: string;
   whitepaper: string;

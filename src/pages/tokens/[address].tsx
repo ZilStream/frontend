@@ -797,11 +797,19 @@ function TokenDetail({
 
                     if (pair.quote_address !== ZIL_ADDRESS && price > 0) {
                       if (pair.quote_address === token.address) {
-                        zilRate =
-                          (1 / price) * (baseToken?.market_data.rate_zil ?? 0);
+                        const baseTokenRate =
+                          baseToken?.market_data.rate_zil ?? 0;
+                        if (baseTokenRate > 0) {
+                          zilRate = (1 / price) * baseTokenRate;
+                        }
                       } else {
-                        zilRate =
-                          price * (quoteToken?.market_data.rate_zil ?? 0);
+                        const quoteTokenRate =
+                          quoteToken?.market_data.rate_zil ?? 0;
+                        if (quoteTokenRate > 0) {
+                          zilRate = price * quoteTokenRate;
+                        }
+                        // If quote token rate is not available, keep the original price
+                        // This will show the pair price in the quote token's units
                       }
                     }
 
