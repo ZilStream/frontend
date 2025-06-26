@@ -606,6 +606,9 @@ export const sendBatchRequest = async (
 ): Promise<BatchResponse[]> => {
   const response = await fetch(node, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(requests.flatMap((request) => request.item)),
   });
 
