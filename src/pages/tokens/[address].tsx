@@ -253,25 +253,49 @@ function TokenDetail({
               </a>
             )}
 
-            <a
-              href={`https://viewblock.io/zilliqa/address/${token.address}`}
-              target="_blank"
-              className="inline-flex items-center mr-2 mb-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded"
-            >
-              <Box size={12} className="mr-1" />
-              ViewBlock
-            </a>
+            {token.address.startsWith("0x") ? (
+              <a
+                href={`https://zq2-mainnet.blockscout.com/address/${token.address}`}
+                target="_blank"
+                className="inline-flex items-center mr-2 mb-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded"
+              >
+                <Box size={12} className="mr-1" />
+                Blockscout
+              </a>
+            ) : (
+              <a
+                href={`https://viewblock.io/zilliqa/address/${token.address}`}
+                target="_blank"
+                className="inline-flex items-center mr-2 mb-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded"
+              >
+                <Box size={12} className="mr-1" />
+                ViewBlock
+              </a>
+            )}
 
-            <a
-              href={`https://zilswap.io/swap?tokenIn=zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz&tokenOut=${token.address}`}
-              target="_blank"
-              className="inline-flex items-center mr-2 mb-2 justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2"
-            >
-              <span className="w-3 h-3 mr-1">
-                <TokenIcon address="zil1p5suryq6q647usxczale29cu3336hhp376c627" />
-              </span>
-              Swap
-            </a>
+            {token.address.startsWith("0x") ? (
+              <a
+                href={`https://plunderswap.com/swap?outputCurrency=${token.address}`}
+                target="_blank"
+                className="inline-flex items-center mr-2 mb-2 justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2"
+              >
+                <span className="w-3 h-3 mr-1">
+                  <TokenIcon url="https://docs.plunderswap.com/.gitbook/assets/plunder_logo_1.svg" />
+                </span>
+                Swap
+              </a>
+            ) : (
+              <a
+                href={`https://zilswap.io/swap?tokenIn=zil1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9yf6pz&tokenOut=${token.address}`}
+                target="_blank"
+                className="inline-flex items-center mr-2 mb-2 justify-center sm:justify-start bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 px-2 py-1 rounded sm:mr-2"
+              >
+                <span className="w-3 h-3 mr-1">
+                  <TokenIcon address="zil1p5suryq6q647usxczale29cu3336hhp376c627" />
+                </span>
+                Swap
+              </a>
+            )}
 
             <div>
               <CopyableAddress address={token.address} showCopy={true} />
