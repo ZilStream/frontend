@@ -110,11 +110,11 @@ const StateProvider = (props: Props) => {
   }
 
   async function loadNftCollections() {
-    let collections = await getNftCollections();
-    dispatch({
-      type: CollectionActionTypes.COLLECTION_INIT,
-      payload: { collections },
-    });
+    // let collections = await getNftCollections();
+    // dispatch({
+    //   type: CollectionActionTypes.COLLECTION_INIT,
+    //   payload: { collections },
+    // });
   }
 
   async function setFavorites() {
