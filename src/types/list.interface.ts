@@ -5,4 +5,5 @@ export enum ListType {
   NFT,
   APR,
   Creators,
+  LST,
 }

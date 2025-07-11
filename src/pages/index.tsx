@@ -145,6 +145,10 @@ function Home() {
       tokensToDisplay = tokensToDisplay.filter((token) =>
         token.tags?.split(",").includes("creator")
       );
+    } else if (currentList == ListType.LST) {
+      tokensToDisplay = tokensToDisplay.filter((token) =>
+        token.tags?.split(",").includes("lst")
+      );
     }
 
     if (currentSort === SortType.APR || currentSort === SortType.APY) {
@@ -463,6 +467,14 @@ function Home() {
                 Ranking
               </button>
               <button
+                onClick={() => setCurrentList(ListType.LST)}
+                className={`${
+                  currentList == ListType.LST ? "list-btn-selected" : "list-btn"
+                } mr-2`}
+              >
+                Staking
+              </button>
+              <button
                 onClick={() => setCurrentList(ListType.DeFi)}
                 className={`${
                   currentList == ListType.DeFi
@@ -471,24 +483,6 @@ function Home() {
                 } mr-2`}
               >
                 DeFi
-              </button>
-              <button
-                onClick={() => setCurrentList(ListType.NFT)}
-                className={`${
-                  currentList == ListType.NFT ? "list-btn-selected" : "list-btn"
-                } mr-2`}
-              >
-                NFT
-              </button>
-              <button
-                onClick={() => setCurrentList(ListType.Creators)}
-                className={`${
-                  currentList == ListType.Creators
-                    ? "list-btn-selected"
-                    : "list-btn"
-                } mr-2`}
-              >
-                Creators
               </button>
             </div>
           </div>
