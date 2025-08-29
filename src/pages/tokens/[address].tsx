@@ -995,9 +995,9 @@ function TokenDetail({
                   </MemberWrapper>
                 </Tab.Panel>
                 <Tab.Panel>
-                  <MemberWrapper>
-                    <TokenLiquidity token={token} />
-                  </MemberWrapper>
+                  {/* <MemberWrapper> */}
+                  <TokenLiquidity token={token} />
+                  {/* </MemberWrapper> */}
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>
